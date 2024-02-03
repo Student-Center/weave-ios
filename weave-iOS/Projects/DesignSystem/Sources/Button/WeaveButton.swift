@@ -30,7 +30,7 @@ public struct WeaveButton: View {
         if !isEnabled {
             return DesignSystem.gray500
         }
-        return isTouched ? DesignSystem.gray500 : DesignSystem.defaultPurple
+        return isTouched ? DesignSystem.gray500 : DesignSystem.defaultBlue
     }
     
     public init(
@@ -66,9 +66,9 @@ public struct WeaveButton: View {
                 Spacer()
             }
             .background(backgroundColor)
-            .cornerRadius(8)
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                Capsule()
                     .stroke(
                         foregroundColor,
                         lineWidth: style == .outline ? 1 : 0
