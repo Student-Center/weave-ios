@@ -8,17 +8,25 @@
 import Foundation
 import SwiftUI
 
-struct WeaveStepper: View {
+public struct WeaveStepper: View {
     
-    let maxCount: Int
-    let currentIndex: Int
+    let maxStepCount: Int
+    let currentStep: Int
     
-    var body: some View {
+    public init(
+        maxStepCount: Int,
+        currentStep: Int
+    ) {
+        self.maxStepCount = maxStepCount
+        self.currentStep = currentStep
+    }
+    
+    public var body: some View {
         HStack(spacing: 3) {
-            ForEach(0 ..< maxCount, id: \.self) { index in
-                if currentIndex < index {
+            ForEach(0 ..< maxStepCount, id: \.self) { index in
+                if currentStep < index {
                     RoundedRectangle(cornerRadius: 4)
-                        .foregroundStyle(DesignSystem.darkGray)
+                        .foregroundStyle(DesignSystem.Colors.darkGray)
                 } else {
                     RoundedRectangle(cornerRadius: 4)
                         .foregroundStyle(
@@ -31,8 +39,8 @@ struct WeaveStepper: View {
     }
     
     func processGradient(index: Int) -> some ShapeStyle {
-        let start = CGFloat(1) / CGFloat(maxCount) * CGFloat(index)
-        let end = CGFloat(1) / CGFloat(maxCount) * CGFloat(index + 1)
+        let start = CGFloat(1) / CGFloat(maxStepCount) * CGFloat(index)
+        let end = CGFloat(1) / CGFloat(maxStepCount) * CGFloat(index + 1)
         
         return LinearGradient(
             colors: [
@@ -45,9 +53,9 @@ struct WeaveStepper: View {
     }
 }
 
-#Preview {
-    WeaveStepper(
-        maxCount: 5,
-        currentIndex: 2
-    )
-}
+//#Preview {
+//    WeaveStepper(
+//        maxStepCount: 5,
+//        currentStep: 2
+//    )
+//}

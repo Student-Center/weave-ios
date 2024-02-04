@@ -30,9 +30,9 @@ public struct WeaveButton: View {
     
     var buttonTintColor: Color {
         if !isEnabled {
-            return DesignSystem.gray500
+            return DesignSystem.Colors.gray500
         }
-        return isTouched ? DesignSystem.gray500 : DesignSystem.defaultBlue
+        return isTouched ? DesignSystem.Colors.gray500 : DesignSystem.Colors.defaultBlue
     }
     
     public init(
