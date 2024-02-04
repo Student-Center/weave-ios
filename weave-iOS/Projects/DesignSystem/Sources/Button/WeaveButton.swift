@@ -30,7 +30,7 @@ public struct WeaveButton: View {
         if !isEnabled {
             return DesignSystem.gray500
         }
-        return isTouched ? DesignSystem.gray500 : DesignSystem.purple
+        return isTouched ? DesignSystem.gray500 : DesignSystem.defaultPurple
     }
     
     public init(
@@ -103,10 +103,10 @@ extension WeaveButton {
         
         var font: Font {
             switch self {
-            case .large: return .bold._16
-            case .medium: return .medium._16
-            case .regular: return .medium._14
-            case .small: return .medium._12
+            case .large: return .pretendard(._600, size: 16)
+            case .medium: return .pretendard(._500, size: 16)
+            case .regular: return .pretendard(._500, size: 15)
+            case .small: return .pretendard(._500, size: 12)
             }
         }
         
