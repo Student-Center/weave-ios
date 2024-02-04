@@ -33,7 +33,7 @@ struct SignUpView: View {
                 case .year:
                     SignUpYearView()
                 case .mbti:
-                    Text("MBTI")
+                    SignUpMBTIView()
                 case .university:
                     Text("University")
                 case .major:
