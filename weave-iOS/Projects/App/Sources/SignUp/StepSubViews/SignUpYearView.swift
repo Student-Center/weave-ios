@@ -32,6 +32,9 @@ struct SignUpYearView: View {
                 .foregroundColor(DesignSystem.Colors.white)
                 .padding(.vertical, 11)
         }
+        .onAppear(perform: {
+            UIApplication.shared.hideKeyboard()
+        })
     }
 }
 
