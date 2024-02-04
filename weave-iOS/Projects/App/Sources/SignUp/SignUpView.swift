@@ -53,6 +53,7 @@ struct SignUpView: View {
                         print("완료")
                     }
                 }
+                .padding(.bottom, 20)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 1)
