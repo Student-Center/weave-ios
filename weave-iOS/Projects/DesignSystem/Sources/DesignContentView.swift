@@ -16,32 +16,32 @@ struct DesignContentView: View {
             
             HStack {
                 generateBox()
-                    .foregroundStyle(DesignSystem.defaultPurple)
+                    .foregroundStyle(DesignSystem.Colors.defaultPurple)
                 generateBox()
-                    .foregroundStyle(DesignSystem.defaultBlue)
+                    .foregroundStyle(DesignSystem.Colors.defaultBlue)
                 generateBox()
-                    .foregroundStyle(DesignSystem.black)
+                    .foregroundStyle(DesignSystem.Colors.black)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray900)
+                    .foregroundStyle(DesignSystem.Colors.gray900)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray800)
+                    .foregroundStyle(DesignSystem.Colors.gray800)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray700)
+                    .foregroundStyle(DesignSystem.Colors.gray700)
             }
             
             HStack {
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray600)
+                    .foregroundStyle(DesignSystem.Colors.gray600)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray500)
+                    .foregroundStyle(DesignSystem.Colors.gray500)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray400)
+                    .foregroundStyle(DesignSystem.Colors.gray400)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray300)
+                    .foregroundStyle(DesignSystem.Colors.gray300)
                 generateBox()
-                    .foregroundStyle(DesignSystem.gray200)
+                    .foregroundStyle(DesignSystem.Colors.gray200)
                 generateBox()
-                    .foregroundStyle(DesignSystem.white)
+                    .foregroundStyle(DesignSystem.Colors.white)
             }
         }
     }
