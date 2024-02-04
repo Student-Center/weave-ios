@@ -44,11 +44,11 @@ public struct WeaveTextInput: View {
                 // 텍스트필드
                 if isSecureMode {
                     SecureField(placeholder, text: $text)
-                        .font(.medium._16)
+                        .font(.pretendard(._500, size: 16))
                         .focused($isFocused)
                 } else {
                     TextField(placeholder, text: $text)
-                        .font(.medium._16)
+                        .font(.pretendard(._500, size: 16))
                         .focused($isFocused)
                 }
                 // Secure 토글 버튼
@@ -94,7 +94,7 @@ public struct WeaveTextInput: View {
                     // 에러인 경우에만 메시지 입력, 이외에는 자리만 차지하도록
                     let message = validationState == .error ? errorMessage : ""
                     Text(message)
-                        .font(.medium._12)
+                        .font(.pretendard(._500, size: 12))
                         .foregroundStyle(validationState.foregroundColor)
                     Spacer()
                 }
