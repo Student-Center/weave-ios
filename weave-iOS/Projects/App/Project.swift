@@ -8,6 +8,8 @@ let target = Target(
     infoPlist: .file(path: "Support/weave-ios-Info.plist"),
     sources: ["Sources/**"],
     dependencies: [
+        .project(target: "Services",
+                 path: .relativeToRoot("Projects/Core")),
         .project(target: "DesignSystem",
                  path: .relativeToRoot("Projects/DesignSystem")),
     ]
