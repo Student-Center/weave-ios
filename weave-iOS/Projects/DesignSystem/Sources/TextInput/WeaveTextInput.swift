@@ -20,7 +20,7 @@ public struct WeaveTextInput: View {
     @State var isSecureMode: Bool
     
     var foregroundColor: Color {
-        return DesignSystem.gray900
+        return DesignSystem.Colors.gray900
     }
     
     public init(
@@ -59,7 +59,7 @@ public struct WeaveTextInput: View {
                         Image(
                             systemName: isSecureMode ? "eye" : "eye.slash"
                         )
-                        .foregroundStyle(DesignSystem.gray500)
+                        .foregroundStyle(DesignSystem.Colors.gray500)
                     })
                 }
                 // State에 따른 icon
@@ -74,7 +74,7 @@ public struct WeaveTextInput: View {
                         text = ""
                     }, label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(DesignSystem.gray500)
+                            .foregroundStyle(DesignSystem.Colors.gray500)
                     })
                 }
             }
@@ -112,7 +112,7 @@ extension WeaveTextInput {
         
         var foregroundColor: Color {
             switch self {
-            case .none: return DesignSystem.gray500
+            case .none: return DesignSystem.Colors.gray500
             case .error: return Color(red: 255, green: 0, blue: 34)
             case .success: return Color(red: 37, green: 211, blue: 102)
             }
