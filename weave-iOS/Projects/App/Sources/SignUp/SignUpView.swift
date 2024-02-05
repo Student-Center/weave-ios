@@ -34,10 +34,12 @@ struct SignUpView: View {
                     SignUpYearView()
                 case .mbti:
                     SignUpMBTIView()
-                case .university:
-                    Text("University")
+                case .school:
+                    SignUpSchoolView()
+                        .zIndex(1000)
                 case .major:
-                    Text("Major")
+                    SignUpMajorView()
+                        .zIndex(1000)
                 }
                 
                 Spacer()
@@ -48,7 +50,9 @@ struct SignUpView: View {
                 ) {
                     let nextRawValue = currentStep.rawValue + 1
                     if let nextStep = SignUpStepTypes(rawValue: nextRawValue) {
-                        currentStep = nextStep
+                        withAnimation(.snappy) {
+                            currentStep = nextStep
+                        }
                     } else {
                         print("완료")
                     }
@@ -93,7 +97,7 @@ enum SignUpStepTypes: Int {
     case gender = 0
     case year = 1
     case mbti = 2
-    case university = 3
+    case school = 3
     case major = 4
     
     var title: String {
@@ -104,7 +108,7 @@ enum SignUpStepTypes: Int {
             return "출생년도를 알려주세요"
         case .mbti:
             return "성격 유형이 무엇인가요?"
-        case .university:
+        case .school:
             return "어느 대학교에 다니시나요?"
         case .major:
             return "어떤 학과를 전공하고 계시나요?"
