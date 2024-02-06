@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import KakaoSDKCommon
+import KakaoSDKAuth
 
 @main
 struct WeaveApp: App {
@@ -13,5 +15,9 @@ struct WeaveApp: App {
         WindowGroup {
             ContentView()
         }
+    }
+    
+    init() {
+        KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
     }
 }
