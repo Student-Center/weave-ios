@@ -8,18 +8,18 @@
 import Foundation
 
 public struct UniversitiesResponseDTO: Decodable {
-    let universities: [UniversityResponseDTO]
+    public let universities: [UniversityResponseDTO]
 }
 
-struct UniversityResponseDTO: Decodable {
-    let id: String
-    let name: String
-    let domainAddress: String
-    let logoAddress: String
+public struct UniversityResponseDTO: Decodable, Equatable {
+    public let id: String
+    public let name: String
+    public let domainAddress: String
+    public let logoAddress: String?
 }
 
 public struct APIEndpoints {
-    static func getUniversitiesInfo() -> EndPoint<UniversitiesResponseDTO> {
+    public static func getUniversitiesInfo() -> EndPoint<UniversitiesResponseDTO> {
         return EndPoint(baseURL: "http://43.200.117.125:8080/",
                         path: "api/univ",
                         method: .get)

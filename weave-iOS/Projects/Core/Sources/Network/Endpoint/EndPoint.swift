@@ -7,19 +7,19 @@
 
 import Foundation
 
-protocol RequestResponsable: Requestable, Responsable {}
+public protocol RequestResponsable: Requestable, Responsable {}
 
-class EndPoint<R>: RequestResponsable {
-    typealias Response = R
+public class EndPoint<R>: RequestResponsable {
+    public typealias Response = R
 
-    var baseURL: String
-    var path: String
-    var method: HTTPMethod
-    var queryParameters: Encodable?
-    var bodyParameters: Encodable?
-    var headers: [String : String]?
+    public var baseURL: String
+    public var path: String
+    public var method: HTTPMethod
+    public var queryParameters: Encodable?
+    public var bodyParameters: Encodable?
+    public var headers: [String : String]?
     
-    init(baseURL: String,
+    public init(baseURL: String,
          path: String,
          method: HTTPMethod,
          queryParameters: Encodable? = nil,
@@ -34,7 +34,7 @@ class EndPoint<R>: RequestResponsable {
     }
 }
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
     case put = "PUT"
