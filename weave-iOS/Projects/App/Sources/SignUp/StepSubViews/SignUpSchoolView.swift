@@ -6,32 +6,47 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 import DesignSystem
 
 struct SignUpSchoolView: View {
+    
+    let store: StoreOf<SignUpFeature>
     
     @State var text = String()
     @State var showDropDown: Bool = false
     @State var selectedSchool: (any WeaveDropDownFetchable)?
     
     var body: some View {
-        VStack {
-            WeaveDropDownPicker(
-                selectedItem: $selectedSchool,
-                dataSources: SchoolModel.mockUp()
-            ) {
-                WeaveTextField(
-                    text: .constant(selectedSchool?.name ?? ""),
-                    placeholder: "위브대학교",
-                    showClearButton: true
-                )
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack {
+                WeaveDropDownPicker(
+                    selectedItem: $selectedSchool,
+                    dataSources: SchoolModel.mockUp()
+                ) {
+                    WeaveTextField(
+                        text: .constant(selectedSchool?.name ?? ""),
+                        placeholder: "위브대학교",
+                        showClearButton: true
+                    )
+                }
+                
+                Spacer()
+                
+                WeaveButton(
+                    title: "다음으로",
+                    size: .medium,
+                    isEnabled: viewStore.mbtiDatas.validate()
+                ) {
+                    viewStore.send(.didTappedNextButton)
+                }
+                .padding(.bottom, 20)
+            }
+            .onAppear {
+                viewStore.send(.requestUniversityLists)
             }
         }
     }
-}
-
-#Preview {
-    SignUpSchoolView()
 }
 
 struct SchoolModel: WeaveDropDownFetchable {

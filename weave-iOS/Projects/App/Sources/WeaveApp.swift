@@ -6,12 +6,18 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct WeaveApp: App {
     var body: some Scene {
         WindowGroup {
-            SignUpView()
+            SignUpView(
+                store: Store(
+                    initialState: SignUpFeature.State()) {
+                        SignUpFeature()
+                    }
+            )
         }
     }
 }

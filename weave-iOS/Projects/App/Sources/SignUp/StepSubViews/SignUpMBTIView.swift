@@ -6,50 +6,57 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 import DesignSystem
 
 struct SignUpMBTIView: View {
     
-    @State var EorI: String?
-    @State var NorS: String?
-    @State var ForT: String?
-    @State var PorJ: String?
+    let store: StoreOf<SignUpFeature>
     
     var body: some View {
-        VStack {
-            HorizonCirclePicker(
-                selectedData: $EorI,
-                dataSources: ["E", "e", "i", "I"],
-                leadingText: "외향적",
-                trailingText: "내향적"
-            )
-            
-            HorizonCirclePicker(
-                selectedData: $NorS,
-                dataSources: ["N", "n", "s", "S"],
-                leadingText: "외향적",
-                trailingText: "내향적"
-            )
-            
-            HorizonCirclePicker(
-                selectedData: $ForT,
-                dataSources: ["F", "f", "t", "T"],
-                leadingText: "외향적",
-                trailingText: "내향적"
-            )
-            
-            HorizonCirclePicker(
-                selectedData: $PorJ,
-                dataSources: ["P", "p", "j", "J"],
-                leadingText: "외향적",
-                trailingText: "내향적"
-            )
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack {
+                HorizonCirclePicker(
+                    selectedData: viewStore.$mbtiDatas.EorI,
+                    dataSources: ["E", "e", "i", "I"],
+                    leadingText: "외향적",
+                    trailingText: "내향적"
+                )
+                
+                HorizonCirclePicker(
+                    selectedData: viewStore.$mbtiDatas.NorS,
+                    dataSources: ["N", "n", "s", "S"],
+                    leadingText: "외향적",
+                    trailingText: "내향적"
+                )
+                
+                HorizonCirclePicker(
+                    selectedData: viewStore.$mbtiDatas.ForT,
+                    dataSources: ["F", "f", "t", "T"],
+                    leadingText: "외향적",
+                    trailingText: "내향적"
+                )
+                
+                HorizonCirclePicker(
+                    selectedData: viewStore.$mbtiDatas.PorJ,
+                    dataSources: ["P", "p", "j", "J"],
+                    leadingText: "외향적",
+                    trailingText: "내향적"
+                )
+                
+                Spacer()
+                
+                WeaveButton(
+                    title: "다음으로",
+                    size: .medium,
+                    isEnabled: viewStore.mbtiDatas.validate()
+                ) {
+                    viewStore.send(.didTappedNextButton)
+                }
+                .padding(.bottom, 20)
+            }
         }
     }
-}
-
-#Preview {
-    SignUpMBTIView()
 }
 
 fileprivate struct HorizonCirclePicker: View {
