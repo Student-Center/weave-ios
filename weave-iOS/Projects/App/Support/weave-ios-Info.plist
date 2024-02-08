@@ -2,19 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UILaunchScreens</key>
+	<key>UILaunchScreen</key>
 	<dict>
-		<key>UILaunchScreen</key>
-		<dict>
-			<key>New item</key>
-			<dict>
-				<key>UILaunchScreenIdentifier</key>
-				<string></string>
-				<key>UIImageName</key>
-				<string></string>
-			</dict>
-		</dict>
+		<key>UIImageName</key>
+		<string></string>
 	</dict>
+	<key>NSPrefPaneIconFile</key>
+	<string></string>
+	<key>UIUserInterfaceStyle</key>
+	<string>Dark</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
