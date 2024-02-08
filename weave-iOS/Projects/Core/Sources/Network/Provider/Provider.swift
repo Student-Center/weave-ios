@@ -11,13 +11,13 @@ struct DummyAPI: Decodable {
     let name: String
 }
 
-class APIProvider {
+public class APIProvider {
     let session: URLSession
-    init(session: URLSession) {
+    public init(session: URLSession) {
         self.session = session
     }
     
-    func request<R: Decodable, E: RequestResponsable>(with endPoint: E, completion: @escaping (Result<R, Error>) -> Void) where E.Response == R {
+    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E, completion: @escaping (Result<R, Error>) -> Void) where E.Response == R {
         
         do {
             let request = try endPoint.getUrlRequest()
@@ -47,6 +47,25 @@ class APIProvider {
             
         } catch {
             completion(.failure(NetworkError.urlRequest(error)))
+        }
+    }
+    
+    public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
+        do {
+            guard let url = try endPoint.getUrlRequest().url else { throw NetworkError.components }
+            
+            let (data, urlResponse) = try await session.data(from: url)
+            
+            guard let response = urlResponse as? HTTPURLResponse,
+                  (200...399).contains(response.statusCode) else {
+                throw NetworkError.unknownError // 또는 적절한 오류 처리
+            }
+            
+            let decodedResponse = try JSONDecoder().decode(R.self, from: data)
+            
+            return decodedResponse
+        } catch {
+            throw NetworkError.urlRequest(error)
         }
     }
 }
