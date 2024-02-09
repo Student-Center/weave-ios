@@ -10,25 +10,6 @@ import ComposableArchitecture
 import DesignSystem
 
 struct SignUpGenderView: View {
-    enum GenderTypes {
-        case boy
-        case girl
-        
-        var icon: Image {
-            switch self {
-            case .boy: return DesignSystem.Icons.boy
-            case .girl: return DesignSystem.Icons.girl
-            }
-        }
-        
-        var title: String {
-            switch self {
-            case .boy: return "남성"
-            case .girl: return "여성"
-            }
-        }
-    }
-    
     let store: StoreOf<SignUpFeature>
     
     var body: some View {
