@@ -37,7 +37,7 @@ struct SignUpGenderView: View {
     }
     
     @ViewBuilder
-    func genderSelectionView(_ gender: GenderTypes) -> some View {
+    func genderSelectionView(_ gender: SignUpFeature.GenderTypes) -> some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
             let foregroundColor = viewStore.selectedGender == gender ? DesignSystem.Colors.defaultBlue : DesignSystem.Colors.lightGray
             
