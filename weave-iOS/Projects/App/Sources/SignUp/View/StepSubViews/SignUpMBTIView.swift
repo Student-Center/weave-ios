@@ -26,22 +26,22 @@ struct SignUpMBTIView: View {
                 HorizonCirclePicker(
                     selectedData: viewStore.$mbtiDatas.NorS,
                     dataSources: ["N", "n", "s", "S"],
-                    leadingText: "외향적",
-                    trailingText: "내향적"
+                    leadingText: "직관적",
+                    trailingText: "현실적"
                 )
                 
                 HorizonCirclePicker(
                     selectedData: viewStore.$mbtiDatas.ForT,
                     dataSources: ["F", "f", "t", "T"],
-                    leadingText: "외향적",
-                    trailingText: "내향적"
+                    leadingText: "감성적",
+                    trailingText: "이성적"
                 )
                 
                 HorizonCirclePicker(
                     selectedData: viewStore.$mbtiDatas.PorJ,
                     dataSources: ["P", "p", "j", "J"],
-                    leadingText: "외향적",
-                    trailingText: "내향적"
+                    leadingText: "즉흥적",
+                    trailingText: "계획적"
                 )
                 
                 Spacer()
