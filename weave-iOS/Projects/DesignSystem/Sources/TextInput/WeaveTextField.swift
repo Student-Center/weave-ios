@@ -10,7 +10,7 @@ import SwiftUI
 public struct WeaveTextField: View {
     //MARK: - Properties
     @Binding var text: String
-    @FocusState private var isFocused: Bool
+    @FocusState var focusState: Bool
     let placeholder: String
     let textAlignment: TextAlignment
     let backgroundColor: Color
@@ -19,7 +19,7 @@ public struct WeaveTextField: View {
     let keyboardType: UIKeyboardType
     
     var focusTintColor: Color {
-        return isFocused ? DesignSystem.Colors.white : DesignSystem.Colors.lightGray
+        return focusState ? DesignSystem.Colors.white : DesignSystem.Colors.lightGray
     }
     
     //MARK: - Initialize
@@ -30,7 +30,8 @@ public struct WeaveTextField: View {
         textAlignment: TextAlignment = .leading,
         backgroundColor: Color = DesignSystem.Colors.darkGray,
         showClearButton: Bool = false,
-        keyboardType: UIKeyboardType = .default
+        keyboardType: UIKeyboardType = .default,
+        focusState: FocusState<Bool> = .init()
     ) {
         self._text = text
         self.placeholder = placeholder
@@ -39,6 +40,7 @@ public struct WeaveTextField: View {
         self.font = font
         self.showClearButton = showClearButton
         self.keyboardType = keyboardType
+        self._focusState = focusState
     }
     
     //MARK: - Body
@@ -46,7 +48,7 @@ public struct WeaveTextField: View {
         HStack(spacing: 5) {
             TextField(placeholder, text: $text)
                 .font(font)
-                .focused($isFocused)
+                .focused($focusState)
                 .frame(height: 48)
                 .multilineTextAlignment(textAlignment)
                 .foregroundStyle(DesignSystem.Colors.white)
