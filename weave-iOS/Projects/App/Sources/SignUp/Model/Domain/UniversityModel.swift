@@ -14,4 +14,5 @@ struct UniversityModel: WeaveDropDownFetchable, Equatable {
     let name: String
     let domainAddress: String
     let logoAddress: String?
+    let iconAssetName: String?
 }

@@ -19,7 +19,8 @@ public struct MajorResponseDTO: Decodable, Equatable {
     var toDomain: MajorModel {
         return MajorModel(
             id: id,
-            name: name
+            name: name,
+            iconAssetName: "major"
         )
     }
 }

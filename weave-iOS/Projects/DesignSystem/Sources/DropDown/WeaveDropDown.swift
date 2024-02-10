@@ -10,6 +10,7 @@ import SwiftUI
 public protocol WeaveDropDownFetchable: Hashable, Equatable {
     var id: String { get }
     var name: String { get }
+    var iconAssetName: String? { get }
 }
 
 public struct WeaveDropDownPicker<Content: View>: View {
@@ -83,7 +84,9 @@ public struct WeaveDropDownPicker<Content: View>: View {
                                     }
                                 }, label: {
                                     HStack(spacing: 16) {
-                                        Image(systemName: "house")
+                                        if let iconName = item.iconAssetName {
+                                            ImageAsset(name: iconName).image
+                                        }
                                         Text(item.name)
                                             .font(.pretendard(._500, size: 18))
                                         Spacer()
