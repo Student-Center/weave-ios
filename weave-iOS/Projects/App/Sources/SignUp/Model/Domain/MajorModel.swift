@@ -11,4 +11,5 @@ import DesignSystem
 struct MajorModel: WeaveDropDownFetchable {
     let id: String
     let name: String
+    let iconAssetName: String?
 }
