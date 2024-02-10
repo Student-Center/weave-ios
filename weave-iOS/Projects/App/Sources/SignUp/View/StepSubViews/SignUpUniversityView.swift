@@ -9,7 +9,7 @@ import SwiftUI
 import ComposableArchitecture
 import DesignSystem
 
-struct SignUpSchoolView: View {
+struct SignUpUniversityView: View {
     
     let store: StoreOf<SignUpFeature>
     
@@ -40,7 +40,10 @@ struct SignUpSchoolView: View {
                     size: .medium,
                     isEnabled: viewStore.selectedUniversity != nil
                 ) {
-                    viewStore.send(.didTappedNextButton)
+                    viewStore.send(
+                        .didTappedNextButton,
+                        animation: .easeInOut(duration: 0.2)
+                    )
                 }
                 .padding(.bottom, 20)
             }

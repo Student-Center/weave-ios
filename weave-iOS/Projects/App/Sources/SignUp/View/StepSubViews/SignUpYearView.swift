@@ -41,7 +41,10 @@ struct SignUpYearView: View {
                     size: .medium,
                     isEnabled: validateNextButton(year: viewStore.birthYear)
                 ) {
-                    viewStore.send(.didTappedNextButton)
+                    viewStore.send(
+                        .didTappedNextButton,
+                        animation: .easeInOut(duration: 0.2)
+                    )
                 }
                 .padding(.bottom, 20)
             }

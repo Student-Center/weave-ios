@@ -36,8 +36,8 @@ struct SignUpView: View {
                         SignUpYearView(store: store)
                     case .mbti:
                         SignUpMBTIView(store: store)
-                    case .school:
-                        SignUpSchoolView(store: store)
+                    case .university:
+                        SignUpUniversityView(store: store)
                             .zIndex(1000)
                     case .major:
                         SignUpMajorView(store: store)
