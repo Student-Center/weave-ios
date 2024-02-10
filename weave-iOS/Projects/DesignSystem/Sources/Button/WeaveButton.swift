@@ -27,10 +27,7 @@ public struct WeaveButton: View {
     }
     
     var buttonTintColor: Color {
-        if !isEnabled {
-            return DesignSystem.Colors.gray200
-        }
-        return isTouched ? DesignSystem.Colors.gray500 : DesignSystem.Colors.defaultPurple
+        return isTouched ? DesignSystem.Colors.gray500 : DesignSystem.Colors.defaultBlue
     }
     
     public init(
@@ -66,13 +63,19 @@ public struct WeaveButton: View {
                 Spacer()
             }
             .background(backgroundColor)
-            .cornerRadius(8)
+            .clipShape(Capsule())
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(
-                        foregroundColor,
-                        lineWidth: style == .outline ? 1 : 0
-                    )
+                ZStack {
+                    Capsule()
+                        .stroke(
+                            foregroundColor,
+                            lineWidth: style == .outline ? 1 : 0
+                        )
+                    if !isEnabled {
+                        Capsule()
+                            .foregroundStyle(.black.opacity(0.25))
+                    }
+                }
             )
             .gesture(
                 DragGesture(minimumDistance: 0)
@@ -86,6 +89,7 @@ public struct WeaveButton: View {
             )
             .disabled(!isEnabled)
         }
+        .animation(.easeInOut(duration: 0.1), value: isTouched)
     }
 }
 
