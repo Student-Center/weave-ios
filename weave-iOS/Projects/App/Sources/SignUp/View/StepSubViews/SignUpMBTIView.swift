@@ -51,7 +51,10 @@ struct SignUpMBTIView: View {
                     size: .medium,
                     isEnabled: viewStore.mbtiDatas.validate()
                 ) {
-                    viewStore.send(.didTappedNextButton)
+                    viewStore.send(
+                        .didTappedNextButton,
+                        animation: .easeInOut(duration: 0.2)
+                    )
                 }
                 .padding(.bottom, 20)
             }

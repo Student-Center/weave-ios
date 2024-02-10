@@ -29,7 +29,10 @@ struct SignUpGenderView: View {
                     size: .medium,
                     isEnabled: viewStore.selectedGender != nil
                 ) {
-                    viewStore.send(.didTappedNextButton)
+                    viewStore.send(
+                        .didTappedNextButton,
+                        animation: .easeInOut(duration: 0.2)
+                    )
                 }
                 .padding(.bottom, 20)
             }
