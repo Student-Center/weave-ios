@@ -39,6 +39,7 @@ struct SignUpFeature: Reducer {
         case didTappedNextButton
         case didTappedPreviousButton
         case didTappedDismissButton
+        case dismissSignUp
         // 성별선택
         case didTappedGender(gender: GenderTypes)
         // 학교
