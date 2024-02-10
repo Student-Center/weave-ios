@@ -33,15 +33,20 @@ struct SignUpFeature: Reducer {
     }
     
     enum Action: BindableAction {
-        case didTappedGender(gender: GenderTypes)
+        // Navigation
         case didTappedNextButton
         case didTappedPreviousButton
+        // 성별선택
+        case didTappedGender(gender: GenderTypes)
+        // 학교
         case requestUniversityLists
         case fetchUniversityLists(list: [UniversityResponseDTO])
         case didTappedUniversity(university: UniversityModel)
+        // 전공
         case requestMajors
         case fetchMajorLists(list: [MajorResponseDTO])
         case didTappedMajors(major: MajorModel)
+        // bind
         case binding(BindingAction<State>)
     }
     
@@ -50,15 +55,13 @@ struct SignUpFeature: Reducer {
         Reduce { state, action in
             
             // 대학교 목록 필터
-            if state.currentStep == .school {
+            if state.currentStep == .university {
                 state.filteredUniversityLists = filterUniversityDataSource(
                     dataSource: state.universityLists,
                     text: state.universityText
                 )
-                state.selectedUniversity = getMatchedUniversityModel(
-                    dataSource: state.filteredUniversityLists,
-                    text: state.universityText
-                )
+                
+                state.selectedUniversity = state.filteredUniversityLists.first { $0.name == state.universityText }
             }
             
             // 전공 목록 필터
@@ -67,10 +70,8 @@ struct SignUpFeature: Reducer {
                     dataSource: state.majorLists,
                     text: state.majorText
                 )
-                state.selectedmajor = getMatchedMajorModel(
-                    dataSource: state.filteredMajorLists,
-                    text: state.majorText
-                )
+                
+                state.selectedmajor = state.filteredMajorLists.first { $0.name == state.majorText }
             }
             
             switch action {
@@ -194,37 +195,19 @@ struct SignUpFeature: Reducer {
         return dataSource.filter { $0.name.contains(text) }
     }
     
-    private func getMatchedUniversityModel(dataSource: [UniversityModel], text: String) -> UniversityModel? {
-        for data in dataSource {
-            if data.name == text {
-                return data
-            }
-        }
-        return nil
-    }
-    
     private func filterMajorDataSource(dataSource: [MajorModel], text: String) -> [MajorModel] {
         if text == "" { return dataSource }
         return dataSource.filter { $0.name.contains(text) }
-    }
-    
-    private func getMatchedMajorModel(dataSource: [MajorModel], text: String) -> MajorModel? {
-        for data in dataSource {
-            if data.name == text {
-                return data
-            }
-        }
-        return nil
     }
 }
 
 extension SignUpFeature {
     
-    enum SignUpStepTypes: Int {
+    enum SignUpStepTypes: Int, Equatable {
         case gender = 0
         case year = 1
         case mbti = 2
-        case school = 3
+        case university = 3
         case major = 4
         
         var title: String {
@@ -235,7 +218,7 @@ extension SignUpFeature {
                 return "출생년도를 알려주세요"
             case .mbti:
                 return "성격 유형이 무엇인가요?"
-            case .school:
+            case .university:
                 return "어느 대학교에 다니시나요?"
             case .major:
                 return "어떤 학과를 전공하고 계시나요?"
