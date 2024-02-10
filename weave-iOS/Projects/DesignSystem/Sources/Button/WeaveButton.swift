@@ -13,6 +13,8 @@ public struct WeaveButton: View {
     let isEnabled: Bool
     let style: WeaveButtonStyle
     let size: ButtonSize
+    let textColor: Color
+    let buttonBackgroundColor: Color
     var icon: Image?
     var handler: (() -> Void)?
     @State private var isTouched: Bool = false
@@ -27,7 +29,7 @@ public struct WeaveButton: View {
     }
     
     var buttonTintColor: Color {
-        return isTouched ? DesignSystem.Colors.gray500 : DesignSystem.Colors.defaultBlue
+        return isTouched ? DesignSystem.Colors.gray500 : buttonBackgroundColor
     }
     
     public init(
@@ -35,6 +37,8 @@ public struct WeaveButton: View {
         icon: Image? = nil,
         style: WeaveButtonStyle = .filled,
         size: ButtonSize = .regular,
+        textColor: Color = DesignSystem.Colors.white,
+        backgroundColor: Color = DesignSystem.Colors.defaultBlue,
         isEnabled: Bool = true,
         handler: (() -> Void)? = nil
     ) {
@@ -42,6 +46,8 @@ public struct WeaveButton: View {
         self.icon = icon
         self.style = style
         self.size = size
+        self.textColor = textColor
+        self.buttonBackgroundColor = backgroundColor
         self.isEnabled = isEnabled
         self.handler = handler
     }
