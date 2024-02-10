@@ -29,7 +29,7 @@ public struct WeaveButton: View {
     }
     
     var buttonTintColor: Color {
-        return isTouched ? DesignSystem.Colors.gray500 : DesignSystem.Colors.defaultBlue
+        return isTouched ? DesignSystem.Colors.gray500 : buttonBackgroundColor
     }
     
     public init(
