@@ -38,10 +38,8 @@ struct SignUpView: View {
                         SignUpMBTIView(store: store)
                     case .university:
                         SignUpUniversityView(store: store)
-                            .zIndex(1000)
                     case .major:
                         SignUpMajorView(store: store)
-                            .zIndex(1000)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -69,11 +67,8 @@ struct SignUpView: View {
                             message: "회원가입은 잠깐이면 끝나요!\n다시 진행해 보시겠어요?",
                             primaryButtonTitle: "네, 좋아요",
                             secondaryButtonTitle: "아니요",
-                            primaryAction: {
-                                print("다시 진행")
-                            },
                             secondaryAction: {
-                                print("찐 취소")
+                                viewStore.send(.dismissSignUp)
                             }
                         )
                     }
