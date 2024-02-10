@@ -85,9 +85,7 @@ struct SignUpFeature: Reducer {
             case .didTappedNextButton:
                 let nextRawValue = state.currentStep.rawValue + 1
                 if let nextStep = SignUpStepTypes(rawValue: nextRawValue) {
-                    withAnimation(.snappy) {
-                        state.currentStep = nextStep
-                    }
+                    state.currentStep = nextStep
                 } else {
                     print("완료")
                     // Validation
