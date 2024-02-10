@@ -30,12 +30,15 @@ struct SignUpFeature: Reducer {
         var majorLists = [MajorModel]()
         var filteredMajorLists = [MajorModel]()
         var selectedmajor: MajorModel?
+        // 닫기 Alert
+        @BindingState var isDismissAlertShow: Bool = false
     }
     
     enum Action: BindableAction {
         // Navigation
         case didTappedNextButton
         case didTappedPreviousButton
+        case didTappedDismissButton
         // 성별선택
         case didTappedGender(gender: GenderTypes)
         // 학교
@@ -106,6 +109,10 @@ struct SignUpFeature: Reducer {
                         print(error)
                     }
                 }
+                return .none
+                
+            case .didTappedDismissButton:
+                state.isDismissAlertShow.toggle()
                 return .none
                 
             case .didTappedPreviousButton:
