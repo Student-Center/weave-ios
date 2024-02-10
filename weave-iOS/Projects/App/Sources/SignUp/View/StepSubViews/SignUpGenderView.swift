@@ -15,6 +15,8 @@ struct SignUpGenderView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
+                Spacer()
+                    .frame(height: 50)
                 HStack(spacing: 56) {
                     genderSelectionView(.boy)
                     genderSelectionView(.girl)
@@ -45,18 +47,10 @@ struct SignUpGenderView: View {
             let foregroundColor = viewStore.selectedGender == gender ? DesignSystem.Colors.defaultBlue : DesignSystem.Colors.lightGray
             
             VStack {
-                ZStack {
-                    Circle()
-                        .stroke(lineWidth: 2)
-                        .frame(width: 108, height: 108)
-                        .foregroundStyle(foregroundColor)
-                        .background(DesignSystem.Colors.darkGray)
-                        .clipShape(Circle())
-                    
-                    gender.icon
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                }
+                gender.getIconImage(isSelected: viewStore.selectedGender == gender)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 108)
                 
                 Text(gender.title)
                     .font(.pretendard(._500, size: 20))
@@ -65,8 +59,6 @@ struct SignUpGenderView: View {
             .onTapGesture {
                 viewStore.send(.didTappedGender(gender: gender))
             }
-            
         }
     }
 }
-
