@@ -237,13 +237,6 @@ extension SignUpFeature {
         case boy
         case girl
         
-        var icon: Image {
-            switch self {
-            case .boy: return DesignSystem.Icons.boy
-            case .girl: return DesignSystem.Icons.girl
-            }
-        }
-        
         var title: String {
             switch self {
             case .boy: return "남성"
@@ -255,6 +248,13 @@ extension SignUpFeature {
             switch self {
             case .boy: return "MAN"
             case .girl: return "WOMAN"
+            }
+        }
+        
+        func getIconImage(isSelected: Bool) -> Image {
+            switch self {
+            case .boy: return isSelected ? DesignSystem.Icons.boySelected : DesignSystem.Icons.boyNormal
+            case .girl: return isSelected ? DesignSystem.Icons.girlSelected : DesignSystem.Icons.girlNormal
             }
         }
     }
