@@ -23,7 +23,8 @@ struct UniversityResponseDTO: Decodable, Equatable {
             id: id,
             name: name,
             domainAddress: domainAddress,
-            logoAddress: logoAddress
+            logoAddress: logoAddress,
+            iconAssetName: "univ"
         )
     }
 }
