@@ -25,7 +25,7 @@ public struct WeaveDropDownPicker<Content: View>: View {
     
     var frameHeight: CGFloat {
         if !showDropDown {
-            return 50
+            return 0
         }
         
         if dataSources.count > 2 {
@@ -78,10 +78,8 @@ public struct WeaveDropDownPicker<Content: View>: View {
                                 }
                                 
                                 Button(action: {
-                                    withAnimation {
-                                        tapHandler?(index)
-                                        showDropDown.toggle()
-                                    }
+                                    tapHandler?(index)
+                                    showDropDown.toggle()
                                 }, label: {
                                     HStack(spacing: 16) {
                                         if let iconName = item.iconAssetName {
@@ -89,6 +87,7 @@ public struct WeaveDropDownPicker<Content: View>: View {
                                         }
                                         Text(item.name)
                                             .font(.pretendard(._500, size: 18))
+                                            .multilineTextAlignment(.leading)
                                         Spacer()
                                     }
                                     .foregroundStyle(DesignSystem.Colors.white)
@@ -110,6 +109,7 @@ public struct WeaveDropDownPicker<Content: View>: View {
                     RoundedRectangle(cornerRadius: 10)
 
                 )
+                .animation(.easeInOut(duration: 0.2), value: frameOffset)
                 .frame(height: frameHeight)
                 .offset(y: frameOffset)
                 
