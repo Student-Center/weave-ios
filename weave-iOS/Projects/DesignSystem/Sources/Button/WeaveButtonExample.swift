@@ -15,7 +15,9 @@ struct WeaveButtonExample: View {
                     title: "Large",
                     icon: Image(systemName: "heart"),
                     style: .filled,
-                    size: .large) {
+                    size: .large,
+                    isEnabled: false
+                ) {
                         print("탭!")
                     }
                     .frame(width: 150)
