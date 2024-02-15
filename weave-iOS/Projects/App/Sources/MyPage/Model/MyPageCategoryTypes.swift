@@ -24,47 +24,59 @@ enum MyPageCategoryTypes: CaseIterable {
         }
     }
     
-    func getSubViewModels() -> [MyPageSubViewItemModel] {
+    var getSubViewTypes: [MyPageSubViewTypes] {
         switch self {
         case .contactPoint:
             return [
-                MyPageSubViewItemModel(
-                    category: self,
-                    icon: DesignSystem.Icons.iconKakao,
-                    title: "카카오톡 ID",
-                    actionTitle: "30실 받기"
-                )
+                .kakaoTalkId
             ]
         case .myPrfile:
             return [
-                MyPageSubViewItemModel(
-                    category: self,
-                    icon: DesignSystem.Icons.puzzle,
-                    title: "성격 유형",
-                    actionTitle: "ENTJ"
-                ),
-                MyPageSubViewItemModel(
-                    category: self,
-                    icon: DesignSystem.Icons.footprint,
-                    title: "닮은 동물",
-                    actionTitle: "30실 받기"
-                ),
-                MyPageSubViewItemModel(
-                    category: self,
-                    icon: DesignSystem.Icons.ruler,
-                    title: "키",
-                    actionTitle: "30실 받기"
-                )
+                .mbti,
+                .similarAnimal,
+                .physicalHeight
             ]
         case .universityVerification:
             return [
-                MyPageSubViewItemModel(
-                    category: self,
-                    icon: DesignSystem.Icons.eMail,
-                    title: "학교 메일 인증",
-                    actionTitle: "30실 받기"
-                )
+                .emailVerification
             ]
+        }
+    }
+    
+    enum MyPageSubViewTypes: String {
+        case kakaoTalkId
+        case mbti
+        case similarAnimal
+        case physicalHeight
+        case emailVerification
+        
+        var title: String {
+            switch self {
+            case .kakaoTalkId: return "카카오톡 ID"
+            case .mbti: return "성격 유형"
+            case .similarAnimal: return "닮은 동물"
+            case .physicalHeight: return "키"
+            case .emailVerification: return "학교 메일 인증"
+            }
+        }
+        
+        var icon: Image {
+            switch self {
+            case .kakaoTalkId:
+                return DesignSystem.Icons.iconKakao
+            case .mbti:
+                return DesignSystem.Icons.puzzle
+            case .similarAnimal:
+                return DesignSystem.Icons.footprint
+            case .physicalHeight:
+                return DesignSystem.Icons.ruler
+            case .emailVerification:
+                return DesignSystem.Icons.eMail
+            }
+        }
+        
+        func actionTitle() -> String {
+            return "30실 받기"
         }
     }
 }
