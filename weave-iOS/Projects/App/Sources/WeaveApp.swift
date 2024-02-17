@@ -8,12 +8,19 @@
 import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
+import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LoginView()
+//            ContentView()
+                .onOpenURL(perform: { url in
+                    if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                        _ = AuthController.handleOpenUrl(url: url)
+                    }
+                })
         }
     }
     
