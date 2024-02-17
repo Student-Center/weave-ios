@@ -4,7 +4,7 @@ let target = Target(
     name: "DesignSystem",
     platform: .iOS,
     product: .framework,
-    bundleId: "com.studentcenter.weave.designSystem",
+    bundleId: "com.studentcenter.weaveios.designSystem",
     sources: ["Sources/**"],
     resources: ["Resources/**"],
     dependencies: []
