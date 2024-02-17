@@ -75,8 +75,37 @@ enum MyPageCategoryTypes: CaseIterable {
             }
         }
         
-        func actionTitle() -> String {
-            return "30실 받기"
+        func foregroundColor(by userModel: MyUserInfoModel) -> Color {
+            return isSubMenuFilled(userModel) ? DesignSystem.Colors.textGray : DesignSystem.Colors.defaultBlue
+        }
+        
+        func isSubMenuFilled(_ userModel: MyUserInfoModel) -> Bool {
+            switch self {
+            case .kakaoTalkId:
+                return false
+            case .mbti:
+                return userModel.mbti != ""
+            case .similarAnimal:
+                return userModel.animalType != nil
+            case .physicalHeight:
+                return userModel.height != nil
+            case .emailVerification:
+                return userModel.isUniversityEmailVerified
+            }
+        }
+        
+        func actionTitle(by userModel: MyUserInfoModel) -> String {
+            if !isSubMenuFilled(userModel) {
+                return "30실 받기"
+            }
+            
+            switch self {
+            case .kakaoTalkId: return ""
+            case .mbti: return userModel.mbti
+            case .similarAnimal: return userModel.animalType ?? ""
+            case .physicalHeight: return String(userModel.height ?? 0)
+            case .emailVerification: return "인증됨"
+            }
         }
     }
 }

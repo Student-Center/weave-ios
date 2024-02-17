@@ -23,24 +23,34 @@ struct MyPageView: View {
                             .padding(.top, 16)
                         
                         VStack(spacing: 0) {
+                            // 1. 카테고리 순회
                             ForEach(MyPageCategoryTypes.allCases, id: \.self) { category in
+                                // 2. 카테고리 헤더 뷰 생성
                                 MyPageSubViewHeaderView(headerTitle: category.headerTitle)
-                                ForEach(0 ..< category.getSubViewTypes.count, id: \.self) { index in
-                                    let viewType = category.getSubViewTypes[index]
-                                    MyPageSubSectionView(
-                                        index: index,
-                                        viewType: viewType
-                                    )
-                                    .onTapGesture {
-                                        viewStore.send(.didTappedSubViews(view: viewType))
+                                if let userInfo = viewStore.myUserInfo {
+                                    // 3. 카테고리 내부 SubView 순회
+                                    ForEach(0 ..< category.getSubViewTypes.count, id: \.self) { index in
+                                        // 4. SubView 생성
+                                        let viewType = category.getSubViewTypes[index]
+                                        MyPageSubSectionView(
+                                            index: index,
+                                            viewType: viewType,
+                                            userInfo: userInfo
+                                        )
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedSubViews(view: viewType))
+                                        }
                                     }
+                                    Spacer()
+                                        .frame(height: 12)
                                 }
-                                Spacer()
-                                    .frame(height: 12)
                             }
                         }
                         .padding(.horizontal, 16)
                     }
+                }
+                .onAppear {
+                    viewStore.send(.requestMyUserInfo)
                 }
                 .toolbar(content: {
                     ToolbarItem(placement: .topBarLeading) {
@@ -83,12 +93,45 @@ fileprivate struct MyProfileHeaderSectionView: View {
                             Spacer()
                             HStack {
                                 Spacer()
+                                // 프로필 변경 버튼, 액션
                                 DesignSystem.Icons.profileEdit
                                     .resizable()
                                     .frame(width: 22, height: 22)
                                     .onTapGesture {
                                         viewStore.send(.didTappedProfileEditButton)
                                     }
+                                    .confirmationDialog(
+                                        "ProfileImage",
+                                        isPresented: viewStore.$isShowEditProfileImageAlert,
+                                        titleVisibility: .hidden
+                                    ) {
+                                        Button("사진 찍기", role: .none) {
+                                            viewStore.send(.didTappedShowCamera)
+                                        }
+                                        Button("앨범에서 가져오기", role: .none) {
+                                            viewStore.send(.showPhotoPicker)
+                                        }
+                                        Button("취소", role: .cancel) {}
+                                    }
+                                    .photoPicker(isPresented: viewStore.$isShowPhotoPicker) { images in
+                                        guard let image = images.first else { return }
+                                        DispatchQueue.main.async {
+                                            viewStore.send(.didPickPhotoCompleted(image: image))
+                                        }
+                                    }
+                                    .camera(isPresented: viewStore.$isShowCamera) { image in
+                                        viewStore.send(.didPickPhotoCompleted(image: image))
+                                    }
+                                    .weaveAlert(
+                                        isPresented: viewStore.$isShowCameraPermissionAlert,
+                                        title: "카메라 접근 권한이 필요해요",
+                                        message: "설정에서 카메라 접근 권한을 허용해주세요",
+                                        primaryButtonTitle: "설정",
+                                        secondaryButtonTitle: "취소",
+                                        primaryAction: {
+                                            viewStore.send(.showAppPreference)
+                                        }
+                                    )
                             }
                         }
                     }
@@ -96,13 +139,16 @@ fileprivate struct MyProfileHeaderSectionView: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(spacing: 3) {
-                            Text("위브대학교")
-                            DesignSystem.Icons.certified
-                                .resizable()
-                                .frame(width: 14, height: 14)
+                            Text(viewStore.myUserInfo?.universityName ?? "")
+                            if let isCertified = viewStore.myUserInfo?.isUniversityEmailVerified {
+                                let certificatedIcon: Image = isCertified ? DesignSystem.Icons.certified : DesignSystem.Icons.nonCertified
+                                certificatedIcon
+                                    .resizable()
+                                    .frame(width: 14, height: 14)
+                            }
                         }
-                        Text("위브만세학과")
-                        Text("05년생")
+                        Text(viewStore.myUserInfo?.majorName ?? "")
+                        Text(viewStore.myUserInfo?.birthYearShortText ?? "")
                     }
                     .font(.pretendard(._500, size: 14))
                     
@@ -130,6 +176,7 @@ fileprivate struct MyProfileHeaderSectionView: View {
                         .foregroundStyle(DesignSystem.Colors.darkGray)
                     Text("⚠️ 프로필 사진은 미팅 매칭 후 생성된 채팅방에서만 확인 가능하니 안심하세요!")
                         .font(.pretendard(._400, size: 11))
+                        .foregroundStyle(DesignSystem.Colors.textGray)
                 }
                 .frame(height: 24)
             }
@@ -155,6 +202,7 @@ fileprivate struct MyPageSubViewHeaderView: View {
 fileprivate struct MyPageSubSectionView: View {
     let index: Int
     let viewType: MyPageCategoryTypes.MyPageSubViewTypes
+    let userInfo: MyUserInfoModel
     
     fileprivate var body: some View {
         ZStack {
@@ -171,9 +219,9 @@ fileprivate struct MyPageSubSectionView: View {
                 Text(viewType.title)
                     .font(.pretendard(._500, size: 16))
                 Spacer()
-                Text(viewType.actionTitle())
+                Text(viewType.actionTitle(by: userInfo))
                     .font(.pretendard(._500, size: 14))
-                    .foregroundStyle(DesignSystem.Colors.defaultBlue)
+                    .foregroundStyle(viewType.foregroundColor(by: userInfo))
                 Image(systemName: "chevron.right")
                     .fontWeight(.semibold)
                     .foregroundStyle(DesignSystem.Colors.textGray)

@@ -4,7 +4,7 @@ let target = Target(
     name: "Services",
     platform: .iOS,
     product: .staticFramework,
-    bundleId: "com.studentcenter.weave.services",
+    bundleId: "com.studentcenter.weaveios.services",
     sources: ["Sources/**"],
     dependencies: []
 )
