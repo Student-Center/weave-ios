@@ -12,6 +12,8 @@ struct DummyAPI: Decodable {
 }
 
 public class APIProvider {
+    static private(set) var serverType: ServerType = .develop
+    
     let session: URLSession
     public init(session: URLSession) {
         self.session = session
