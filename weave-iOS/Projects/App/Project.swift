@@ -4,7 +4,7 @@ let target = Target(
     name: "weave-ios",
     platform: .iOS,
     product: .app,
-    bundleId: "com.studentcenter.weave-ios",
+    bundleId: "com.studentcenter.weaveios",
     infoPlist: .file(path: "Support/weave-ios-Info.plist"),
     sources: ["Sources/**"],
     dependencies: [
