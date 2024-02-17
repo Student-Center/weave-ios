@@ -10,7 +10,6 @@ import DesignSystem
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
-import SnapKit
 import UIKit
 
 struct LoginView: View {
