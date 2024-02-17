@@ -52,9 +52,9 @@ public class APIProvider {
     
     public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
         do {
-            guard let url = try endPoint.getUrlRequest().url else { throw NetworkError.components }
+            let url = try endPoint.getUrlRequest()
             
-            let (data, urlResponse) = try await session.data(from: url)
+            let (data, urlResponse) = try await session.data(for: url)
             
             guard let response = urlResponse as? HTTPURLResponse,
                   (200...399).contains(response.statusCode) else {
