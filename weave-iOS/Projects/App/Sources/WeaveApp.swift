@@ -9,6 +9,7 @@ import SwiftUI
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
+import ComposableArchitecture
 
 @main
 struct WeaveApp: App {
