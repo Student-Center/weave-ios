@@ -22,15 +22,9 @@ struct WeaveApp: App {
         WindowGroup {
             LoginView().onOpenURL(perform: { url in
                 if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                    AuthController.handleOpenUrl(url: url)
+                    _ = AuthController.handleOpenUrl(url: url)
                 }
             })
-            //            SignUpView(
-            //                store: Store(
-            //                    initialState: SignUpFeature.State()) {
-            //                        SignUpFeature()
-            //                    }
-            //            )
         }
     }
 }

@@ -10,6 +10,7 @@ import DesignSystem
 import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
+import Services
 
 struct LoginView: View {
     var body: some View {
@@ -65,6 +66,10 @@ struct LoginView: View {
                     print("loginWithKakaoTalk() success.")
                     if let idToken = oauthToken?.idToken {
                         print("oauthToken: \(idToken)")
+                        Task {
+                            await requestSNSLogin(idToken: idToken, with: .kakao)
+                            // 화면이동처리
+                        }
                     }
                     
                     _ = oauthToken
@@ -73,7 +78,10 @@ struct LoginView: View {
         }
     }
     
-    private func requestSNSLogin() {
-        
+    private func requestSNSLogin(idToken: String, with type: SNSLoginType) async {
+        let endPoint = APIEndpoints.requestSNSLogin(idToken: idToken, with: type)
+        guard let provider = try? await APIProvider().request(with: endPoint) else { return }
+        UDManager.accessToken = provider.accessToken
+        UDManager.refreshToken = provider.refreshToken
     }
 }

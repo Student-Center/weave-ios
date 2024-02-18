@@ -8,6 +8,35 @@
 import Foundation
 import Services
 
-struct SNSLoginRequestDTO {
+struct SNSLoginRequestDTO: Encodable {
     let idToken: String
+}
+
+struct SNSLoginResponseDTO: Decodable {
+    let accessToken: String
+    let refreshToken: String
+}
+
+enum SNSLoginType {
+    case apple
+    case kakao
+    
+    var pathProvider: String {
+        switch self {
+        case .apple:
+            "APPLE"
+        case .kakao:
+            "KAKAO"
+        }
+    }
+}
+
+extension APIEndpoints {
+    static func requestSNSLogin(idToken: String, with type: SNSLoginType) -> EndPoint<SNSLoginResponseDTO> {
+        return EndPoint(
+            path: "api/auth/login/\(type.pathProvider)",
+            method: .post,
+            bodyParameters: SNSLoginRequestDTO(idToken: idToken)
+        )
+    }
 }
