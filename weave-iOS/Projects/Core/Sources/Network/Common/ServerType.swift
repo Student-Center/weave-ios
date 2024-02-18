@@ -11,12 +11,12 @@ enum ServerType {
     case develop // db 개발, api 개발
     case release // db 상용, api 상용
     
-    var url: String {
+    var baseURL: String {
         switch self {
         case .develop:
-            return "http://43.200.117.125:8080/"
+            return SecretKey.developURL
         case .release:
-            return "www.apple.com"
+            return SecretKey.releaseURL
         }
     }
 }
