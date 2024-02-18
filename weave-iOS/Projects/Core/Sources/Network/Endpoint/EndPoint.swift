@@ -11,14 +11,13 @@ public protocol RequestResponsable: Requestable, Responsable {}
 
 public class EndPoint<R>: RequestResponsable {
     public typealias Response = R
-    
+  
     public var baseURL: String = APIProvider.serverType.baseURL
     public var path: String
     public var method: HTTPMethod
     public var queryParameters: Encodable?
     public var bodyParameters: Encodable?
     public var headers: [String : String]?
-    
     
     public init(path: String,
          method: HTTPMethod,
