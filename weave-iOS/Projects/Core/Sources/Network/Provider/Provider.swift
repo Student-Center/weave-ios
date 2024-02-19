@@ -69,4 +69,20 @@ public class APIProvider {
             throw NetworkError.urlRequest(error)
         }
     }
+    
+    // Response 코드를 리턴
+    public func request<E: RequestResponsable>(with endPoint: E) async throws -> Int {
+        do {
+            let urlRequest = try endPoint.getUrlRequest()
+            let (data, urlResponse) = try await session.data(for: urlRequest)
+            
+            guard let response = urlResponse as? HTTPURLResponse,
+                  (200...399).contains(response.statusCode) else {
+                throw NetworkError.unknownError // 또는 적절한 오류 처리
+            }
+            return response.statusCode
+        } catch {
+            throw NetworkError.urlRequest(error)
+        }
+    }
 }
