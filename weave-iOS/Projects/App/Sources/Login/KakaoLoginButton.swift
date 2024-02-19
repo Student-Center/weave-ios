@@ -10,13 +10,12 @@ import DesignSystem
 import KakaoSDKUser
 
 struct KakaoLoginButton: View {
-    @State private var isTapped: Bool = false
+    var onComplte: ((String) -> Void)
     
     init(onComplte: @escaping ((String) -> Void)) {
         self.onComplte = onComplte
     }
     
-    var onComplte: ((String) -> Void)
     var body: some View {
         Button(action: {
             isAvailableOpenKakao()
