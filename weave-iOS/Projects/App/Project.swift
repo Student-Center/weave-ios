@@ -5,6 +5,9 @@ let target = Target(
     platform: .iOS,
     product: .app,
     bundleId: "com.studentcenter.weaveios",
+    deploymentTarget: .iOS(targetVersion: "17.0",
+                           devices: .iphone,
+                           supportsMacDesignedForIOS: false),
     infoPlist: .file(path: "Support/weave-ios-Info.plist"),
     sources: ["Sources/**"],
     dependencies: [
@@ -13,6 +16,9 @@ let target = Target(
         .project(target: "DesignSystem",
                  path: .relativeToRoot("Projects/DesignSystem")),
         .package(product: "ComposableArchitecture", type: .macro),
+        .package(product: "KakaoSDKCommon", type: .macro),
+        .package(product: "KakaoSDKAuth", type: .macro),
+        .package(product: "KakaoSDKUser", type: .macro),
         .external(name: "Kingfisher"),
     ]
 )
@@ -24,7 +30,8 @@ let project = Project(
     packages: [
         .remote(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git",
-            requirement: .exact("1.7.2"))
+            requirement: .exact("1.7.2")),
+        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .branch("master"))
     ],
     settings: nil,
     targets: [target],

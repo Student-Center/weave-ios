@@ -12,8 +12,10 @@ struct DummyAPI: Decodable {
 }
 
 public class APIProvider {
+    static private(set) var serverType: ServerType = .develop
+    
     let session: URLSession
-    public init(session: URLSession) {
+    public init(session: URLSession = URLSession.shared) {
         self.session = session
     }
     
@@ -53,7 +55,7 @@ public class APIProvider {
     public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
         do {
             let urlRequest = try endPoint.getUrlRequest()
-            
+
             let (data, urlResponse) = try await session.data(for: urlRequest)
             
             guard let response = urlResponse as? HTTPURLResponse,
