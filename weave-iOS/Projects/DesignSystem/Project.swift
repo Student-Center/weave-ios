@@ -5,6 +5,9 @@ let target = Target(
     platform: .iOS,
     product: .framework,
     bundleId: "com.studentcenter.weaveios.designSystem",
+    deploymentTarget: .iOS(targetVersion: "17.0",
+                           devices: .iphone,
+                           supportsMacDesignedForIOS: false),
     sources: ["Sources/**"],
     resources: ["Resources/**"],
     dependencies: []
