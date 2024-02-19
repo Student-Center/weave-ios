@@ -10,6 +10,7 @@ let target = Target(
                            supportsMacDesignedForIOS: false),
     infoPlist: .file(path: "Support/weave-ios-Info.plist"),
     sources: ["Sources/**"],
+    entitlements: .file(path: .relativeToCurrentFile("weave-ios.entitlements")),
     dependencies: [
         .project(target: "Services",
                  path: .relativeToRoot("Projects/Core")),
