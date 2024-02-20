@@ -4,7 +4,7 @@ let target = Target(
     name: "weave-ios",
     platform: .iOS,
     product: .app,
-    bundleId: "com.studentcenter.weaveios",
+    bundleId: "com.arex.studentcenter.weaveios",
     deploymentTarget: .iOS(targetVersion: "17.0",
                            devices: .iphone,
                            supportsMacDesignedForIOS: false),
