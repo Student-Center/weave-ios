@@ -8,12 +8,12 @@
 import Foundation
 import Services
 
-struct SendVerificationRequestDTO: Encodable {
+struct EmailSendRequestDTO: Encodable {
     let universityEmail: String
 }
 
 extension APIEndpoints {
-    static func sendVerifyEmail(body: SendVerificationRequestDTO) -> EndPoint<Int> {
+    static func sendVerifyEmail(body: EmailSendRequestDTO) -> EndPoint<Int> {
         return EndPoint(
             path: "api/users/my/university-verification:send",
             method: .post,

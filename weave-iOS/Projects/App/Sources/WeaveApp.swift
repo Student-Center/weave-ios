@@ -20,7 +20,13 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            UnivEmailVerifyView()
+            UnivEmailVerifyView(
+                store: .init(
+                    initialState: UnivEmailVerifyFeature.State(userEmail: ""),
+                    reducer: {
+                        UnivEmailVerifyFeature()
+                    })
+            )
         }
     }
 }
