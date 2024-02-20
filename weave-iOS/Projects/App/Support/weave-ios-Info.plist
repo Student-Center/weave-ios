@@ -47,7 +47,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>사진 촬영을 위해 카메라 접근 권한이 필요해요</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>사진을 선택하기 위해 앨범 접근 권한일 필요해요</string>
+	<string>사진을 선택하기 위해 앨범 접근 권한이 필요해요</string>
 	<key>NSPrefPaneIconFile</key>
 	<string></string>
 	<key>UIApplicationSceneManifest</key>
