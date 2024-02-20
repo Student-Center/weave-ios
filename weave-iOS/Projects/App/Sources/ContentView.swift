@@ -8,14 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var selection: AppScreen? = .home
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        AppTabView(selection: $selection)
     }
 }
 
