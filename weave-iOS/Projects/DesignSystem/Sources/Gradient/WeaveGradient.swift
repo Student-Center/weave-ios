@@ -27,6 +27,14 @@ public extension LinearGradient {
             endPoint: UnitPoint(x: 1, y: 0.69)
         )
     }
+    
+    static var weaveGradientReversed: LinearGradient {
+        return LinearGradient(
+            colors: Color.weaveGradientColors.reversed(),
+            startPoint: UnitPoint(x: 0.02, y: 0.5),
+            endPoint: UnitPoint(x: 1, y: 0.69)
+        )
+    }
 }
 
 /*
