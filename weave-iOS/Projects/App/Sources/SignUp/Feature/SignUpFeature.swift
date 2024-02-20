@@ -12,6 +12,7 @@ import Services
 
 struct SignUpFeature: Reducer {
     struct State: Equatable {
+        let registerToken: String
         // 현단계 상태값
         var currentStep: SignUpStepTypes = .gender
         // 성별
@@ -50,6 +51,8 @@ struct SignUpFeature: Reducer {
         case requestMajors
         case fetchMajorLists(list: [MajorResponseDTO])
         case didTappedMajors(major: MajorModel)
+        // 회원가입 완료
+        case didCompleteSignUp
         // bind
         case binding(BindingAction<State>)
     }
@@ -88,7 +91,6 @@ struct SignUpFeature: Reducer {
                 if let nextStep = SignUpStepTypes(rawValue: nextRawValue) {
                     state.currentStep = nextStep
                 } else {
-                    print("완료")
                     // Validation
                     guard let gender = state.selectedGender,
                           let mbti = state.mbtiDatas.value,
@@ -102,8 +104,12 @@ struct SignUpFeature: Reducer {
                         universityId: univ.id,
                         majorId: major.id
                     )
-                    return .run { send in
-                        try await requestRegisterUser(dto: requestDTO)
+                    return .run { [token = state.registerToken] send in
+                        try await requestRegisterUser(
+                            registerToken: token,
+                            dto: requestDTO
+                        )
+                        await send.callAsFunction(.didCompleteSignUp)
                     } catch: { error, send in
                         print(error)
                     }
@@ -167,6 +173,10 @@ struct SignUpFeature: Reducer {
                 state.majorText = major.name
                 return .none
                 
+            case .didCompleteSignUp:
+                // 다음 뷰 전환 액션
+                return .none
+                
             default: return .none
             }
         }
@@ -189,8 +199,8 @@ struct SignUpFeature: Reducer {
     }
     
     // 회원가입 요청
-    private func requestRegisterUser(dto: RegisterUserRequestDTO) async throws {
-        let endPoint = APIEndpoints.registerUser(registerToken: "", body: dto)
+    private func requestRegisterUser(registerToken: String, dto: RegisterUserRequestDTO) async throws {
+        let endPoint = APIEndpoints.registerUser(registerToken: registerToken, body: dto)
         let provider = APIProvider(session: URLSession.shared)
         let response: TempTokenResponseDTO = try await provider.request(with: endPoint)
     }
