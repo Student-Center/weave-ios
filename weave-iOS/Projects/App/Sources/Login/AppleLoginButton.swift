@@ -9,6 +9,12 @@ import SwiftUI
 import AuthenticationServices
 
 struct AppleLoginButton: View {
+    var onComplte: ((String) -> Void)
+    
+    init(onComplte: @escaping ((String) -> Void)) {
+        self.onComplte = onComplte
+    }
+    
     var body: some View {
         SignInWithAppleButton(.signIn) { requset in
             requset.requestedScopes = [.email, .fullName]
@@ -27,20 +33,12 @@ struct AppleLoginButton: View {
                     guard let idTokenString = String(data: appleIdToken, encoding: .utf8) else {
                         return
                     }
-                    
-                    appleIdCredential.user
-                    appleIdCredential.fullName
-                    appleIdCredential.email
+                    onComplte(idTokenString)
                 }
                 
                 // iCloud의 패스워드
                 if let passwordCredential = authResults.credential as? ASPasswordCredential {
-                    passwordCredential.user
-                    passwordCredential.password
                 }
-//                Task {
-//                    await requestSNSLogin(idToken: "", with: .apple)
-//                }
                 
             case .failure(let error):
                 print("Authorisation failed: \(error.localizedDescription)")
@@ -53,5 +51,7 @@ struct AppleLoginButton: View {
 }
 
 #Preview {
-    AppleLoginButton()
+    AppleLoginButton { _ in
+        
+    }
 }
