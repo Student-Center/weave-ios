@@ -20,13 +20,12 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            UnivEmailVerifyView(
-                store: .init(
-                    initialState: UnivEmailVerifyFeature.State(userEmail: ""),
-                    reducer: {
-                        UnivEmailVerifyFeature()
-                    })
-            )
+            ContentView()
+                .onOpenURL(perform: { url in
+                if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                    _ = AuthController.handleOpenUrl(url: url)
+                }
+            })
         }
     }
 }
