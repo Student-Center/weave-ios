@@ -56,13 +56,13 @@ extension AppScreen {
     var destination: some View {
         switch self {
         case .chat:
-            LoginView()
+            ChatView()
         case .home:
-            LoginView()
+            HomeView()
         case .request:
-            LoginView()
+            RequestView()
         case .myTeam:
-            LoginView()
+            MyTeamView()
         case .myPage:
             MyPageView(store: Store(initialState: MyPageFeature.State(), reducer: {
                 MyPageFeature()
