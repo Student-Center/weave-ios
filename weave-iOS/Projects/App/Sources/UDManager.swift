@@ -30,3 +30,11 @@ public enum UDManager {
     @UDWrapper(key: CommonKey.RefreshToken, defaultValue: "")
     static var refreshToken: String
 }
+
+extension UDManager {
+    static var isLogin: Bool {
+        print("accessToken: \(UDManager.accessToken)")
+        print("refreshToken: \(UDManager.refreshToken)")
+        return !UDManager.accessToken.isEmpty && !UDManager.refreshToken.isEmpty
+    }
+}

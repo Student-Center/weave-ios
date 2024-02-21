@@ -10,7 +10,11 @@ import SwiftUI
 struct ContentView: View {
     @State private var selection: AppScreen? = .home
     var body: some View {
-        AppTabView(selection: $selection)
+        if UDManager.isLogin {
+            AppTabView(selection: $selection)
+        } else {
+            LoginView()
+        }
     }
 }
 

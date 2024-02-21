@@ -20,7 +20,8 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            LoginView().onOpenURL(perform: { url in
+            ContentView()
+                .onOpenURL(perform: { url in
                 if (AuthApi.isKakaoTalkLoginUrl(url)) {
                     _ = AuthController.handleOpenUrl(url: url)
                 }
