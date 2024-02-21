@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import Services
+import ComposableArchitecture
 
 struct LoginView: View {
     var body: some View {
@@ -25,7 +26,11 @@ struct LoginView: View {
             Spacer()
                 .frame(height: 16)
             
-//            AppleLoginButton()
+            AppleLoginButton(onComplte: { idToken in
+                Task {
+                    await requestSNSLogin(idToken: idToken, with: .apple)
+                }
+            })
             
             Spacer()
                 .frame(height: 58)
@@ -34,8 +39,28 @@ struct LoginView: View {
     
     private func requestSNSLogin(idToken: String, with type: SNSLoginType) async {
         let endPoint = APIEndpoints.requestSNSLogin(idToken: idToken, with: type)
-        guard let provider = try? await APIProvider().request(with: endPoint) else { return }
+        guard let provider = try? await APIProvider().request(with: endPoint) else {
+            // TODO: - SignUpView 연동
+            landingToSignUp(idToken: idToken)
+            return
+        }
+        
         UDManager.accessToken = provider.accessToken
         UDManager.refreshToken = provider.refreshToken
+        
+//        landingToHomeView()
     }
+    
+    private func landingToSignUp(idToken: String) {
+        SignUpView(
+            store: Store(
+                initialState: SignUpFeature.State(registerToken: idToken)) {
+                    SignUpFeature()
+                }
+        )
+    }
+    
+//    private func landingToHomeView() {
+//        HomeView()
+//    }
 }
