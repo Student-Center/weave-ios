@@ -12,12 +12,18 @@ struct EmailSendRequestDTO: Encodable {
     let universityEmail: String
 }
 
+struct EmptyResponse: Decodable {}
+
 extension APIEndpoints {
-    static func sendVerifyEmail(body: EmailSendRequestDTO) -> EndPoint<Int> {
+    static func sendVerifyEmail(body: EmailSendRequestDTO) -> EndPoint<EmptyResponse> {
         return EndPoint(
             path: "api/users/my/university-verification:send",
             method: .post,
-            bodyParameters: body
+            bodyParameters: body,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(UDManager.accessToken)"
+            ]
         )
     }
 }

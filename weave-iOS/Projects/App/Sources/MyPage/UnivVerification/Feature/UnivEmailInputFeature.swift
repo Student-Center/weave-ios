@@ -18,6 +18,7 @@ struct UnivEmailInputFeature: Reducer {
         @BindingState var emailPrefix = String()
         @BindingState var isShowEmailSendAlert = false
         @BindingState var isShowEmailSendErrorAlert = false
+        @BindingState var pushToNextView = false
     }
     
     enum Action: BindableAction {
@@ -26,6 +27,7 @@ struct UnivEmailInputFeature: Reducer {
         case requestSendVerifyEmail
         case showSendErrorAlert
         case didCompleteSendEmail
+        case pushNextView
         case binding(BindingAction<State>)
     }
     
@@ -41,6 +43,7 @@ struct UnivEmailInputFeature: Reducer {
                     )
                     await send.callAsFunction(.didCompleteSendEmail)
                 } catch: { error, send in
+                    print(error)
                     // 이메일 전송 에러처리
                     await send.callAsFunction(.showSendErrorAlert)
                 }
@@ -65,6 +68,10 @@ struct UnivEmailInputFeature: Reducer {
                 state.isShowEmailSendAlert.toggle()
                 return .none
                 
+            case .pushNextView:
+                state.pushToNextView.toggle()
+                return .none
+                
             default:
                 return .none
             }
@@ -78,15 +85,12 @@ struct UnivEmailInputFeature: Reducer {
         return response
     }
     
+    // 이메일 보내기
     func requestSendVerificationEmail(email: String) async throws {
+        print("👉 발송 이메일: \(email)")
         let endPoint = APIEndpoints.sendVerifyEmail(body: .init(universityEmail: email))
         let provider = APIProvider()
-        let statusCode = try await provider.request(with: endPoint)
-        if statusCode == 204 {
-            return
-        } else {
-            throw SendEmailError.statusCodeError
-        }
+        try await provider.requestWithNoResponse(with: endPoint)
     }
     
     enum SendEmailError: Error {

@@ -55,7 +55,7 @@ public class APIProvider {
     public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
         do {
             let urlRequest = try endPoint.getUrlRequest()
-
+            
             let (data, urlResponse) = try await session.data(for: urlRequest)
             
             guard let response = urlResponse as? HTTPURLResponse,
@@ -71,17 +71,21 @@ public class APIProvider {
         }
     }
     
-    // Response 코드를 리턴
-    public func request<E: RequestResponsable>(with endPoint: E) async throws -> Int {
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E) async throws {
         do {
             let urlRequest = try endPoint.getUrlRequest()
+            
             let (data, urlResponse) = try await session.data(for: urlRequest)
             
-            guard let response = urlResponse as? HTTPURLResponse,
-                  (200...399).contains(response.statusCode) else {
-                throw NetworkError.unknownError // 또는 적절한 오류 처리
+            guard let response = urlResponse as? HTTPURLResponse else {
+                throw NetworkError.unknownError
             }
-            return response.statusCode
+            
+            if response.statusCode == 204 {
+                return
+            } else {
+                throw NetworkError.invalidHttpStatusCode(response.statusCode)
+            }
         } catch {
             throw NetworkError.urlRequest(error)
         }

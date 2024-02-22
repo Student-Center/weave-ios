@@ -14,11 +14,15 @@ struct EmailVerifyRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func verifyCode(body: EmailVerifyRequestDTO) -> EndPoint<Int> {
+    static func verifyCode(body: EmailVerifyRequestDTO) -> EndPoint<EmptyResponse> {
         return EndPoint(
             path: "api/users/my/university-verification:verify",
             method: .post,
-            bodyParameters: body
+            bodyParameters: body,
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(UDManager.accessToken)"
+            ]
         )
     }
 }

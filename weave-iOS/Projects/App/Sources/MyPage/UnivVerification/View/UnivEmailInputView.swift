@@ -48,17 +48,32 @@ struct UnivEmailInputView: View {
                     WeaveButton(
                         title: "인증메일 보내기",
                         size: .large,
-                        isEnabled: !viewStore.emailPrefix.isEmpty
+                        isEnabled: !viewStore.emailPrefix.isEmpty && viewStore.universityInfo != nil
                     ) {
                         viewStore.send(.requestSendVerifyEmail)
                     }
+                    .navigationDestination(isPresented: viewStore.$pushToNextView, destination: {
+                        UnivEmailVerifyView(
+                            store: .init(
+                                initialState: UnivEmailVerifyFeature.State(
+                                    userEmail: viewStore.emailPrefix + "@" + (viewStore.universityInfo!.domainAddress)
+                                ),
+                                reducer: {
+                                    UnivEmailVerifyFeature()
+                                }
+                            )
+                        )
+                    })
                     .frame(height: 56)
                     .padding(.horizontal, 16)
                     .weaveAlert(
                         isPresented: viewStore.$isShowEmailSendAlert,
                         title: "✅\n인증번호 발송 완료!",
                         message: "메일로 인증번호가 발송되었어요.\n메일을 확인해 인증번호를 입력해 주세요.",
-                        primaryButtonTitle: "네, 좋아요"
+                        primaryButtonTitle: "네, 좋아요",
+                        primaryAction: {
+                            viewStore.send(.pushNextView)
+                        }
                     )
                     .weaveAlert(
                         isPresented: viewStore.$isShowEmailSendErrorAlert,
@@ -88,6 +103,7 @@ struct UnivEmailInputView: View {
             initialState: UnivEmailInputFeature.State(),
             reducer: {
                 UnivEmailInputFeature(universityName: "명지대학교")
-            })
+            }
+        )
     )
 }

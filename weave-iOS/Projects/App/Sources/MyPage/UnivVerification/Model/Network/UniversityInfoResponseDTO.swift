@@ -27,7 +27,8 @@ extension APIEndpoints {
     static func getSingleUniversityInfo(univName: String) -> EndPoint<UniversityInfoResponseDTO> {
         return EndPoint(
             path: "api/univ/name/\(univName)",
-            method: .get
+            method: .get,
+            headers: ["Authorization": "Bearer \(UDManager.accessToken)"]
         )
     }
 }
