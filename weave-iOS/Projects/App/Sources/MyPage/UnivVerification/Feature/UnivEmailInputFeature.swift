@@ -11,9 +11,8 @@ import ComposableArchitecture
 
 struct UnivEmailInputFeature: Reducer {
     
-    let universityName: String
-    
     struct State: Equatable {
+        let universityName: String
         var universityInfo: UniversityInfoModel?
         @BindingState var emailPrefix = String()
         @BindingState var isShowEmailSendAlert = false
@@ -49,8 +48,8 @@ struct UnivEmailInputFeature: Reducer {
                 }
                 
             case .requestUniversityInfo:
-                return .run { send in
-                    let univInfo = try await requestUniversityInfo()
+                return .run { [univName = state.universityName] send in
+                    let univInfo = try await requestUniversityInfo(univName: univName)
                     await send.callAsFunction(.fetchUniversityInfo(dto: univInfo))
                 } catch: { error, send in
                     print(error)
@@ -78,8 +77,8 @@ struct UnivEmailInputFeature: Reducer {
         }
     }
     
-    func requestUniversityInfo() async throws -> UniversityInfoResponseDTO {
-        let endPoint = APIEndpoints.getSingleUniversityInfo(univName: universityName)
+    func requestUniversityInfo(univName: String) async throws -> UniversityInfoResponseDTO {
+        let endPoint = APIEndpoints.getSingleUniversityInfo(univName: univName)
         let provider = APIProvider()
         let response: UniversityInfoResponseDTO = try await provider.request(with: endPoint)
         return response

@@ -56,7 +56,7 @@ struct UnivEmailInputView: View {
                         UnivEmailVerifyView(
                             store: .init(
                                 initialState: UnivEmailVerifyFeature.State(
-                                    userEmail: viewStore.emailPrefix + "@" + (viewStore.universityInfo!.domainAddress)
+                                    userEmail: viewStore.emailPrefix + "@" + (viewStore.universityInfo?.domainAddress ?? "")
                                 ),
                                 reducer: {
                                     UnivEmailVerifyFeature()
@@ -99,11 +99,9 @@ struct UnivEmailInputView: View {
 
 #Preview {
     UnivEmailInputView(
-        store: .init(
-            initialState: UnivEmailInputFeature.State(),
-            reducer: {
-                UnivEmailInputFeature(universityName: "명지대학교")
+        store: Store(
+            initialState: UnivEmailInputFeature.State(universityName: "명지대학교")) {
+                UnivEmailInputFeature()
             }
-        )
     )
 }
