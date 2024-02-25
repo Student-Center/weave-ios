@@ -16,7 +16,7 @@ extension APIEndpoints {
     static func editMyHeight(body: MyHeightEditRequestDTO) -> EndPoint<TempTokenResponseDTO> {
         return EndPoint(
             path: "api/users/my/height",
-            method: .post,
+            method: .patch,
             bodyParameters: body,
             headers: ["Auhtorization": "Bearer \(UDManager.accessToken)"]
         )

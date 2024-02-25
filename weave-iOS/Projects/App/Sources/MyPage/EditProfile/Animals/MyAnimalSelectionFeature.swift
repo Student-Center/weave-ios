@@ -26,12 +26,21 @@ struct MyAnimalSelectionFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .didTappedSaveButton(let animal):
-                print(animal)
-                return .none
+                return .run { send in
+                    try await requestEditMyAnimal(animal: animal)
+                } catch: { error, send in
+                    print(error)
+                }
                 
             default:
                 return .none
             }
         }
+    }
+    
+    func requestEditMyAnimal(animal: AnimalTypes) async throws {
+        let endPoint = APIEndpoints.editMyAnimal(body: .init(animalType: animal.requestValue))
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
     }
 }
