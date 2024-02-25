@@ -122,7 +122,7 @@ extension WeaveButton {
         
         var padding: CGSize {
             switch self {
-            case .large: return .init(width: 24, height: 16)
+            case .large: return .init(width: 24, height: 18)
             case .medium: return .init(width: 24, height: 14)
             case .regular: return .init(width: 24, height: 13)
             case .small: return .init(width: 24, height: 12)

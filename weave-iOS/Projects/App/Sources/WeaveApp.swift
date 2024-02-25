@@ -20,12 +20,11 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .onOpenURL(perform: { url in
-                if (AuthApi.isKakaoTalkLoginUrl(url)) {
-                    _ = AuthController.handleOpenUrl(url: url)
-                }
-            })
+            MyAnimalSelectionView(
+                store: Store(initialState: MyAnimalSelectionFeature.State(), reducer: {
+                    MyAnimalSelectionFeature()
+                })
+            )
         }
     }
 }
