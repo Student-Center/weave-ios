@@ -23,7 +23,7 @@ struct SignUpMBTIView: View {
                 WeaveButton(
                     title: "다음으로",
                     size: .medium,
-                    isEnabled: getButtonConfig(model: viewStore.mbtiDatas)
+                    isEnabled: viewStore.mbtiDatas.validate()
                 ) {
                     viewStore.send(
                         .didTappedNextButton,
@@ -33,10 +33,5 @@ struct SignUpMBTIView: View {
                 .padding(.bottom, 20)
             }
         }
-    }
-    
-    func getButtonConfig(model: MBTIDataModel) -> Bool {
-        print(model)
-        return model.validate()
     }
 }
