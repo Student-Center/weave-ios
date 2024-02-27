@@ -70,4 +70,24 @@ public class APIProvider {
             throw NetworkError.urlRequest(error)
         }
     }
+    
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E) async throws {
+        do {
+            let urlRequest = try endPoint.getUrlRequest()
+            
+            let (data, urlResponse) = try await session.data(for: urlRequest)
+            
+            guard let response = urlResponse as? HTTPURLResponse else {
+                throw NetworkError.unknownError
+            }
+            
+            if response.statusCode == 204 {
+                return
+            } else {
+                throw NetworkError.invalidHttpStatusCode(response.statusCode)
+            }
+        } catch {
+            throw NetworkError.urlRequest(error)
+        }
+    }
 }

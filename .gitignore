@@ -103,3 +103,4 @@ Tuist/Dependencies/Carthage
 # Avoid checking in build artifacts from Swift Package Manager dependencies
 Tuist/Dependencies/SwiftPackageManager
 SecretKey.swift
+weave-ios/Projects/Core/Sources/Network/Common/SecretKey.swift
