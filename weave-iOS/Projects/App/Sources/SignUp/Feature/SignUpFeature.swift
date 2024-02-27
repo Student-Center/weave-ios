@@ -93,14 +93,13 @@ struct SignUpFeature: Reducer {
                 } else {
                     // Validation
                     guard let gender = state.selectedGender,
-                          let mbti = state.mbtiDatas.value,
                           let birthYear = Int(state.birthYear),
                           let univ = state.selectedUniversity,
                           let major = state.selectedmajor else { return .none }
                     let requestDTO = RegisterUserRequestDTO(
                         gender: gender.value,
                         birthYear: birthYear,
-                        mbti: mbti,
+                        mbti: state.mbtiDatas.requestValue,
                         universityId: univ.id,
                         majorId: major.id
                     )
@@ -265,27 +264,6 @@ extension SignUpFeature {
             case .boy: return isSelected ? DesignSystem.Icons.boySelected : DesignSystem.Icons.boyNormal
             case .girl: return isSelected ? DesignSystem.Icons.girlSelected : DesignSystem.Icons.girlNormal
             }
-        }
-    }
-
-    struct MBTIDataModel: Equatable {
-        var EorI: String?
-        var NorS: String?
-        var ForT: String?
-        var PorJ: String?
-        
-        var value: String? {
-            guard let EorI,
-                  let NorS,
-                  let ForT,
-                  let PorJ else { return nil }
-            
-            return EorI + NorS + ForT + PorJ
-        }
-        
-        func validate() -> Bool {
-            return [EorI, NorS, ForT, PorJ]
-                .allSatisfy { $0 != nil }
         }
     }
 }
