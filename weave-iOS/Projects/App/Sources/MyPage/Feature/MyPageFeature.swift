@@ -83,11 +83,14 @@ struct MyPageFeature: Reducer {
                         )
                     )
                 case .similarAnimal:
+                    var animalType: AnimalTypes?
+                    if let animalName = state.myUserInfo?.animalType {
+                        print(animalName)
+                        animalType = AnimalTypes(rawValue: animalName)
+                    }
                     state.destination = .editAnimal(
                         .init(
-                            selectedAnimal: AnimalTypes(
-                                rawValue: state.myUserInfo?.animalType ?? ""
-                            )
+                            selectedAnimal: animalType
                         )
                     )
                 default: break

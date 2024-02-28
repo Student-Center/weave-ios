@@ -40,6 +40,9 @@ struct MyAnimalSelectionView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .onAppear {
+                self.selectedAnimal = viewStore.selectedAnimal
+            }
         }
     }
 }
