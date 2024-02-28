@@ -17,6 +17,8 @@ struct MyPageFeature: Reducer {
         @BindingState var isShowPhotoPicker: Bool = false
         @BindingState var isShowCamera: Bool = false
         @BindingState var isShowCameraPermissionAlert: Bool = false
+        
+        @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
@@ -32,7 +34,7 @@ struct MyPageFeature: Reducer {
         case showCamera
         case showAppPreference
         case didPickPhotoCompleted(image: Image)
-        
+        case destination(PresentationAction<Destination.Action>)
         // bind
         case binding(BindingAction<State>)
     }
@@ -66,9 +68,37 @@ struct MyPageFeature: Reducer {
                 
             case .didTappedSubViews(let type):
                 switch type {
+                case .mbti:
+                    state.destination = .editMbti(
+                        .init(
+                            mbtiDataModel: .init(
+                                mbti: state.myUserInfo?.mbti ?? ""
+                            )
+                        )
+                    )
+                case .physicalHeight:
+                    state.destination = .editHeight(
+                        .init(
+                            height: state.myUserInfo?.height
+                        )
+                    )
+                case .similarAnimal:
+                    state.destination = .editAnimal(
+                        .init(
+                            selectedAnimal: AnimalTypes(
+                                rawValue: state.myUserInfo?.animalType ?? ""
+                            )
+                        )
+                    )
                 default: break
                 }
                 return .none
+                
+            case .destination(.dismiss):
+                state.destination = nil
+                return .run { send in
+                    await send.callAsFunction(.requestMyUserInfo)
+                }
                 
             case .showPhotoPicker:
                 state.isShowPhotoPicker.toggle()
@@ -106,7 +136,12 @@ struct MyPageFeature: Reducer {
                 
             case .binding(_):
                 return .none
+                
+            default: return .none
             }
+        }
+        .ifLet(\.$destination, action: /Action.destination) {
+            Destination()
         }
     }
     
@@ -126,6 +161,33 @@ struct MyPageFeature: Reducer {
             return await AVCaptureDevice.requestAccess(for: .video)
         } else {
             return false
+        }
+    }
+}
+
+//MARK: - Destination
+extension MyPageFeature {
+    struct Destination: Reducer {
+        enum State: Equatable {
+            case editMbti(MyMbtiEditFeature.State)
+            case editAnimal(MyAnimalSelectionFeature.State)
+            case editHeight(MyHeightEditFeature.State)
+        }
+        enum Action {
+            case editMbti(MyMbtiEditFeature.Action)
+            case editAnimal(MyAnimalSelectionFeature.Action)
+            case editHeight(MyHeightEditFeature.Action)
+        }
+        var body: some ReducerOf<Self> {
+            Scope(state: /State.editMbti, action: /Action.editMbti) {
+                MyMbtiEditFeature()
+            }
+            Scope(state: /State.editAnimal, action: /Action.editAnimal) {
+                MyAnimalSelectionFeature()
+            }
+            Scope(state: /State.editHeight, action: /Action.editHeight) {
+                MyHeightEditFeature()
+            }
         }
     }
 }

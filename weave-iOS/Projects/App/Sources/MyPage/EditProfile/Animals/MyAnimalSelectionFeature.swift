@@ -11,12 +11,19 @@ import Services
 import DesignSystem
 
 struct MyAnimalSelectionFeature: Reducer {
+    @Dependency(\.dismiss) var dismiss
+    
     struct State: Equatable {
         var selectedAnimal: AnimalTypes?
+        
+        init(selectedAnimal: AnimalTypes? = nil) {
+            self.selectedAnimal = selectedAnimal
+        }
     }
     
     enum Action: BindableAction {
         case didTappedSaveButton(animal: AnimalTypes)
+        case dismiss
         case binding(BindingAction<State>)
     }
     
@@ -28,8 +35,14 @@ struct MyAnimalSelectionFeature: Reducer {
             case .didTappedSaveButton(let animal):
                 return .run { send in
                     try await requestEditMyAnimal(animal: animal)
+                    await send.callAsFunction(.dismiss)
                 } catch: { error, send in
                     print(error)
+                }
+                
+            case .dismiss:
+                return .run { send in
+                    await dismiss()
                 }
                 
             default:

@@ -18,7 +18,7 @@ extension APIEndpoints {
             path: "api/users/my/animal-type",
             method: .patch,
             bodyParameters: body,
-            headers: ["Auhtorization": "Bearer \(UDManager.accessToken)"]
+            headers: ["Authorization": "Bearer \(UDManager.accessToken)"]
         )
     }
 }

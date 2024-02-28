@@ -20,10 +20,11 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MyAnimalSelectionView(
-                store: Store(initialState: MyAnimalSelectionFeature.State(), reducer: {
-                    MyAnimalSelectionFeature()
-                })
+            MyPageView(
+                store: Store(
+                    initialState: MyPageFeature.State()) {
+                        MyPageFeature()
+                    }
             )
         }
     }

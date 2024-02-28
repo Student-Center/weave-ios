@@ -11,12 +11,15 @@ import Services
 import DesignSystem
 
 struct MyMbtiEditFeature: Reducer {
+    @Dependency(\.dismiss) var dismiss
+    
     struct State: Equatable {
         @BindingState var mbtiDataModel: MBTIDataModel
     }
     
     enum Action: BindableAction {
         case didTappedSaveButton
+        case dismiss
         case binding(BindingAction<State>)
     }
     
@@ -28,8 +31,14 @@ struct MyMbtiEditFeature: Reducer {
             case .didTappedSaveButton:
                 return .run { [mbti = state.mbtiDataModel] send in
                     try await requestMyMBTIData(mbti: mbti)
+                    await send.callAsFunction(.dismiss)
                 } catch: { error, send in
                     print(error)
+                }
+                
+            case .dismiss:
+                return .run { send in
+                    await dismiss()
                 }
                 
             default:

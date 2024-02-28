@@ -17,21 +17,10 @@ struct MyAnimalSelectionView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
-                ZStack {
-                    Text("내가 닮은 동물상은?")
-                        .font(.pretendard(._600, size: 20))
-                    HStack {
-                        Spacer()
-                        Button(action: {}, label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                        })
-                        .foregroundStyle(DesignSystem.Colors.lightGray)
-                    }
+                CenterTitleView(title: "내가 닮은 동물상은 ?") {
+                    viewStore.send(.dismiss)
                 }
-                .padding(.horizontal, 16)
-                .frame(height: 54)
+                
                 AnimalSelectionList(
                     selectedItem: $selectedAnimal
                 )

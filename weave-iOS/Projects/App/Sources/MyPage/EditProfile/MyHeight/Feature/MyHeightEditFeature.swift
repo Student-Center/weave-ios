@@ -10,12 +10,27 @@ import ComposableArchitecture
 import Services
 
 struct MyHeightEditFeature: Reducer {
+    @Dependency(\.dismiss) var dismiss
+    
     struct State: Equatable {
-        @BindingState var heightText = String()
+        @BindingState var heightText: String
+        
+        init(height: Int?) {
+            if let height {
+                self.heightText = String(height)
+            } else {
+                self.heightText = String()
+            }
+        }
+        
+        init() {
+            self.heightText = String()
+        }
     }
     
     enum Action: BindableAction {
         case didTappedSaveButton
+        case dismiss
         case binding(BindingAction<State>)
     }
     
@@ -27,8 +42,14 @@ struct MyHeightEditFeature: Reducer {
             case .didTappedSaveButton:
                 return .run { [height = state.heightText] send in
                     try await requestEditMyProfile(height: Int(height)!)
+                    await send.callAsFunction(.dismiss)
                 } catch: { error, send in
                     print(error)
+                }
+                
+            case .dismiss:
+                return .run { send in
+                    await dismiss()
                 }
                 
             default:

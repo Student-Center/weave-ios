@@ -18,7 +18,7 @@ extension APIEndpoints {
             path: "api/users/my/mbti",
             method: .patch,
             bodyParameters: body,
-            headers: ["Auhtorization": "Bearer \(UDManager.accessToken)"]
+            headers: ["Authorization": "Bearer \(UDManager.accessToken)"]
         )
     }
 }

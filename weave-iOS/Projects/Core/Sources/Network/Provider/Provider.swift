@@ -85,6 +85,12 @@ public class APIProvider {
             if response.statusCode == 204 {
                 return
             } else {
+                // Data를 String으로 변환
+                if let string = String(data: data, encoding: .utf8) {
+                    print(string)
+                } else {
+                    print("Data 변환 실패")
+                }
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
             }
 

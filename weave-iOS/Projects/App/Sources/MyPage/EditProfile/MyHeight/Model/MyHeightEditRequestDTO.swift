@@ -18,7 +18,7 @@ extension APIEndpoints {
             path: "api/users/my/height",
             method: .patch,
             bodyParameters: body,
-            headers: ["Auhtorization": "Bearer \(UDManager.accessToken)"]
+            headers: ["Authorization": "Bearer \(UDManager.accessToken)"]
         )
     }
 }
