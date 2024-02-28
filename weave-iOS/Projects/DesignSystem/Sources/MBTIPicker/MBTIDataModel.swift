@@ -61,7 +61,7 @@ public struct MBTIDataModel: Equatable {
         self.사고감정 = MBTITypes(rawValue: String(characters[2])) ?? .none
         self.판단인식 = MBTITypes(rawValue: String(characters[3])) ?? .none
     }
-    
+
     public var requestValue: String {
         return [외향내향, 감각직관, 사고감정, 판단인식]
             .map { $0.rawValue }

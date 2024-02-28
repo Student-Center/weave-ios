@@ -72,7 +72,6 @@ public class APIProvider {
     }
     
     public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E) async throws {
-
         do {
             let urlRequest = try endPoint.getUrlRequest()
             
@@ -93,7 +92,6 @@ public class APIProvider {
                 }
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
             }
-
         } catch {
             throw NetworkError.urlRequest(error)
         }
