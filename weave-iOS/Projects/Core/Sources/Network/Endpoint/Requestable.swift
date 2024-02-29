@@ -29,7 +29,8 @@ extension Requestable {
         
         // httpMethod
         urlRequest.httpMethod = method.rawValue
-        
+        urlRequest.setValue("*/*", forHTTPHeaderField: "Accept")
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         // header
         headers?.forEach { urlRequest.setValue($1, forHTTPHeaderField: $0) }
         

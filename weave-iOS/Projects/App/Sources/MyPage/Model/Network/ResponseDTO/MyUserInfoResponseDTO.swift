@@ -41,11 +41,10 @@ struct MyUserInfoResponseDTO: Decodable {
 extension APIEndpoints {
     static func getMyUserInfo() -> EndPoint<MyUserInfoResponseDTO> {
         return EndPoint(
-            baseURL: "",
             path: "api/users/my",
             method: .get,
             headers: [
-                "Authorization": ""
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

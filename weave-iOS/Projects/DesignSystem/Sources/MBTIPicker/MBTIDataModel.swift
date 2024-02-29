@@ -49,6 +49,19 @@ public struct MBTIDataModel: Equatable {
         self.판단인식 = 판단인식
     }
     
+    public init(mbti: String) {
+        self.init()
+        guard mbti.count == 4 else {
+            return
+        }
+        
+        let characters = Array(mbti)
+        self.외향내향 = MBTITypes(rawValue: String(characters[0])) ?? .none
+        self.감각직관 = MBTITypes(rawValue: String(characters[1])) ?? .none
+        self.사고감정 = MBTITypes(rawValue: String(characters[2])) ?? .none
+        self.판단인식 = MBTITypes(rawValue: String(characters[3])) ?? .none
+    }
+
     public var requestValue: String {
         return [외향내향, 감각직관, 사고감정, 판단인식]
             .map { $0.rawValue }
