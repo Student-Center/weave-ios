@@ -9,9 +9,9 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 
-struct HomeView: View {
+struct MeetingTeamListView: View {
     
-    let store: StoreOf<HomeFeature>
+    let store: StoreOf<MeetingTeamListFeature>
     
     let column = GridItem(.fixed(UIScreen.main.bounds.size.width))
     
@@ -57,8 +57,8 @@ struct HomeView: View {
                 .toolbar(.visible, for: .tabBar)
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-                    state: /HomeFeature.Destination.State.teamDetail,
-                    action: HomeFeature.Destination.Action.teamDetail
+                    state: /MeetingTeamListFeature.Destination.State.teamDetail,
+                    action: MeetingTeamListFeature.Destination.Action.teamDetail
                 ) { store in
                     MeetingTeamDetailView(store: store)
                 }

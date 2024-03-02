@@ -9,7 +9,7 @@ import Foundation
 import Services
 import ComposableArchitecture
 
-struct HomeFeature: Reducer {
+struct MeetingTeamListFeature: Reducer {
     struct State: Equatable {
         @BindingState var teamList: MeetingTeamListModel?
         
@@ -77,7 +77,7 @@ enum TempError: Error {
 }
 
 //MARK: - Destination
-extension HomeFeature {
+extension MeetingTeamListFeature {
     struct Destination: Reducer {
         enum State: Equatable {
             case teamDetail(MeetingTeamDetailFeature.State)
