@@ -10,6 +10,8 @@ import Services
 import ComposableArchitecture
 
 struct MeetingTeamDetailFeature: Reducer {
+    @Dependency(\.dismiss) var dismiss
+    
     struct State: Equatable {
         let teamId: String
         
@@ -17,6 +19,7 @@ struct MeetingTeamDetailFeature: Reducer {
         @BindingState var isShowRequestMeetingConfirmAlert = false
         @BindingState var isShowNeedUnivVerifyAlert = false
         @BindingState var isShowNoTeamAlert = false
+        @BindingState var isShowRequestSuccessAlert = false
     }
     
     enum Action: BindableAction {
@@ -29,6 +32,9 @@ struct MeetingTeamDetailFeature: Reducer {
         case makeTeamAction
         case univVerifyAction
         case requestMeeting
+        case successedRequestMeeting
+        
+        case dismiss
         
         case requestTeamUserInfo
         case fetchTeamUserInfo(response: MeetingTeamDetailResponseDTO)
@@ -59,9 +65,18 @@ struct MeetingTeamDetailFeature: Reducer {
             case .requestMeeting:
                 return .run { [teamId = state.teamId] send in
                     try await requestMeeting(targetTeamId: teamId)
-                    print("성공")
+                    await send.callAsFunction(.successedRequestMeeting)
                 } catch: { error, send in
                     print(error)
+                }
+                
+            case .successedRequestMeeting:
+                state.isShowRequestSuccessAlert.toggle()
+                return .none
+                
+            case .dismiss:
+                return .run { send in
+                    await dismiss()
                 }
             default:
                 return .none

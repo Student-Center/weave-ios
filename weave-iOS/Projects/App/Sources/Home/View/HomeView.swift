@@ -17,7 +17,7 @@ struct HomeView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            NavigationStack {
+            NavigationView {
                 ScrollView {
                     if let teamList = viewStore.teamList {
                         LazyVGrid(columns: [column], spacing: 16, content: {
@@ -53,6 +53,14 @@ struct HomeView: View {
                             }
                         )
                     }
+                }
+                .toolbar(.visible, for: .tabBar)
+                .navigationDestination(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /HomeFeature.Destination.State.teamDetail,
+                    action: HomeFeature.Destination.Action.teamDetail
+                ) { store in
+                    MeetingTeamDetailView(store: store)
                 }
             }
         }
@@ -109,7 +117,5 @@ fileprivate struct MeetingListItemView: View {
 }
 
 #Preview {
-    HomeView(store: Store(initialState: HomeFeature.State(), reducer: {
-        HomeFeature()
-    }))
+    AppTabView(selection: .constant(.home))
 }

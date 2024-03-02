@@ -12,6 +12,8 @@ import ComposableArchitecture
 struct HomeFeature: Reducer {
     struct State: Equatable {
         @BindingState var teamList: MeetingTeamListModel?
+        
+        @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
@@ -21,6 +23,9 @@ struct HomeFeature: Reducer {
         //MARK: UserAction
         case didTappedTeamView(id: String)
         case didTappedFilterIcon
+        
+        // destination
+        case destination(PresentationAction<Destination.Action>)
         
         // bind
         case binding(BindingAction<State>)
@@ -43,10 +48,19 @@ struct HomeFeature: Reducer {
                 
             case .didTappedTeamView(let id):
                 // 상세 뷰로 전환
+                state.destination = .teamDetail(.init(teamId: id))
                 return .none
+                
+            case .destination(.dismiss):
+                state.destination = nil
+                return .none
+                
             default:
                 return .none
             }
+        }
+        .ifLet(\.$destination, action: /Action.destination) {
+            Destination()
         }
     }
     
@@ -60,4 +74,21 @@ struct HomeFeature: Reducer {
 
 enum TempError: Error {
     case tempError
+}
+
+//MARK: - Destination
+extension HomeFeature {
+    struct Destination: Reducer {
+        enum State: Equatable {
+            case teamDetail(MeetingTeamDetailFeature.State)
+        }
+        enum Action {
+            case teamDetail(MeetingTeamDetailFeature.Action)
+        }
+        var body: some ReducerOf<Self> {
+            Scope(state: /State.teamDetail, action: /Action.teamDetail) {
+                MeetingTeamDetailFeature()
+            }
+        }
+    }
 }
