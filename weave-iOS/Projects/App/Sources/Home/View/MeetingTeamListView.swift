@@ -62,6 +62,15 @@ struct MeetingTeamListView: View {
                 ) { store in
                     MeetingTeamDetailView(store: store)
                 }
+                .sheet(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MeetingTeamListFeature.Destination.State.filter,
+                    action: MeetingTeamListFeature.Destination.Action.filter
+                ) { store in
+                    MeetingTeamListFilterView(store: store)
+                        .presentationDetents([.fraction(0.8)])
+                        .presentationDragIndicator(.visible)
+                }
             }
         }
     }

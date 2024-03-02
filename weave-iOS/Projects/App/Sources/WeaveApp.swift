@@ -13,6 +13,7 @@ import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
+    
     init() {
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
@@ -20,12 +21,7 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MyPageView(
-                store: Store(
-                    initialState: MyPageFeature.State()) {
-                        MyPageFeature()
-                    }
-            )
+            AppTabView(selection: .constant(.home))
         }
     }
 }

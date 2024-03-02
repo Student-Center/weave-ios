@@ -72,7 +72,22 @@ fileprivate struct LeftAlignTextCapsuleItemView: View {
     }
     
     fileprivate var body: some View {
-        Text(item.text)
+        CapsuleContentView(title: item.text, tintColor: tintColor)
+    }
+}
+
+public struct CapsuleContentView: View {
+    
+    let title: String
+    let tintColor: Color
+    
+    public init(title: String, tintColor: Color) {
+        self.title = title
+        self.tintColor = tintColor
+    }
+    
+    public var body: some View {
+        Text(title)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .overlay(

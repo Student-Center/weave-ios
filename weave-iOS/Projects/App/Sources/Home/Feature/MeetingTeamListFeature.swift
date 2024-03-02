@@ -51,6 +51,10 @@ struct MeetingTeamListFeature: Reducer {
                 state.destination = .teamDetail(.init(teamId: id))
                 return .none
                 
+            case .didTappedFilterIcon:
+                state.destination = .filter(.init())
+                return .none
+                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
@@ -81,13 +85,18 @@ extension MeetingTeamListFeature {
     struct Destination: Reducer {
         enum State: Equatable {
             case teamDetail(MeetingTeamDetailFeature.State)
+            case filter(MeetingTeamListFilterFeature.State)
         }
         enum Action {
             case teamDetail(MeetingTeamDetailFeature.Action)
+            case filter(MeetingTeamListFilterFeature.Action)
         }
         var body: some ReducerOf<Self> {
             Scope(state: /State.teamDetail, action: /Action.teamDetail) {
                 MeetingTeamDetailFeature()
+            }
+            Scope(state: /State.filter, action: /Action.filter) {
+                MeetingTeamListFilterFeature()
             }
         }
     }
