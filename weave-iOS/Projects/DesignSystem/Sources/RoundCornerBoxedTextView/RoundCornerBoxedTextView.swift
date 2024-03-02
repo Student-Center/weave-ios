@@ -25,7 +25,7 @@ public struct RoundCornerBoxedTextView: View {
                 .font(.pretendard(._500, size: 12))
                 .foregroundStyle(.white)
                 .padding(.vertical, 5)
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 8)
         }
         .background(backgroundColor)
         .clipShape(
