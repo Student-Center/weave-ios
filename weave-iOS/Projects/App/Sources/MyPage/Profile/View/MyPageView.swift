@@ -69,6 +69,36 @@ struct MyPageView: View {
                     }
                 })
             }
+            // MBTI
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editMbti,
+                action: MyPageFeature.Destination.Action.editMbti
+            ) { store in
+                MyMbtiEditView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
+            // 닮은 동물 선택
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editAnimal,
+                action: MyPageFeature.Destination.Action.editAnimal
+            ) { store in
+                MyAnimalSelectionView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
+            // 키 변경
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editHeight,
+                action: MyPageFeature.Destination.Action.editHeight
+            ) { store in
+                MyHeightEditView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 }
