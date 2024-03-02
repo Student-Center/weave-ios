@@ -53,31 +53,6 @@ extension Requestable {
         guard let url = urlComponents.url else { throw NetworkError.components }
         return url
     }
-    
-    func requestLogger(request: URLRequest) {
-        debugPrint("🛜 Network Request Log")
-        debugPrint("✅ [URL] : \(request.url?.absoluteString ?? "")")
-        debugPrint("✅ [Method] : \(request.httpMethod ?? "")")
-        debugPrint("✅ [Headers] : \(request.allHTTPHeaderFields ?? [:])")
-        
-        if let body = request.httpBody?.toPrettyPrintedString {
-            debugPrint("✅ [Body] : \(body)")
-        } else {
-            debugPrint("✅ [Body] : body 없음")
-        }
-    }
-    
-    func responseLogger(response: URLResponse, data: Data) {
-        debugPrint("🛜 Network Response Log")
-        
-        guard let response = response as? HTTPURLResponse else {
-            debugPrint("✅ [Response] : HTTPURLResponse 캐스팅 실패")
-            return
-        }
-        
-        debugPrint("✅ [StatusCode] : \(response.statusCode)")
-        debugPrint("✅ [ResponseData] : \(data.toPrettyPrintedString ?? "")")
-    }
 }
 
 extension Encodable {
@@ -98,4 +73,48 @@ fileprivate extension Data {
     }
     return prettyPrintedString as String
   }
+}
+
+//MARK: - Network Logger
+extension Requestable {
+    internal func requestLogger(request: URLRequest) {
+        print("")
+        debugPrint("======================== 👉 Network Request Log 👈 ==========================")
+        debugPrint("✅ [URL] : \(request.url?.absoluteString ?? "")")
+        debugPrint("✅ [Method] : \(request.httpMethod ?? "")")
+        debugPrint("✅ [Headers] : \(request.allHTTPHeaderFields ?? [:])")
+        
+        if let body = request.httpBody?.toPrettyPrintedString {
+            debugPrint("✅ [Body] : \(body)")
+        } else {
+            debugPrint("✅ [Body] : body 없음")
+        }
+        debugPrint("==============================================================================")
+        print("")
+    }
+    
+    internal func responseLogger(response: URLResponse, data: Data) {
+        print("")
+        debugPrint("======================== 👉 Network Response Log 👈 ==========================")
+        
+        guard let response = response as? HTTPURLResponse else {
+            debugPrint("✅ [Response] : HTTPURLResponse 캐스팅 실패")
+            return
+        }
+        
+        debugPrint("✅ [StatusCode] : \(response.statusCode)")
+        
+        switch response.statusCode {
+        case 400..<500:
+            debugPrint("🚨 클라이언트 오류")
+        case 500..<600:
+            debugPrint("🚨 서버 오류")
+        default:
+            break
+        }
+        
+        debugPrint("✅ [ResponseData] : \(data.toPrettyPrintedString ?? "")")
+        debugPrint("===============================================================================")
+        print("")
+    }
 }
