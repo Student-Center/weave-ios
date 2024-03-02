@@ -55,16 +55,15 @@ public class APIProvider {
     public func request<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
         do {
             let urlRequest = try endPoint.getUrlRequest()
-
             let (data, urlResponse) = try await session.data(for: urlRequest)
-            
+            endPoint.responseLogger(response: urlResponse, data: data)
             guard let response = urlResponse as? HTTPURLResponse,
                   (200...399).contains(response.statusCode) else {
                 throw NetworkError.unknownError // 또는 적절한 오류 처리
             }
-            
+
             let decodedResponse = try JSONDecoder().decode(R.self, from: data)
-            
+            print(decodedResponse)
             return decodedResponse
         } catch {
             throw NetworkError.urlRequest(error)
@@ -76,7 +75,7 @@ public class APIProvider {
             let urlRequest = try endPoint.getUrlRequest()
             
             let (data, urlResponse) = try await session.data(for: urlRequest)
-            
+            endPoint.responseLogger(response: urlResponse, data: data)
             guard let response = urlResponse as? HTTPURLResponse else {
                 throw NetworkError.unknownError
             }
@@ -84,12 +83,6 @@ public class APIProvider {
             if response.statusCode == 204 {
                 return
             } else {
-                // Data를 String으로 변환
-                if let string = String(data: data, encoding: .utf8) {
-                    print(string)
-                } else {
-                    print("Data 변환 실패")
-                }
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
             }
         } catch {
