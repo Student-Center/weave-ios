@@ -17,6 +17,11 @@ struct HomeFeature: Reducer {
     enum Action: BindableAction {
         case requestMeetingTeamList
         case fetchMeetingTeamList(response: MeetingTeamGetListDTO)
+        
+        //MARK: UserAction
+        case didTappedTeamView(id: String)
+        case didTappedFilterIcon
+        
         // bind
         case binding(BindingAction<State>)
     }
@@ -34,6 +39,10 @@ struct HomeFeature: Reducer {
                 }
             case .fetchMeetingTeamList(let response):
                 state.teamList = response.toDomain
+                return .none
+                
+            case .didTappedTeamView(let id):
+                // 상세 뷰로 전환
                 return .none
             default:
                 return .none

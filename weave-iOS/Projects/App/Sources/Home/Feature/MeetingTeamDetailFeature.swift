@@ -11,7 +11,9 @@ import ComposableArchitecture
 
 struct MeetingTeamDetailFeature: Reducer {
     struct State: Equatable {
-        @BindingState var teamList: MeetingTeamListModel?
+        let teamId: String
+        
+        @BindingState var teamModel: MeetingTeamDetailModel?
         @BindingState var isShowRequestMeetingConfirmAlert = false
         @BindingState var isShowNeedUnivVerifyAlert = false
         @BindingState var isShowNoTeamAlert = false
@@ -29,7 +31,7 @@ struct MeetingTeamDetailFeature: Reducer {
         case requestMeeting
         
         case requestTeamUserInfo
-        case fetchTeamUserInfo(response: MeetingTeamGetListDTO)
+        case fetchTeamUserInfo(response: MeetingTeamDetailResponseDTO)
         
         // bind
         case binding(BindingAction<State>)
@@ -40,16 +42,44 @@ struct MeetingTeamDetailFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .didTappedRequestMeetingButton:
-                state.isShowNoTeamAlert.toggle()
+                state.isShowRequestMeetingConfirmAlert.toggle()
                 return .none
             case .requestTeamUserInfo:
-                return .none
+                return .run { [teamId = state.teamId] send in
+                    let response = try await requestDetailTeamInfo(teamId: teamId)
+                    await send.callAsFunction(.fetchTeamUserInfo(response: response))
+                } catch: { error, send in
+                    print(error)
+                }
             case .fetchTeamUserInfo(let response):
-                state.teamList = response.toDomain
+                state.teamModel = response.toDomain
                 return .none
+                
+            // 미팅 요청
+            case .requestMeeting:
+                return .run { [teamId = state.teamId] send in
+                    try await requestMeeting(targetTeamId: teamId)
+                    print("성공")
+                } catch: { error, send in
+                    print(error)
+                }
             default:
                 return .none
             }
         }
+    }
+    
+    func requestDetailTeamInfo(teamId: String) async throws -> MeetingTeamDetailResponseDTO {
+        let endPoint = APIEndpoints.getMeetingTeamDetail(teamId: teamId)
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
+    }
+    
+    func requestMeeting(targetTeamId: String) async throws {
+        let requestDTO = RequestMeetingRequestDTO(receivingMeetingTeamId: targetTeamId)
+        let endPoint = APIEndpoints.getRequestMeeting(requestDTO: requestDTO)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
     }
 }

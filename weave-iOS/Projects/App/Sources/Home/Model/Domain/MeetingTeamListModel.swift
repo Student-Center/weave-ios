@@ -18,14 +18,14 @@ struct MeetingTeamModel: Equatable, Hashable {
     let id: String
     let teamIntroduce: String
     let memberCount: Int
-    let gender: String
+    let gender: String?
+    let location: String
     let memberInfos: [MeetingMemberModel]
 }
 
 // MARK: - MemberInfo
 struct MeetingMemberModel: Equatable, Hashable {
     let id: String
-    let userId: String
     let universityName: String
     let mbti: String
     let birthYear: Int
@@ -33,7 +33,21 @@ struct MeetingMemberModel: Equatable, Hashable {
     
     var userInfoString: String {
         // ToDo - 알맞게 패턴 처리
-//        return "\(universityName)・\(birthYear)\n\(mbti)"
-        return "위브대・05\nENTP"
+        return "\(universityName.toShortUnivName())・\(birthYear.toShortBirthYear())\n\(mbti)"
+    }
+}
+
+//MARK: - Extension - 추후 Core 모듈로
+extension Int {
+    func toShortBirthYear() -> String {
+        let birthYear = String(self)
+        guard birthYear.count > 2 else { return "N/A" }
+        return String(birthYear.suffix(2))
+    }
+}
+
+extension String {
+    func toShortUnivName() -> String {
+        return self.replacingOccurrences(of: "대학교", with: "대")
     }
 }

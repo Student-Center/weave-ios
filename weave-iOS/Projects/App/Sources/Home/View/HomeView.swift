@@ -23,6 +23,9 @@ struct HomeView: View {
                         LazyVGrid(columns: [column], spacing: 16, content: {
                             ForEach(teamList.items, id: \.self) { team in
                                 MeetingListItemView(teamModel: team)
+                                    .onTapGesture {
+                                        viewStore.send(.didTappedTeamView(id: team.id))
+                                    }
                             }
                         })
                         .padding(.top, 20)
@@ -41,7 +44,7 @@ struct HomeView: View {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(
                             action: {
-                                
+                                viewStore.send(.didTappedFilterIcon)
                             },
                             label: {
                                 Image(systemName: "slider.horizontal.3")
@@ -63,10 +66,10 @@ fileprivate struct MeetingListItemView: View {
     var body: some View {
         VStack(spacing: 20) {
             HStack(spacing: 8) {
-                RoundCornerBoxedTextView("3 : 3")
+                RoundCornerBoxedTextView("\(teamModel.memberCount) : \(teamModel.memberCount)")
                 RoundCornerBoxedTextView(teamModel.teamIntroduce)
                 Spacer()
-                LocationIconView(region: "서울")
+                LocationIconView(region: teamModel.location)
             }
             
             HStack {

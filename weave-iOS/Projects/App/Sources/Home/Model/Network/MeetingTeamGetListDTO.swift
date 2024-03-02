@@ -20,10 +20,10 @@ struct MeetingTeamGetListDTO: Codable {
                 teamIntroduce: $0.teamIntroduce,
                 memberCount: $0.memberCount,
                 gender: $0.gender,
+                location: $0.location,
                 memberInfos: $0.memberInfos.map { memberDTO in
                     MeetingMemberModel(
                         id: memberDTO.id,
-                        userId: memberDTO.userId,
                         universityName: memberDTO.universityName,
                         mbti: memberDTO.mbti,
                         birthYear: memberDTO.birthYear,
@@ -43,14 +43,14 @@ struct MeetingTeamDTO: Codable {
     let id: String
     let teamIntroduce: String
     let memberCount: Int
-    let gender: String
+    let gender: String?
+    let location: String
     let memberInfos: [MeetingMemberDTO]
 }
 
 // MARK: - MemberInfo
 struct MeetingMemberDTO: Codable {
     let id: String
-    let userId: String
     let universityName: String
     let mbti: String
     let birthYear: Int
@@ -62,6 +62,7 @@ extension APIEndpoints {
         return EndPoint(
             path: "api/meeting-teams",
             method: .get,
+            queryParameters: MeetingTeamGetListRequestDTO(),
             headers: [
                 "Authorization": "Bearer \(SecretKey.token)"
             ]
