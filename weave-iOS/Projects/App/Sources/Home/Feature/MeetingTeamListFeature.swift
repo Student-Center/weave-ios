@@ -55,6 +55,10 @@ struct MeetingTeamListFeature: Reducer {
                 state.destination = .filter(.init())
                 return .none
                 
+//            case .destination(.presented(.filter(.dismissSaveFilter))):
+//                guard case let .filter(filter) = self.destination
+//                  else { return .none }
+                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none

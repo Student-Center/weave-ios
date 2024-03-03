@@ -11,15 +11,16 @@ public struct LeftAlignTextCapsuleListView: View {
 
     @Binding var selectedItem: (any LeftAlignListFetchable)?
     let dataSources: [any LeftAlignListFetchable]
-    let geometry: GeometryProxy
+    let viewWidth: CGFloat
     
-    public init(selectedItem: Binding<(any LeftAlignListFetchable)?>,
-         dataSources: [any LeftAlignListFetchable],
-         geometry: GeometryProxy
+    public init(
+        selectedItem: Binding<(any LeftAlignListFetchable)?>,
+        dataSources: [any LeftAlignListFetchable],
+        viewWidth: CGFloat
     ) {
         self._selectedItem = selectedItem
         self.dataSources = dataSources
-        self.geometry = geometry
+        self.viewWidth = viewWidth
     }
     
     public var body: some View {
@@ -35,7 +36,7 @@ public struct LeftAlignTextCapsuleListView: View {
                 .padding(.horizontal, 4)
                 .padding(.vertical, 8)
                 .alignmentGuide(.leading, computeValue: { d in
-                    if (abs(width - d.width) > geometry.size.width)
+                    if (abs(width - d.width) > viewWidth)
                     {
                         width = 0
                         height -= d.height

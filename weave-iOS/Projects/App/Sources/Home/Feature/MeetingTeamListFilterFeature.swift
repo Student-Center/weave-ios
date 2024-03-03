@@ -12,16 +12,30 @@ import ComposableArchitecture
 struct MeetingTeamListFilterFeature: Reducer {
     @Dependency(\.dismiss) var dismiss
     
+    struct FilterInputs {
+        let count: MeetingMemberCountType?
+        let regions: MeetingLocationModel?
+    }
+    
     struct State: Equatable {
-        @BindingState var locationList: [MeetingLocationModel] = []
+        @BindingState var locationList: [MeetingLocationModel]
+        var filterModel: MeetingTeamFilterModel
+        
+        init(
+            filterModel: MeetingTeamFilterModel = MeetingTeamFilterModel()
+        ) {
+            self.locationList = []
+            self.filterModel = filterModel
+        }
     }
     
     enum Action: BindableAction {
         //MARK: UserAction
-        
         case requestMeetingLocationList
         case fetchMeetingLocationList(list: MeetingLocationListResponseDTO)
+        case didTappedSaveButton(input: FilterInputs)
         
+        case dismissSaveFilter
         //MARK: Alert Effect
         
         case dismiss
@@ -33,7 +47,6 @@ struct MeetingTeamListFilterFeature: Reducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-                
             case .requestMeetingLocationList:
                 return .run { send in
                     let locationList = try await requestDetailTeamInfo()
@@ -43,6 +56,15 @@ struct MeetingTeamListFilterFeature: Reducer {
             case .fetchMeetingLocationList(let list):
                 state.locationList = list.toDomain
                 return .none
+                
+            case .didTappedSaveButton(let input):
+                let filter = state.filterModel
+                return .none
+                
+            case .dismissSaveFilter:
+                return .run { send in
+                    await dismiss()
+                }
                 
             case .dismiss:
                 return .run { send in
