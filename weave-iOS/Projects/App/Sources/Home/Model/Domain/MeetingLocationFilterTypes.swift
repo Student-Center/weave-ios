@@ -24,20 +24,20 @@ enum MeetingLocationFilterType: String, CaseIterable, LeftAlignListFetchable {
     }
 }
 
-enum MeetingMemberCountType: String, CaseIterable, LeftAlignListFetchable {
-    case two
-    case three
-    case four
+enum MeetingMemberCountType: Int, CaseIterable, LeftAlignListFetchable {
+    case two = 2
+    case three = 3
+    case four = 4
     
     var id: String {
+        return String(self.rawValue)
+    }
+    
+    var countValue: Int {
         return self.rawValue
     }
     
     var text: String {
-        switch self {
-        case .two: return "2 : 2"
-        case .three: return "3 : 3"
-        case .four: return "4 : 4"
-        }
+        return "\(countValue) : \(countValue)"
     }
 }

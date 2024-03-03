@@ -58,8 +58,15 @@ struct MeetingTeamListFilterFeature: Reducer {
                 return .none
                 
             case .didTappedSaveButton(let input):
-                let filter = state.filterModel
-                return .none
+                var filter = state.filterModel
+                filter.memberCount = input.count?.countValue
+                if let region = input.regions {
+                    filter.preferredLocations = [region.name]
+                }
+                state.filterModel = filter
+                return .run { send in
+                    await send.callAsFunction(.dismissSaveFilter)
+                }
                 
             case .dismissSaveFilter:
                 return .run { send in

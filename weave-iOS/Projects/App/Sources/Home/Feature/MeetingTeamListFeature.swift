@@ -12,7 +12,7 @@ import ComposableArchitecture
 struct MeetingTeamListFeature: Reducer {
     struct State: Equatable {
         @BindingState var teamList: MeetingTeamListModel?
-        
+        var filterModel = MeetingTeamFilterModel()
         @PresentationState var destination: Destination.State?
     }
     
@@ -36,8 +36,8 @@ struct MeetingTeamListFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .requestMeetingTeamList:
-                return .run { send in
-                    let response = try await requestMeetingTeamList()
+                return .run { [filter = state.filterModel] send in
+                    let response = try await requestMeetingTeamList(filter: filter)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))
                 } catch: { error, send in
                     print(error)
@@ -52,12 +52,19 @@ struct MeetingTeamListFeature: Reducer {
                 return .none
                 
             case .didTappedFilterIcon:
-                state.destination = .filter(.init())
+                state.destination = .filter(.init(filterModel: state.filterModel))
                 return .none
                 
-//            case .destination(.presented(.filter(.dismissSaveFilter))):
-//                guard case let .filter(filter) = self.destination
-//                  else { return .none }
+            // Filter 선택 완료 이후
+            case .destination(.presented(.filter(.dismissSaveFilter))):
+                if case let .filter(filter) = state.destination {
+                    print("FilterModel: \(filter)")
+                    state.filterModel = filter.filterModel
+                }
+                state.destination = nil
+                return .run { send in
+                    await send.callAsFunction(.requestMeetingTeamList)
+                }
                 
             case .destination(.dismiss):
                 state.destination = nil
@@ -72,8 +79,14 @@ struct MeetingTeamListFeature: Reducer {
         }
     }
     
-    func requestMeetingTeamList() async throws -> MeetingTeamGetListDTO {
-        let endPoint = APIEndpoints.getMeetingTeamList()
+    func requestMeetingTeamList(filter: MeetingTeamFilterModel) async throws -> MeetingTeamGetListDTO {
+        let dto = MeetingTeamGetListRequestDTO(
+            memberCount: filter.memberCount,
+            youngestMemberBirthYear: filter.youngestMemberBirthYear,
+            oldestMemberBirthYear: filter.oldestMemberBirthYear,
+            preferredLocations: filter.preferredLocations
+        )
+        let endPoint = APIEndpoints.getMeetingTeamList(requestDTO: dto)
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
         return response

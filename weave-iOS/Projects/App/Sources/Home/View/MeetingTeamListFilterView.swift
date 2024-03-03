@@ -89,12 +89,23 @@ struct MeetingTeamListFilterView: View {
                 WeaveButton(
                     title: "저장하기",
                     size: .large
-                )
+                ) {
+                    let countType = selectedMeetingCount as? MeetingMemberCountType
+                    let region = selectedLocation as? MeetingLocationModel
+                    let input = MeetingTeamListFilterFeature.FilterInputs(
+                        count: countType,
+                        regions: region
+                    )
+                    viewStore.send(.didTappedSaveButton(input: input))
+                }
                 .padding(.horizontal, 16)
             }
             .background(DesignSystem.Colors.darkGray)
             .onAppear {
                 viewStore.send(.requestMeetingLocationList)
+                if let selectedCount = viewStore.filterModel.memberCount {
+                    selectedMeetingCount = MeetingMemberCountType(rawValue: selectedCount)
+                }
             }
         }
     }
