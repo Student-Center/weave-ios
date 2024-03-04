@@ -19,6 +19,14 @@ struct MeetingTeamListFilterFeature: Reducer {
     
     struct State: Equatable {
         @BindingState var locationList: [MeetingLocationModel]
+        
+        // 나이대 슬라이더
+        @BindingState var lowValue = 0.0
+        @BindingState var highValue = 1.0
+        
+        @BindingState var lowYear = 1996
+        @BindingState var highYear = 2006
+        
         var filterModel: MeetingTeamFilterModel
         
         init(
@@ -34,6 +42,10 @@ struct MeetingTeamListFilterFeature: Reducer {
         case requestMeetingLocationList
         case fetchMeetingLocationList(list: MeetingLocationListResponseDTO)
         case didTappedSaveButton(input: FilterInputs)
+        
+        // range
+        case sliderLowValueChanged(value: Double)
+        case sliderHighValueChanged(value: Double)
         
         case dismissSaveFilter
         //MARK: Alert Effect
@@ -63,6 +75,8 @@ struct MeetingTeamListFilterFeature: Reducer {
                 if let region = input.regions {
                     filter.preferredLocations = [region.name]
                 }
+                filter.oldestMemberBirthYear = state.lowYear
+                filter.youngestMemberBirthYear = state.highYear
                 state.filterModel = filter
                 return .run { send in
                     await send.callAsFunction(.dismissSaveFilter)
@@ -73,6 +87,16 @@ struct MeetingTeamListFilterFeature: Reducer {
                     await dismiss()
                 }
                 
+            case .sliderLowValueChanged(let value):
+                let lowYear = rangeValueToYear(input: value)
+                state.lowYear = lowYear
+                return .none
+                
+            case .sliderHighValueChanged(let value):
+                let highYear = rangeValueToYear(input: value)
+                state.highYear = highYear
+                return .none
+                
             case .dismiss:
                 return .run { send in
                     await dismiss()
@@ -81,6 +105,15 @@ struct MeetingTeamListFilterFeature: Reducer {
                 return .none
             }
         }
+    }
+    
+    func rangeValueToYear(input: Double) -> Int {
+        let minYear = 1996
+        let maxYear = 2006
+        let range = maxYear - minYear
+        let transformed = (input * Double(range)) + Double(minYear)
+        let year = Int(round(transformed))
+        return year
     }
     
     func requestDetailTeamInfo() async throws -> MeetingLocationListResponseDTO {

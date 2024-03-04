@@ -48,14 +48,27 @@ struct MeetingTeamListFilterView: View {
                             Text("미팅 상대 나이대")
                                 .font(.pretendard(._500, size: 16))
                             Spacer()
-                            Text("06년생 ~ 96년생")
+                            Text(
+                                "\(String(String(viewStore.lowYear).suffix(2)))년생 ~ \(String(String(viewStore.highYear).suffix(2)))년생"
+                            )
                                 .font(.pretendard(._500, size: 16))
                                 .foregroundStyle(DesignSystem.Colors.defaultBlue)
                         }
                         .padding(.vertical, 16)
                         
-                        Slider(value: .constant(0.5))
-                            .padding(.bottom, 20)
+                        RangeSlider(
+                            lowValue: viewStore.$lowValue,
+                            highValue: viewStore.$highValue,
+                            in: 0...1,
+                            showDifferenceOnEditing: false)
+                        { state in }
+                        .padding(.horizontal, 5)
+                        .onChange(of: viewStore.lowValue) { oldValue, newValue in
+                            viewStore.send(.sliderLowValueChanged(value: newValue))
+                        }
+                        .onChange(of: viewStore.highValue) { oldValue, newValue in
+                            viewStore.send(.sliderHighValueChanged(value: newValue))
+                        }
                         
                         getSectionDivider()
                             .padding(.vertical, 16)
