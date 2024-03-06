@@ -33,6 +33,7 @@ struct GenerateMyTeamFeature: Reducer {
         case fetchMeetingLocationList(list: MeetingLocationListResponseDTO)
         
         case didTappedGenerateButton(input: InputModel)
+        case didTappedBackButton
         
         case didSuccessedGenerateTeam
         
@@ -58,6 +59,11 @@ struct GenerateMyTeamFeature: Reducer {
             case .teamNameOnChanged(let name):
                 state.isTeamNameError = name.count > 10
                 return .none
+                
+            case .didTappedBackButton:
+                return .run { send in
+                    await dismiss()
+                }
                 
             case .didTappedGenerateButton(let input):
                 guard let count = input.count,

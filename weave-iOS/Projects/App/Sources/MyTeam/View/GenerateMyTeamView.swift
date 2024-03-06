@@ -83,6 +83,16 @@ struct GenerateMyTeamView: View {
             }
             .navigationBarBackButtonHidden()
             .navigationTitle("내 팀 만들기")
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        viewStore.send(.didTappedBackButton)
+                    }, label: {
+                        Image(systemName: "chevron.left")
+                    })
+                    .foregroundStyle(.white)
+                }
+            }
         }
     }
 }
@@ -181,14 +191,12 @@ fileprivate struct TeamNameInputView: View {
                 Text("10글자 이내로 작성해 주세요!")
                     .font(.pretendard(._500, size: 12))
                     .foregroundStyle(viewStore.isTeamNameError ? DesignSystem.Colors.notificationRed : DesignSystem.Colors.gray600)
+                    .padding(.vertical, 5)
             }
         }
     }
 }
 
 #Preview {
-    GenerateMyTeamView(store: Store(
-        initialState: GenerateMyTeamFeature.State(), reducer: {
-            GenerateMyTeamFeature()
-        }))
+    AppTabView(selection: .constant(.myTeam))
 }

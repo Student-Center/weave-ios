@@ -11,13 +11,20 @@ import ComposableArchitecture
 
 struct MyTeamFeature: Reducer {
     struct State: Equatable {
-        
+        @BindingState var myTeamList: [MyTeamItemModel]
         @PresentationState var destination: Destination.State?
+        var didDataFetched = false
+        init(myTeamList: [MyTeamItemModel] = []) {
+            self.myTeamList = myTeamList
+        }
     }
     
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedGenerateMyTeam
+        
+        case requestMyTeamList
+        case fetchMyTeamList(dto: MyTeamListResponseDTO)
         
         case destination(PresentationAction<Destination.Action>)
         // bind
@@ -37,6 +44,26 @@ struct MyTeamFeature: Reducer {
                 state.destination = nil
                 return .none
                 
+            case .requestMyTeamList:
+                return .run { send in
+                    let response = try await requestMyUserInfo()
+                    await send.callAsFunction(.fetchMyTeamList(dto: response))
+                } catch: { error, send in
+                    print(error)
+                }
+                
+            case .fetchMyTeamList(let dto):
+                state.didDataFetched = true
+                state.myTeamList = dto.toDomain
+                return .none
+                
+                
+            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
+                state.destination = nil
+                return .run { send in
+                    await send.callAsFunction(.requestMyTeamList)
+                }
+                
             case .binding(_):
                 return .none
                 
@@ -48,9 +75,9 @@ struct MyTeamFeature: Reducer {
         }
     }
     
-    func requestMyUserInfo() async throws -> MyUserInfoResponseDTO {
-        let endPoint = APIEndpoints.getMyUserInfo()
-        let provider = APIProvider(session: URLSession.shared)
+    func requestMyUserInfo() async throws -> MyTeamListResponseDTO {
+        let endPoint = APIEndpoints.getMyTeamList()
+        let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
         return response
     }

@@ -16,8 +16,24 @@ struct MyTeamView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                getEmptyView() {
-                    viewStore.send(.didTappedGenerateMyTeam)
+                VStack {
+                    if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
+                        getEmptyView() {
+                            viewStore.send(.didTappedGenerateMyTeam)
+                        }
+                    } else {
+                        ScrollView {
+                            LazyVStack {
+                                ForEach(viewStore.myTeamList, id: \.id) { team in
+                                    MyTeamItemView(store: store, teamModel: team)
+                                }
+                            }
+                            .padding(.vertical, 20)
+                        }
+                    }
+                }
+                .onAppear {
+                    viewStore.send(.requestMyTeamList)
                 }
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
@@ -50,6 +66,44 @@ struct MyTeamView: View {
                 handler()
             }
             .padding(.horizontal, 80)
+        }
+    }
+}
+
+fileprivate struct MyTeamItemView: View {
+    let store: StoreOf<MyTeamFeature>
+    let teamModel: MyTeamItemModel
+    
+    fileprivate var body: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack {
+                HStack {
+                    RoundCornerBoxedTextView(
+                        teamModel.memberCount?.text ?? "",
+                        tintColor: DesignSystem.Colors.lightGray
+                    )
+                    RoundCornerBoxedTextView(
+                        teamModel.teamIntroduce,
+                        tintColor: DesignSystem.Colors.lightGray
+                    )
+                    Spacer()
+                    DesignSystem.Icons.menu
+                }
+                
+                HStack {
+                    Spacer()
+                    ForEach(teamModel.memberInfos, id: \.id) { member in
+                        RoundedRectangle(cornerRadius: 12)
+                            .frame(width: 48, height: 48)
+                            .frame(maxWidth: .infinity)
+                    }
+                    Spacer()
+                }
+            }
+            .padding(.bottom, 19)
+            .padding([.top, .leading, .trailing], 12)
+            .background(DesignSystem.Colors.darkGray)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }
