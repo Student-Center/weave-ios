@@ -126,13 +126,14 @@ extension WeaveButton {
         case medium
         case regular
         case small
+        case tiny
         
         var font: Font {
             switch self {
             case .large: return .pretendard(._600, size: 16)
             case .medium: return .pretendard(._500, size: 16)
             case .regular: return .pretendard(._500, size: 15)
-            case .small: return .pretendard(._500, size: 12)
+            case .small, .tiny: return .pretendard(._500, size: 12)
             }
         }
         
@@ -142,6 +143,7 @@ extension WeaveButton {
             case .medium: return .init(width: 24, height: 14)
             case .regular: return .init(width: 24, height: 13)
             case .small: return .init(width: 24, height: 12)
+            case .tiny: return .init(width: 24, height: 8)
             }
         }
     }

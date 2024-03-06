@@ -23,17 +23,23 @@ struct MyTeamView: View {
                         }
                     } else {
                         ScrollView {
-                            LazyVStack {
+                            LazyVStack(spacing: 20) {
                                 ForEach(viewStore.myTeamList, id: \.id) { team in
                                     MyTeamItemView(store: store, teamModel: team)
                                 }
                             }
                             .padding(.vertical, 20)
+                            .padding(.horizontal, 16)
                         }
                     }
                 }
                 .onAppear {
                     viewStore.send(.requestMyTeamList)
+                }
+                .confirmationDialog("", isPresented: viewStore.$isShowTeamEditSheet) {
+                    Button("내 팀 수정하기", role: .destructive) {}
+                    Button("삭제하기", role: .destructive) {}
+                    Button("닫기", role: .cancel) {}
                 }
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
@@ -74,9 +80,23 @@ fileprivate struct MyTeamItemView: View {
     let store: StoreOf<MyTeamFeature>
     let teamModel: MyTeamItemModel
     
+    var sortedTeamMember: [MyTeamMemberModel] {
+        return teamModel.memberInfos.sorted { $0.role.sortValue < $1.role.sortValue }
+    }
+    
+    var isMyHostTeam: Bool {
+        var result = false
+        for member in teamModel.memberInfos {
+            if member.role == .leader && member.isMe {
+                return true
+            }
+        }
+        return result
+    }
+    
     fileprivate var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack {
+            VStack(spacing: 20) {
                 HStack {
                     RoundCornerBoxedTextView(
                         teamModel.memberCount?.text ?? "",
@@ -88,14 +108,23 @@ fileprivate struct MyTeamItemView: View {
                     )
                     Spacer()
                     DesignSystem.Icons.menu
+                        .onTapGesture {
+                            viewStore.send(.didTappedTeamOption)
+                        }
                 }
                 
-                HStack {
+                HStack(alignment: .top) {
                     Spacer()
-                    ForEach(teamModel.memberInfos, id: \.id) { member in
-                        RoundedRectangle(cornerRadius: 12)
-                            .frame(width: 48, height: 48)
-                            .frame(maxWidth: .infinity)
+                    if let memberCount = teamModel.memberCount {
+                        ForEach(0 ..< memberCount.countValue, id: \.self) { index in
+                            if index <= teamModel.memberInfos.count - 1 {
+                                // 리얼유저
+                                MyTeamMemberView(member: sortedTeamMember[index])
+                            } else {
+                                // 더미
+                                MyTeamEmptyMemberView(isMyHostTeam: isMyHostTeam)
+                            }
+                        }
                     }
                     Spacer()
                 }
@@ -104,6 +133,77 @@ fileprivate struct MyTeamItemView: View {
             .padding([.top, .leading, .trailing], 12)
             .background(DesignSystem.Colors.darkGray)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+fileprivate struct MyTeamMemberView: View {
+    
+    let member: MyTeamMemberModel
+    
+    var isLeader: Bool {
+        return member.role == .leader
+    }
+    
+    fileprivate var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .inset(by: 1)
+                    .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                    .background(DesignSystem.Colors.lightGray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if isLeader {
+                    HStack {
+                        VStack {
+                            DesignSystem.Icons.crown
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .offset(x: -6.5, y: -7.5)
+                }
+            }
+            .frame(width: 48, height: 48)
+            .frame(maxWidth: .infinity)
+            
+            VStack(spacing: 4) {
+                Text(member.displayUnivBirthText)
+                Text(member.mbti)
+            }
+            .font(.pretendard(._600, size: 12))
+        }
+    }
+}
+
+fileprivate struct MyTeamEmptyMemberView: View {
+    
+    let isMyHostTeam: Bool
+    
+    fileprivate var body: some View {
+        VStack(spacing: 12) {
+            ZStack {
+                DesignSystem.Icons.dotLineRect
+                    .resizable()
+                if isMyHostTeam {
+                    DesignSystem.Icons.plus
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                }
+            }
+            .frame(width: 48, height: 48)
+            .frame(maxWidth: .infinity)
+            
+            if isMyHostTeam {
+                WeaveButton(title: "친구 초대", size: .tiny)
+                    .frame(width: 73)
+            } else {
+                Text("곧 들어와요")
+                    .font(.pretendard(._600, size: 12))
+                    .foregroundStyle(DesignSystem.Colors.gray600)
+            }
         }
     }
 }

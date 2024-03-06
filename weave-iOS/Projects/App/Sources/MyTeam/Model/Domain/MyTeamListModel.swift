@@ -44,7 +44,7 @@ struct MyTeamMemberModel {
     let universityName: String
     let mbti: String
     let birthYear: Int
-    let role: String
+    let role: TeamMemberRoleType
     let isMe: Bool
     
     init(
@@ -59,7 +59,23 @@ struct MyTeamMemberModel {
         self.universityName = universityName
         self.mbti = mbti
         self.birthYear = birthYear
-        self.role = role
+        self.role = TeamMemberRoleType(rawValue: role) ?? .member
         self.isMe = isMe
+    }
+    
+    var displayUnivBirthText: String {
+        return "\(universityName)•\(birthYear.toShortBirthYear())"
+    }
+}
+
+enum TeamMemberRoleType: String {
+    case leader = "LEADER"
+    case member = "MEMBER"
+    
+    var sortValue: Int {
+        switch self {
+        case .leader: return 0
+        case .member: return 1
+        }
     }
 }

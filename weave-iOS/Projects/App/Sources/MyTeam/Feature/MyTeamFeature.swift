@@ -12,6 +12,7 @@ import ComposableArchitecture
 struct MyTeamFeature: Reducer {
     struct State: Equatable {
         @BindingState var myTeamList: [MyTeamItemModel]
+        @BindingState var isShowTeamEditSheet = false
         @PresentationState var destination: Destination.State?
         var didDataFetched = false
         init(myTeamList: [MyTeamItemModel] = []) {
@@ -22,6 +23,7 @@ struct MyTeamFeature: Reducer {
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedGenerateMyTeam
+        case didTappedTeamOption
         
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
@@ -42,6 +44,10 @@ struct MyTeamFeature: Reducer {
                 
             case .destination(.dismiss):
                 state.destination = nil
+                return .none
+                
+            case .didTappedTeamOption:
+                state.isShowTeamEditSheet.toggle()
                 return .none
                 
             case .requestMyTeamList:
