@@ -70,7 +70,7 @@ public class APIProvider {
         }
     }
     
-    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E) async throws {
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204) async throws {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             
@@ -80,7 +80,7 @@ public class APIProvider {
                 throw NetworkError.unknownError
             }
             
-            if response.statusCode == 204 {
+            if response.statusCode == successCode {
                 return
             } else {
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
