@@ -15,14 +15,20 @@ struct GenerateMeetingTeamRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func getGenerateMeetingTeam(requestDTO: GenerateMeetingTeamRequestDTO) -> EndPoint<MeetingTeamDetailResponseDTO> {
+    static func getGenerateMeetingTeam(
+        requestDTO: GenerateMeetingTeamRequestDTO,
+        modifyId: String? = nil,
+        isModify: Bool
+    ) -> EndPoint<MeetingTeamDetailResponseDTO> {
+        let path = "/\(modifyId ?? "")"
         return EndPoint(
-            path: "api/meeting-teams",
-            method: .post,
+            path: "api/meeting-teams\(path)",
+            method: isModify ? .patch : .post,
             bodyParameters: requestDTO,
             headers: [
                 "Authorization": "Bearer \(SecretKey.token)"
             ]
         )
     }
+    
 }

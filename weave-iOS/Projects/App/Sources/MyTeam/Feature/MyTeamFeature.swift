@@ -12,8 +12,6 @@ import ComposableArchitecture
 struct MyTeamFeature: Reducer {
     struct State: Equatable {
         @BindingState var myTeamList: [MyTeamItemModel]
-        @BindingState var isShowTeamEditSheet = false
-        @BindingState var isShowDeleteConfirmAlert = false
         
         @PresentationState var destination: Destination.State?
         
@@ -26,8 +24,7 @@ struct MyTeamFeature: Reducer {
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedGenerateMyTeam
-        case didTappedTeamOption
-        case didTappedDeleteConfirmAlert
+        case didTappedModifyMyTeam(team: MyTeamItemModel)
         
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
@@ -47,16 +44,15 @@ struct MyTeamFeature: Reducer {
                 state.destination = .generateMyTeam(.init())
                 return .none
                 
-            case .didTappedDeleteConfirmAlert:
-                state.isShowDeleteConfirmAlert.toggle()
+            case .didTappedModifyMyTeam(let team):
+                let generateMyTeamState = GenerateMyTeamFeature.State(
+                    myTeamModelFromEdit: team
+                )
+                state.destination = .generateMyTeam(generateMyTeamState)
                 return .none
                 
             case .destination(.dismiss):
                 state.destination = nil
-                return .none
-                
-            case .didTappedTeamOption:
-                state.isShowTeamEditSheet.toggle()
                 return .none
                 
                 

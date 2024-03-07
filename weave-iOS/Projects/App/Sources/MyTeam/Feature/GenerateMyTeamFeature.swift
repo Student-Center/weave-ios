@@ -23,14 +23,24 @@ struct GenerateMyTeamFeature: Reducer {
         @BindingState var teamName: String = ""
         @BindingState var isTeamNameError = false
         
-        init(locationList: [MeetingLocationModel] = []) {
+        var myTeamModelFromEdit: MyTeamItemModel?
+        var currentTeamMemberCount: Int?
+        
+        init(
+            locationList: [MeetingLocationModel] = [],
+            myTeamModelFromEdit: MyTeamItemModel? = nil
+        ) {
             self.locationList = locationList
+            self.myTeamModelFromEdit = myTeamModelFromEdit
+            self.currentTeamMemberCount = myTeamModelFromEdit?.memberInfos.count
         }
     }
     
     enum Action: BindableAction {
+        case onAppear
         case requestMeetingLocationList
         case fetchMeetingLocationList(list: MeetingLocationListResponseDTO)
+        case fetchTeamName(name: String)
         
         case didTappedGenerateButton(input: InputModel)
         case didTappedBackButton
@@ -46,11 +56,21 @@ struct GenerateMyTeamFeature: Reducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
+            case .onAppear:
+                if let editModel = state.myTeamModelFromEdit {
+                    
+                }
+                return .send(.requestMeetingLocationList)
+                
             case .requestMeetingLocationList:
                 return .run { send in
                     let locationList = try await requestMeetingLocationList()
                     await send.callAsFunction(.fetchMeetingLocationList(list: locationList))
                 }
+                
+            case .fetchTeamName(let name):
+                state.teamName = name
+                return .none
                 
             case .fetchMeetingLocationList(let list):
                 state.locationList = list.toDomain
@@ -73,8 +93,14 @@ struct GenerateMyTeamFeature: Reducer {
                     memberCount: count.countValue,
                     location: location.name
                 )
-                return .run { send in
-                    try await requestGenerateMeetingTeam(requestDTO: requestDTO)
+                let isModify = state.myTeamModelFromEdit != nil
+                
+                return .run { [model = state.myTeamModelFromEdit] send in
+                    try await requestGenerateMeetingTeam(
+                        requestDTO: requestDTO, 
+                        modifyId: model?.id,
+                        isModify: isModify
+                    )
                     await send.callAsFunction(.didSuccessedGenerateTeam)
                 } catch: { error, send in
                     print(error)
@@ -99,9 +125,13 @@ struct GenerateMyTeamFeature: Reducer {
         return response
     }
     
-    func requestGenerateMeetingTeam(requestDTO: GenerateMeetingTeamRequestDTO) async throws {
-        let endPoint = APIEndpoints.getGenerateMeetingTeam(requestDTO: requestDTO)
+    func requestGenerateMeetingTeam(
+        requestDTO: GenerateMeetingTeamRequestDTO,
+        modifyId: String? = nil,
+        isModify: Bool
+    ) async throws {
+        let endPoint = APIEndpoints.getGenerateMeetingTeam(requestDTO: requestDTO, modifyId: modifyId, isModify: isModify)
         let provider = APIProvider()
-        try await provider.requestWithNoResponse(with: endPoint)
+        try await provider.requestWithNoResponse(with: endPoint, successCode: isModify ? 204 : 201)
     }
 }

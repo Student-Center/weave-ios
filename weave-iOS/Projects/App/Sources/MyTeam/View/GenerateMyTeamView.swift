@@ -30,6 +30,8 @@ struct GenerateMyTeamView: View {
     @State var locationFilterType: (any LeftAlignListFetchable)?
     @State var selectedLocation: (any LeftAlignListFetchable)?
     
+    @State var isTapEnable = true
+    
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
@@ -41,11 +43,22 @@ struct GenerateMyTeamView: View {
                                 selectedItem: $selectedMeetingCount,
                                 dataSources: MeetingMemberCountType.allCases,
                                 viewWidth: capsuleViewWidth,
-                                backgroundColor: DesignSystem.Colors.darkGray
+                                backgroundColor: DesignSystem.Colors.darkGray,
+                                isTapEnable: isTapEnable
                             )
                             .padding(.horizontal, -5)
                             Spacer()
                         }
+                        
+                        if !isTapEnable {
+                            HStack {
+                                Text("팀이 다 찼을 때는 수정할 수 없어요!")
+                                    .font(.pretendard(._500, size: 12))
+                                    .foregroundStyle(DesignSystem.Colors.notificationRed)
+                                Spacer()
+                            }
+                        }
+                        
                         Divider()
                         
                         if selectedMeetingCount != nil {
@@ -78,8 +91,24 @@ struct GenerateMyTeamView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .onChange(of: viewStore.locationList, { oldValue, newValue in
+                // Network Request가 되었을 때, 수정으로 넘어온 데이터가 있다면 자동 선택되도록 함
+                if let editModel = viewStore.myTeamModelFromEdit {
+                    viewStore.send(.fetchTeamName(name: editModel.teamIntroduce))
+                    self.selectedMeetingCount = editModel.memberCount
+                    if let matchedLocation = viewStore.locationList.first(where: { model in
+                        return model.displayName == editModel.location
+                    }) {
+                        self.locationFilterType = matchedLocation.isCapitalArea ? MeetingLocationFilterType.capital : MeetingLocationFilterType.nonCapital
+                        self.selectedLocation = matchedLocation
+                        if editModel.memberInfos.count > 1 {
+                            self.isTapEnable = false
+                        }
+                    }
+                }
+            })
             .onAppear {
-                viewStore.send(.requestMeetingLocationList)
+                viewStore.send(.onAppear)
             }
             .navigationBarBackButtonHidden()
             .navigationTitle("내 팀 만들기")

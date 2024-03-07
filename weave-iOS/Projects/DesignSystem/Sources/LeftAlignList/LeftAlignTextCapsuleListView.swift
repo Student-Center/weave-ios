@@ -13,17 +13,20 @@ public struct LeftAlignTextCapsuleListView: View {
     let dataSources: [any LeftAlignListFetchable]
     let viewWidth: CGFloat
     let backgroundColor: Color
+    let isTapEnable: Bool
     
     public init(
         selectedItem: Binding<(any LeftAlignListFetchable)?>,
         dataSources: [any LeftAlignListFetchable],
         viewWidth: CGFloat,
-        backgroundColor: Color = .clear
+        backgroundColor: Color = .clear,
+        isTapEnable: Bool = true
     ) {
         self._selectedItem = selectedItem
         self.dataSources = dataSources
         self.viewWidth = viewWidth
         self.backgroundColor = backgroundColor
+        self.isTapEnable = isTapEnable
     }
     
     public var body: some View {
@@ -61,6 +64,7 @@ public struct LeftAlignTextCapsuleListView: View {
                     return result
                 })
                 .onTapGesture {
+                    guard isTapEnable else { return }
                     selectedItem = item
                 }
             }

@@ -31,6 +31,9 @@ struct MyTeamView: View {
                             .padding(.vertical, 20)
                             .padding(.horizontal, 16)
                         }
+                        .refreshable {
+                            viewStore.send(.requestMyTeamList)
+                        }
                     }
                 }
                 .onAppear {
@@ -74,6 +77,8 @@ struct MyTeamView: View {
 fileprivate struct MyTeamItemView: View {
     let store: StoreOf<MyTeamFeature>
     let teamModel: MyTeamItemModel
+    @State var isShowTeamEditSheet = false
+    @State var isShowDeleteConfirmAlert = false
     
     var sortedTeamMember: [MyTeamMemberModel] {
         return teamModel.memberInfos.sorted { $0.role.sortValue < $1.role.sortValue }
@@ -84,13 +89,12 @@ fileprivate struct MyTeamItemView: View {
     }
     
     var isMyHostTeam: Bool {
-        var result = false
         for member in teamModel.memberInfos {
             if member.role == .leader && member.isMe {
                 return true
             }
         }
-        return result
+        return false
     }
     
     fileprivate var body: some View {
@@ -108,7 +112,7 @@ fileprivate struct MyTeamItemView: View {
                     Spacer()
                     DesignSystem.Icons.menu
                         .onTapGesture {
-                            viewStore.send(.didTappedTeamOption)
+                            isShowTeamEditSheet.toggle()
                         }
                 }
                 
@@ -128,17 +132,17 @@ fileprivate struct MyTeamItemView: View {
                     Spacer()
                 }
             }
-            .confirmationDialog("", isPresented: viewStore.$isShowTeamEditSheet) {
+            .confirmationDialog("", isPresented: $isShowTeamEditSheet) {
                 Button("내 팀 수정하기") {
-                    
+                    viewStore.send(.didTappedModifyMyTeam(team: teamModel))
                 }
                 Button("삭제하기", role: .destructive) {
-                    viewStore.send(.didTappedDeleteConfirmAlert)
+                    isShowDeleteConfirmAlert.toggle()
                 }
                 Button("닫기", role: .cancel) {}
             }
             .weaveAlert(
-                isPresented: viewStore.$isShowDeleteConfirmAlert,
+                isPresented: $isShowDeleteConfirmAlert,
                 title: "\(teamModel.teamIntroduce)팀을\n삭제하시겠어요?",
                 message: isTeamCompleted ? "팀을 삭제하시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
                 primaryButtonTitle: "삭제할래요",
