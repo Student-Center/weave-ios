@@ -13,6 +13,7 @@ struct MeetingTeamListFeature: Reducer {
     struct State: Equatable {
         @BindingState var teamList: MeetingTeamListModel?
         var filterModel = MeetingTeamFilterModel()
+        
         @PresentationState var destination: Destination.State?
     }
     

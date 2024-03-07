@@ -36,11 +36,6 @@ struct MyTeamView: View {
                 .onAppear {
                     viewStore.send(.requestMyTeamList)
                 }
-                .confirmationDialog("", isPresented: viewStore.$isShowTeamEditSheet) {
-                    Button("내 팀 수정하기", role: .destructive) {}
-                    Button("삭제하기", role: .destructive) {}
-                    Button("닫기", role: .cancel) {}
-                }
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
                     state: /MyTeamFeature.Destination.State.generateMyTeam,
@@ -82,6 +77,10 @@ fileprivate struct MyTeamItemView: View {
     
     var sortedTeamMember: [MyTeamMemberModel] {
         return teamModel.memberInfos.sorted { $0.role.sortValue < $1.role.sortValue }
+    }
+    
+    var isTeamCompleted: Bool {
+        return teamModel.memberCount?.countValue == teamModel.memberInfos.count
     }
     
     var isMyHostTeam: Bool {
@@ -129,6 +128,26 @@ fileprivate struct MyTeamItemView: View {
                     Spacer()
                 }
             }
+            .confirmationDialog("", isPresented: viewStore.$isShowTeamEditSheet) {
+                Button("내 팀 수정하기") {
+                    
+                }
+                Button("삭제하기", role: .destructive) {
+                    viewStore.send(.didTappedDeleteConfirmAlert)
+                }
+                Button("닫기", role: .cancel) {}
+            }
+            .weaveAlert(
+                isPresented: viewStore.$isShowDeleteConfirmAlert,
+                title: "\(teamModel.teamIntroduce)팀을\n삭제하시겠어요?",
+                message: isTeamCompleted ? "팀을 삭제하시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
+                primaryButtonTitle: "삭제할래요",
+                primaryButtonColor: DesignSystem.Colors.notificationRed,
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+                    viewStore.send(.requestDeleteTeam(teamId: teamModel.id))
+                }
+            )
             .padding(.bottom, 19)
             .padding([.top, .leading, .trailing], 12)
             .background(DesignSystem.Colors.darkGray)

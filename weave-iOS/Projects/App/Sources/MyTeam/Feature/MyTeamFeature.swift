@@ -13,7 +13,10 @@ struct MyTeamFeature: Reducer {
     struct State: Equatable {
         @BindingState var myTeamList: [MyTeamItemModel]
         @BindingState var isShowTeamEditSheet = false
+        @BindingState var isShowDeleteConfirmAlert = false
+        
         @PresentationState var destination: Destination.State?
+        
         var didDataFetched = false
         init(myTeamList: [MyTeamItemModel] = []) {
             self.myTeamList = myTeamList
@@ -24,9 +27,11 @@ struct MyTeamFeature: Reducer {
         //MARK: UserAction
         case didTappedGenerateMyTeam
         case didTappedTeamOption
+        case didTappedDeleteConfirmAlert
         
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
+        case requestDeleteTeam(teamId: String)
         
         case destination(PresentationAction<Destination.Action>)
         // bind
@@ -42,6 +47,10 @@ struct MyTeamFeature: Reducer {
                 state.destination = .generateMyTeam(.init())
                 return .none
                 
+            case .didTappedDeleteConfirmAlert:
+                state.isShowDeleteConfirmAlert.toggle()
+                return .none
+                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
@@ -49,6 +58,7 @@ struct MyTeamFeature: Reducer {
             case .didTappedTeamOption:
                 state.isShowTeamEditSheet.toggle()
                 return .none
+                
                 
             case .requestMyTeamList:
                 return .run { send in
@@ -63,6 +73,14 @@ struct MyTeamFeature: Reducer {
                 state.myTeamList = dto.toDomain
                 return .none
                 
+            case .requestDeleteTeam(let teamId):
+                print(teamId)
+                return .run { send in
+                    try await requestDeleteTeamById(teamId: teamId)
+                    await send.callAsFunction(.requestMyTeamList)
+                } catch: { error, send in
+                    print(error)
+                }
                 
             case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
                 state.destination = nil
@@ -86,6 +104,12 @@ struct MyTeamFeature: Reducer {
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
         return response
+    }
+    
+    func requestDeleteTeamById(teamId: String) async throws {
+        let endPoint = APIEndpoints.deleteMyTeam(teamId: teamId)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
     }
 }
 

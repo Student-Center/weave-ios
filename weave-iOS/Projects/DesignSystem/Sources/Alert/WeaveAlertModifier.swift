@@ -31,6 +31,7 @@ public extension View {
         title: String,
         message: String? = nil,
         primaryButtonTitle: String,
+        primaryButtonColor: Color = DesignSystem.Colors.defaultBlue,
         secondaryButtonTitle: String? = nil,
         primaryAction: (() -> Void)? = nil,
         secondaryAction: (() -> Void)? = nil
@@ -40,6 +41,7 @@ public extension View {
             title: title,
             message: message,
             primaryButtonTitle: primaryButtonTitle,
+            primaryButtonColor: primaryButtonColor,
             secondaryButtonTitle: secondaryButtonTitle,
             primaryAction: primaryAction,
             secondaryAction: secondaryAction
