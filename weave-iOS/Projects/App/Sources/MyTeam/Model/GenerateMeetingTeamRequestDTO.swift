@@ -20,7 +20,10 @@ extension APIEndpoints {
         modifyId: String? = nil,
         isModify: Bool
     ) -> EndPoint<MeetingTeamDetailResponseDTO> {
-        let path = "/\(modifyId ?? "")"
+        var path = ""
+        if let modifyId {
+            path += "/\(modifyId)"
+        }
         return EndPoint(
             path: "api/meeting-teams\(path)",
             method: isModify ? .patch : .post,
