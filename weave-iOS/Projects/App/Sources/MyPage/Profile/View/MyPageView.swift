@@ -188,7 +188,7 @@ fileprivate struct MyProfileHeaderSectionView: View {
                         HStack(spacing: 3) {
                             Text("보유")
                                 .font(.pretendard(._700, size: 10))
-                            Text("0실")
+                            Text("\(viewStore.myUserInfo?.sil ?? 0)실")
                                 .font(.pretendard(._700, size: 12))
                         }
                         .foregroundStyle(.black)
