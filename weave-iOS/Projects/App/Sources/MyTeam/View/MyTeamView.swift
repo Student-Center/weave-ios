@@ -125,7 +125,18 @@ fileprivate struct MyTeamItemView: View {
                                 MyTeamMemberView(member: sortedTeamMember[index])
                             } else {
                                 // 더미
-                                MyTeamEmptyMemberView(isMyHostTeam: isMyHostTeam)
+                                MyTeamEmptyMemberView(isMyHostTeam: isMyHostTeam) {
+                                    // 친구 초대 눌렸을 때
+                                    viewStore.send(.didTappedInviteButton(team: teamModel))
+                                }
+                                .background {
+                                    if let inviteLink = viewStore.teamInviteLink {
+                                        ActivityView(
+                                            isPresented: viewStore.$isShowActivityView,
+                                            activityItmes: [URL(string: inviteLink)!]
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -204,6 +215,7 @@ fileprivate struct MyTeamMemberView: View {
 fileprivate struct MyTeamEmptyMemberView: View {
     
     let isMyHostTeam: Bool
+    var handler: () -> Void
     
     fileprivate var body: some View {
         VStack(spacing: 12) {
@@ -220,8 +232,10 @@ fileprivate struct MyTeamEmptyMemberView: View {
             .frame(maxWidth: .infinity)
             
             if isMyHostTeam {
-                WeaveButton(title: "친구 초대", size: .tiny)
-                    .frame(width: 73)
+                WeaveButton(title: "친구 초대", size: .tiny) {
+                    handler()
+                }
+                .frame(width: 73)
             } else {
                 Text("곧 들어와요")
                     .font(.pretendard(._600, size: 12))

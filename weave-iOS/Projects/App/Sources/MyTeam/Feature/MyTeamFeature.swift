@@ -12,10 +12,13 @@ import ComposableArchitecture
 struct MyTeamFeature: Reducer {
     struct State: Equatable {
         @BindingState var myTeamList: [MyTeamItemModel]
+        @BindingState var isShowActivityView = false
         
         @PresentationState var destination: Destination.State?
         
         var didDataFetched = false
+        var teamInviteLink: String?
+        
         init(myTeamList: [MyTeamItemModel] = []) {
             self.myTeamList = myTeamList
         }
@@ -25,9 +28,11 @@ struct MyTeamFeature: Reducer {
         //MARK: UserAction
         case didTappedGenerateMyTeam
         case didTappedModifyMyTeam(team: MyTeamItemModel)
+        case didTappedInviteButton(team: MyTeamItemModel)
         
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
+        case fetchInviteLink(dto: MyTeamInviteResponseDTO)
         case requestDeleteTeam(teamId: String)
         
         case destination(PresentationAction<Destination.Action>)
@@ -49,6 +54,20 @@ struct MyTeamFeature: Reducer {
                     myTeamModelFromEdit: team
                 )
                 state.destination = .generateMyTeam(generateMyTeamState)
+                return .none
+                
+            case .didTappedInviteButton(let team):
+                state.isShowActivityView.toggle()
+                return .run { send in
+                    let response = try await requestInviteLink(teamId: team.id)
+                    await send.callAsFunction(.fetchInviteLink(dto: response))
+                } catch: { error, send in
+                    print(error)
+                }
+                
+            case .fetchInviteLink(let dto):
+                state.teamInviteLink = dto.meetingTeamInvitationLink
+                state.isShowActivityView.toggle()
                 return .none
                 
             case .destination(.dismiss):
@@ -80,6 +99,7 @@ struct MyTeamFeature: Reducer {
                 
             case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
                 state.destination = nil
+                state.myTeamList = []
                 return .run { send in
                     await send.callAsFunction(.requestMyTeamList)
                 }
@@ -93,6 +113,13 @@ struct MyTeamFeature: Reducer {
         .ifLet(\.$destination, action: /Action.destination) {
             Destination()
         }
+    }
+    
+    func requestInviteLink(teamId: String) async throws -> MyTeamInviteResponseDTO {
+        let endPoint = APIEndpoints.createInviteLink(teamId: teamId)
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
     }
     
     func requestMyUserInfo() async throws -> MyTeamListResponseDTO {
