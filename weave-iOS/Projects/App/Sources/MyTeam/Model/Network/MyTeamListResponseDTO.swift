@@ -10,7 +10,7 @@ import Services
 
 struct MyTeamListResponseDTO: Codable {
     let items: [MyTeamResponseDTO]
-    let next: String
+    let next: String?
     let total: Int
     
     var toDomain: [MyTeamItemModel] {

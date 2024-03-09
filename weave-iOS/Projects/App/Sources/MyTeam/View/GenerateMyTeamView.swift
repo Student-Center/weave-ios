@@ -76,6 +76,7 @@ struct GenerateMyTeamView: View {
                     }
                     .padding(.horizontal, 16)
                 }
+                .scrollDismissesKeyboard(.interactively)
                 WeaveButton(
                     title: "내 팀 만들기",
                     size: .large,
