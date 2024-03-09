@@ -126,5 +126,12 @@ fileprivate struct MeetingListItemView: View {
 }
 
 #Preview {
-    AppTabView(selection: .constant(.home))
+    AppTabView(
+        store: Store(
+            initialState: AppTabViewFeature.State(selection: .myTeam),
+            reducer: {
+                AppTabViewFeature(rootview: .constant(.mainView))
+            }
+        )
+    )
 }

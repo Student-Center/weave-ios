@@ -13,7 +13,7 @@ struct MyAnimalEditRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func editMyAnimal(body: MyAnimalEditRequestDTO) -> EndPoint<TempTokenResponseDTO> {
+    static func editMyAnimal(body: MyAnimalEditRequestDTO) -> EndPoint<EmptyResponse> {
         return EndPoint(
             path: "api/users/my/animal-type",
             method: .patch,
