@@ -18,6 +18,7 @@ public struct WeaveAlert: View {
     let title: String
     var message: String?
     let primaryButtonTitle: String
+    let primaryButtonColor: Color
     var secondaryButtonTitle: String?
     var primaryAction: (() -> Void)?
     var secondaryAction: (() -> Void)?
@@ -27,6 +28,7 @@ public struct WeaveAlert: View {
         title: String,
         message: String? = nil,
         primaryButtonTitle: String,
+        primaryButtonColor: Color = DesignSystem.Colors.defaultBlue,
         secondaryButtonTitle: String? = nil,
         primaryAction: (() -> Void)? = nil,
         secondaryAction: (() -> Void)? = nil
@@ -35,6 +37,7 @@ public struct WeaveAlert: View {
         self.title = title
         self.message = message
         self.primaryButtonTitle = primaryButtonTitle
+        self.primaryButtonColor = primaryButtonColor
         self.secondaryButtonTitle = secondaryButtonTitle
         self.primaryAction = primaryAction
         self.secondaryAction = secondaryAction
@@ -77,7 +80,10 @@ public struct WeaveAlert: View {
                             .frame(width: getButtonWidth(ratio: 0.3))
                         }
                         
-                        WeaveButton(title: primaryButtonTitle) {
+                        WeaveButton(
+                            title: primaryButtonTitle,
+                            backgroundColor: primaryButtonColor
+                        ) {
                             isPresented.toggle()
                             primaryAction?()
                         }

@@ -15,6 +15,7 @@ struct UniversitiesResponseDTO: Decodable {
 struct UniversityResponseDTO: Decodable, Equatable {
     let id: String
     let name: String
+    let displayName: String
     let domainAddress: String
     let logoAddress: String?
     
@@ -22,9 +23,10 @@ struct UniversityResponseDTO: Decodable, Equatable {
         return UniversityModel(
             id: id,
             name: name,
+            displayName: displayName,
             domainAddress: domainAddress,
             logoAddress: logoAddress,
-            iconAssetName: "univ"
+            iconAssetName: "Univ"
         )
     }
 }
@@ -32,15 +34,8 @@ struct UniversityResponseDTO: Decodable, Equatable {
 extension APIEndpoints {
     static func getUniversityInfo() -> EndPoint<UniversitiesResponseDTO> {
         return EndPoint(
-            baseURL: "http://43.200.117.125:8080/",
             path: "api/univ",
             method: .get
         )
     }
-}
-
-/// Login Feature 머지전까지 사용할 임시 DTO
-struct TempTokenResponseDTO: Decodable {
-    let accessToken: String
-    let refreshToken: String
 }
