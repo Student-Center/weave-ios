@@ -13,7 +13,7 @@ struct MyHeightEditRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func editMyHeight(body: MyHeightEditRequestDTO) -> EndPoint<TempTokenResponseDTO> {
+    static func editMyHeight(body: MyHeightEditRequestDTO) -> EndPoint<EmptyResponse> {
         return EndPoint(
             path: "api/users/my/height",
             method: .patch,

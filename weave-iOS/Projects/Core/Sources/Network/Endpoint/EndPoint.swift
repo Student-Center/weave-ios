@@ -7,6 +7,8 @@
 
 import Foundation
 
+public struct EmptyResponse: Decodable {}
+
 public protocol RequestResponsable: Requestable, Responsable {}
 
 public class EndPoint<R>: RequestResponsable {

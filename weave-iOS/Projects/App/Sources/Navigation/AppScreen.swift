@@ -64,7 +64,9 @@ extension AppScreen {
         case .request:
             RequestView()
         case .myTeam:
-            MyTeamView()
+            MyTeamView(store: Store(initialState: MyTeamFeature.State(), reducer: {
+                MyTeamFeature()
+            }))
         case .myPage:
             MyPageView(store: Store(initialState: MyPageFeature.State(), reducer: {
                 MyPageFeature()

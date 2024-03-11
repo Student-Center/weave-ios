@@ -63,14 +63,13 @@ public class APIProvider {
             }
 
             let decodedResponse = try JSONDecoder().decode(R.self, from: data)
-            print(decodedResponse)
             return decodedResponse
         } catch {
             throw NetworkError.urlRequest(error)
         }
     }
     
-    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E) async throws {
+    public func requestWithNoResponse<E: RequestResponsable>(with endPoint: E, successCode: Int = 204) async throws {
         do {
             let urlRequest = try endPoint.getUrlRequest()
             
@@ -80,7 +79,7 @@ public class APIProvider {
                 throw NetworkError.unknownError
             }
             
-            if response.statusCode == 204 {
+            if response.statusCode == successCode {
                 return
             } else {
                 throw NetworkError.invalidHttpStatusCode(response.statusCode)
@@ -89,4 +88,38 @@ public class APIProvider {
             throw NetworkError.urlRequest(error)
         }
     }
+}
+
+extension APIProvider {
+    public func requestSNSLogin<R: Decodable, E: RequestResponsable>(with endPoint: E) async throws -> R where E.Response == R {
+        do {
+            let urlRequest = try endPoint.getUrlRequest()
+            let (data, urlResponse) = try await session.data(for: urlRequest)
+            endPoint.responseLogger(response: urlResponse, data: data)
+            guard let response = urlResponse as? HTTPURLResponse else {
+                throw NetworkError.unknownError
+            }
+            
+            guard response.statusCode == 200 else {
+                if response.statusCode == 401 {
+                    let decodedResponse = try JSONDecoder().decode(SignUpRegisterTokenResponse.self, from: data)
+                    throw LoginNetworkError.needRegist(registerToken: decodedResponse)
+                }
+                throw NetworkError.unknownError
+            }
+
+            let decodedResponse = try JSONDecoder().decode(R.self, from: data)
+            return decodedResponse
+        } catch {
+            throw NetworkError.urlRequest(error)
+        }
+    }
+}
+
+public enum LoginNetworkError: Error {
+    case needRegist(registerToken: SignUpRegisterTokenResponse)
+}
+
+public struct SignUpRegisterTokenResponse: Decodable {
+    public let registerToken: String
 }

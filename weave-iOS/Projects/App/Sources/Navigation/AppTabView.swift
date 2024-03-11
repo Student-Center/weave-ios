@@ -6,13 +6,14 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct AppTabView: View {
-    @Binding var selection: AppScreen?
-    
+    var store: StoreOf<AppTabViewFeature>
+        
     var body: some View {
-        NavigationStack {
-            TabView(selection: $selection) {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            TabView(selection: viewStore.$selection) {
                 ForEach(AppScreen.allCases) { screen in
                     screen.destination
                         .tag(screen as AppScreen?)
@@ -22,8 +23,4 @@ struct AppTabView: View {
             .tint(.white)
         }
     }
-}
-
-#Preview {
-    AppTabView(selection: .constant(.chat))
 }
