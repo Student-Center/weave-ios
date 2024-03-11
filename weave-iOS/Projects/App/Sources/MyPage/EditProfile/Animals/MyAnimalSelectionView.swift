@@ -58,7 +58,7 @@ struct AnimalSelectionList: View {
                     LeftAlignTextCapsuleListView(
                         selectedItem: $selectedItem,
                         dataSources: AnimalTypes.allCases,
-                        geometry: geometry
+                        viewWidth: UIScreen.main.bounds.width - 36
                     )
                 }
             }

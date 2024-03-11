@@ -58,11 +58,15 @@ extension AppScreen {
         case .chat:
             ChatView()
         case .home:
-            HomeView()
+            MeetingTeamListView(store: Store(initialState: MeetingTeamListFeature.State(), reducer: {
+                MeetingTeamListFeature()
+            }))
         case .request:
             RequestView()
         case .myTeam:
-            MyTeamView()
+            MyTeamView(store: Store(initialState: MyTeamFeature.State(), reducer: {
+                MyTeamFeature()
+            }))
         case .myPage:
             MyPageView(store: Store(initialState: MyPageFeature.State(), reducer: {
                 MyPageFeature()

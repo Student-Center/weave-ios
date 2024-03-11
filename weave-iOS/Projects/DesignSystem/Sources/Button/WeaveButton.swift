@@ -15,6 +15,7 @@ public struct WeaveButton: View {
     let size: ButtonSize
     let textColor: Color
     let buttonBackgroundColor: Color
+    let isWeaveGraientBackground: Bool
     var icon: Image?
     var handler: (() -> Void)?
     @State private var isTouched: Bool = false
@@ -25,7 +26,11 @@ public struct WeaveButton: View {
     }
     
     var backgroundColor: Color {
-        return style == .filled ? buttonTintColor : .white
+        return style == .filled ? buttonTintColor : .clear
+    }
+    
+    var textTintColor: Color {
+        return isTouched ? DesignSystem.Colors.gray500 : textColor
     }
     
     var buttonTintColor: Color {
@@ -39,6 +44,7 @@ public struct WeaveButton: View {
         size: ButtonSize = .regular,
         textColor: Color = DesignSystem.Colors.white,
         backgroundColor: Color = DesignSystem.Colors.defaultBlue,
+        isWeaveGraientBackground: Bool = false,
         isEnabled: Bool = true,
         handler: (() -> Void)? = nil
     ) {
@@ -50,6 +56,7 @@ public struct WeaveButton: View {
         self.buttonBackgroundColor = backgroundColor
         self.isEnabled = isEnabled
         self.handler = handler
+        self.isWeaveGraientBackground = isWeaveGraientBackground
     }
     
     public var body: some View {
@@ -64,11 +71,11 @@ public struct WeaveButton: View {
                 
                 Text(title)
                     .font(size.font)
-                    .foregroundColor(foregroundColor)
+                    .foregroundColor(textTintColor)
                     .padding(.vertical, size.padding.height)
                 Spacer()
             }
-            .background(backgroundColor)
+            .background(getBackgroundColor())
             .clipShape(Capsule())
             .overlay(
                 ZStack {
@@ -97,6 +104,15 @@ public struct WeaveButton: View {
         }
         .animation(.easeInOut(duration: 0.1), value: isTouched)
     }
+    
+    
+    private func getBackgroundColor() -> some View {
+        if isWeaveGraientBackground {
+            return AnyView(LinearGradient.weaveGradientReversed)
+        } else {
+            return AnyView(backgroundColor)
+        }
+    }
 }
 
 extension WeaveButton {
@@ -110,13 +126,14 @@ extension WeaveButton {
         case medium
         case regular
         case small
+        case tiny
         
         var font: Font {
             switch self {
             case .large: return .pretendard(._600, size: 16)
             case .medium: return .pretendard(._500, size: 16)
             case .regular: return .pretendard(._500, size: 15)
-            case .small: return .pretendard(._500, size: 12)
+            case .small, .tiny: return .pretendard(._500, size: 12)
             }
         }
         
@@ -126,6 +143,7 @@ extension WeaveButton {
             case .medium: return .init(width: 24, height: 14)
             case .regular: return .init(width: 24, height: 13)
             case .small: return .init(width: 24, height: 12)
+            case .tiny: return .init(width: 24, height: 8)
             }
         }
     }

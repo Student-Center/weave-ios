@@ -81,8 +81,11 @@ struct SignUpView: View {
 #Preview {
     SignUpView(
         store: Store(
-            initialState: SignUpFeature.State(registerToken: "token")) {
-                SignUpFeature()
-            }
+            initialState: SignUpFeature.State(
+                registerToken: ""
+            )
+        ) {
+            SignUpFeature(rootView: .constant(.mainView))
+        }
     )
 }

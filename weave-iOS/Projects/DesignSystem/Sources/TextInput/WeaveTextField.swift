@@ -54,6 +54,7 @@ public struct WeaveTextField: View {
                 .foregroundStyle(DesignSystem.Colors.white)
                 .padding(.vertical, 7)
                 .keyboardType(keyboardType)
+                .autocorrectionDisabled()
             
             if showClearButton {
                 Button(action: {

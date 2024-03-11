@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignSystem
+import ComposableArchitecture
 
 struct ChatView: View {
     var body: some View {
@@ -36,5 +37,12 @@ struct ChatView: View {
 }
 
 #Preview {
-    AppTabView(selection: .constant(.chat))
+    AppTabView(
+        store: Store(
+            initialState: AppTabViewFeature.State(selection: .chat),
+            reducer: {
+                AppTabViewFeature(rootview: .constant(.mainView))
+            }
+        )
+    )
 }

@@ -1,0 +1,243 @@
+//
+//  MyTeamView.swift
+//  weave-ios
+//
+//  Created by 강동영 on 2/21/24.
+//
+
+import SwiftUI
+import DesignSystem
+import ComposableArchitecture
+
+struct MyTeamView: View {
+    
+    let store: StoreOf<MyTeamFeature>
+    
+    var body: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            NavigationView {
+                VStack {
+                    if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
+                        getEmptyView() {
+                            viewStore.send(.didTappedGenerateMyTeam)
+                        }
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 20) {
+                                ForEach(viewStore.myTeamList, id: \.id) { team in
+                                    MyTeamItemView(store: store, teamModel: team)
+                                }
+                            }
+                            .padding(.vertical, 20)
+                            .padding(.horizontal, 16)
+                        }
+                        .refreshable {
+                            viewStore.send(.requestMyTeamList)
+                        }
+                    }
+                }
+                .onAppear {
+                    viewStore.send(.requestMyTeamList)
+                }
+                .navigationDestination(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MyTeamFeature.Destination.State.generateMyTeam,
+                    action: MyTeamFeature.Destination.Action.generateMyTeam
+                ) { store in
+                    GenerateMyTeamView(store: store)
+                }
+                .toolbar(content: {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Text("내 팀")
+                            .font(.pretendard(._600, size: 20))
+                    }
+                })
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func getEmptyView(handler: @escaping () -> Void) -> some View {
+        VStack(spacing: 10) {
+            Text("내 팀을 만들어 보세요!")
+                .font(.pretendard(._600, size: 22))
+            Text("내 팀이 있어야 미팅 요청을 할 수 있어요.")
+                .font(.pretendard(._500, size: 14))
+                .foregroundStyle(DesignSystem.Colors.gray600)
+            Spacer()
+                .frame(height: 20)
+            WeaveButton(title: "내 팀 만들기", size: .large) {
+                handler()
+            }
+            .padding(.horizontal, 80)
+        }
+    }
+}
+
+fileprivate struct MyTeamItemView: View {
+    let store: StoreOf<MyTeamFeature>
+    let teamModel: MyTeamItemModel
+    @State var isShowTeamEditSheet = false
+    @State var isShowDeleteConfirmAlert = false
+    
+    var sortedTeamMember: [MyTeamMemberModel] {
+        return teamModel.memberInfos.sorted { $0.role.sortValue < $1.role.sortValue }
+    }
+    
+    var isTeamCompleted: Bool {
+        return teamModel.memberCount?.countValue == teamModel.memberInfos.count
+    }
+    
+    var isMyHostTeam: Bool {
+        for member in teamModel.memberInfos {
+            if member.role == .leader && member.isMe {
+                return true
+            }
+        }
+        return false
+    }
+    
+    fileprivate var body: some View {
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack(spacing: 20) {
+                HStack {
+                    RoundCornerBoxedTextView(
+                        teamModel.memberCount?.text ?? "",
+                        tintColor: DesignSystem.Colors.lightGray
+                    )
+                    RoundCornerBoxedTextView(
+                        teamModel.teamIntroduce,
+                        tintColor: DesignSystem.Colors.lightGray
+                    )
+                    Spacer()
+                    DesignSystem.Icons.menu
+                        .onTapGesture {
+                            isShowTeamEditSheet.toggle()
+                        }
+                }
+                
+                HStack(alignment: .top) {
+                    Spacer()
+                    if let memberCount = teamModel.memberCount {
+                        ForEach(0 ..< memberCount.countValue, id: \.self) { index in
+                            if index <= teamModel.memberInfos.count - 1 {
+                                // 리얼유저
+                                MyTeamMemberView(member: sortedTeamMember[index])
+                            } else {
+                                // 더미
+                                MyTeamEmptyMemberView(isMyHostTeam: isMyHostTeam)
+                            }
+                        }
+                    }
+                    Spacer()
+                }
+            }
+            .confirmationDialog("", isPresented: $isShowTeamEditSheet) {
+                Button("내 팀 수정하기") {
+                    viewStore.send(.didTappedModifyMyTeam(team: teamModel))
+                }
+                Button("삭제하기", role: .destructive) {
+                    isShowDeleteConfirmAlert.toggle()
+                }
+                Button("닫기", role: .cancel) {}
+            }
+            .weaveAlert(
+                isPresented: $isShowDeleteConfirmAlert,
+                title: "\(teamModel.teamIntroduce)팀을\n삭제하시겠어요?",
+                message: isTeamCompleted ? "팀을 삭제하시면 진행중인 미팅 요청과 매칭이 자동 취소돼요!" : nil,
+                primaryButtonTitle: "삭제할래요",
+                primaryButtonColor: DesignSystem.Colors.notificationRed,
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+                    viewStore.send(.requestDeleteTeam(teamId: teamModel.id))
+                }
+            )
+            .padding(.bottom, 19)
+            .padding([.top, .leading, .trailing], 12)
+            .background(DesignSystem.Colors.darkGray)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+    }
+}
+
+fileprivate struct MyTeamMemberView: View {
+    
+    let member: MyTeamMemberModel
+    
+    var isLeader: Bool {
+        return member.role == .leader
+    }
+    
+    fileprivate var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .inset(by: 1)
+                    .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                    .background(DesignSystem.Colors.lightGray)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if isLeader {
+                    HStack {
+                        VStack {
+                            DesignSystem.Icons.crown
+                                .resizable()
+                                .frame(width: 20, height: 20)
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                    .offset(x: -6.5, y: -7.5)
+                }
+            }
+            .frame(width: 48, height: 48)
+            .frame(maxWidth: .infinity)
+            
+            VStack(spacing: 4) {
+                Text(member.displayUnivBirthText)
+                Text(member.mbti)
+            }
+            .font(.pretendard(._600, size: 12))
+        }
+    }
+}
+
+fileprivate struct MyTeamEmptyMemberView: View {
+    
+    let isMyHostTeam: Bool
+    
+    fileprivate var body: some View {
+        VStack(spacing: 12) {
+            ZStack {
+                DesignSystem.Icons.dotLineRect
+                    .resizable()
+                if isMyHostTeam {
+                    DesignSystem.Icons.plus
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                }
+            }
+            .frame(width: 48, height: 48)
+            .frame(maxWidth: .infinity)
+            
+            if isMyHostTeam {
+                WeaveButton(title: "친구 초대", size: .tiny)
+                    .frame(width: 73)
+            } else {
+                Text("곧 들어와요")
+                    .font(.pretendard(._600, size: 12))
+                    .foregroundStyle(DesignSystem.Colors.gray600)
+            }
+        }
+    }
+}
+
+#Preview {
+    AppTabView(
+        store: Store(
+            initialState: AppTabViewFeature.State(selection: .myTeam),
+            reducer: {
+                AppTabViewFeature(rootview: .constant(.mainView))
+            }
+        )
+    )
+}
