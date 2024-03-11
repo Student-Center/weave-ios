@@ -29,7 +29,7 @@ extension APIEndpoints {
             method: isModify ? .patch : .post,
             bodyParameters: requestDTO,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

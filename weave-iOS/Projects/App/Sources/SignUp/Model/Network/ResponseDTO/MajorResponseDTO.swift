@@ -28,7 +28,6 @@ public struct MajorResponseDTO: Decodable, Equatable {
 extension APIEndpoints {
     static func getMajorInfo(univId: String) -> EndPoint<MajorsResponseDTO> {
         return EndPoint(
-            baseURL: "http://43.200.117.125:8080/",
             path: "api/univ/\(univId)/majors",
             method: .get
         )

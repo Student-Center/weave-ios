@@ -34,7 +34,7 @@ extension APIEndpoints {
             path: "api/meeting-teams/locations",
             method: .get,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

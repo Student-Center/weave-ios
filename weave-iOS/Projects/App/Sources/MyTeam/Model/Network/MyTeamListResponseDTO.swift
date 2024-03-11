@@ -10,7 +10,7 @@ import Services
 
 struct MyTeamListResponseDTO: Codable {
     let items: [MyTeamResponseDTO]
-    let next: String
+    let next: String?
     let total: Int
     
     var toDomain: [MyTeamItemModel] {
@@ -67,7 +67,7 @@ extension APIEndpoints {
             method: .get,
             queryParameters: request,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

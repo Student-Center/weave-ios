@@ -11,6 +11,8 @@ import DesignSystem
 import Services
 
 struct SignUpFeature: Reducer {
+    @Binding var rootView: RootViewType
+    
     struct State: Equatable {
         let registerToken: String
         // 현단계 상태값
@@ -52,6 +54,7 @@ struct SignUpFeature: Reducer {
         case fetchMajorLists(list: [MajorResponseDTO])
         case didTappedMajors(major: MajorModel)
         // 회원가입 완료
+        case fetchTokens(dto: SNSLoginResponseDTO)
         case didCompleteSignUp
         // bind
         case binding(BindingAction<State>)
@@ -104,11 +107,11 @@ struct SignUpFeature: Reducer {
                         majorId: major.id
                     )
                     return .run { [token = state.registerToken] send in
-                        try await requestRegisterUser(
+                        let response = try await requestRegisterUser(
                             registerToken: token,
                             dto: requestDTO
                         )
-                        await send.callAsFunction(.didCompleteSignUp)
+                        await send.callAsFunction(.fetchTokens(dto: response))
                     } catch: { error, send in
                         print(error)
                     }
@@ -134,6 +137,13 @@ struct SignUpFeature: Reducer {
                     await send.callAsFunction(.fetchUniversityLists(list: universityLists))
                 } catch: { error, send in
                     print(error)
+                }
+                
+            case .fetchTokens(let tokens):
+                return .run { send in
+                    UDManager.accessToken = tokens.accessToken
+                    UDManager.refreshToken = tokens.refreshToken
+                    await send.callAsFunction(.didCompleteSignUp)
                 }
                 
             case .fetchUniversityLists(let universityLists):
@@ -173,7 +183,11 @@ struct SignUpFeature: Reducer {
                 return .none
                 
             case .didCompleteSignUp:
-                // 다음 뷰 전환 액션
+                rootView = .mainView
+                return .none
+                
+            case .dismissSignUp:
+                rootView = .loginView
                 return .none
                 
             default: return .none
@@ -184,7 +198,7 @@ struct SignUpFeature: Reducer {
     // 학교 리스트 불러오기
     private func requestUniversityLists() async throws -> [UniversityResponseDTO] {
         let endPoint = APIEndpoints.getUniversityInfo()
-        let provider = APIProvider(session: URLSession.shared)
+        let provider = APIProvider()
         let response: UniversitiesResponseDTO = try await provider.request(with: endPoint)
         return response.universities
     }
@@ -192,16 +206,17 @@ struct SignUpFeature: Reducer {
     // 전공 리스트 불러오기
     private func requestMajorLists(univId: String) async throws -> [MajorResponseDTO] {
         let endPoint = APIEndpoints.getMajorInfo(univId: univId)
-        let provider = APIProvider(session: URLSession.shared)
+        let provider = APIProvider()
         let response: MajorsResponseDTO = try await provider.request(with: endPoint)
         return response.majors
     }
     
     // 회원가입 요청
-    private func requestRegisterUser(registerToken: String, dto: RegisterUserRequestDTO) async throws {
+    private func requestRegisterUser(registerToken: String, dto: RegisterUserRequestDTO) async throws -> SNSLoginResponseDTO {
         let endPoint = APIEndpoints.registerUser(registerToken: registerToken, body: dto)
-        let provider = APIProvider(session: URLSession.shared)
-        let response: TempTokenResponseDTO = try await provider.request(with: endPoint)
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
     }
     
     // 포함하는 데이터 소스로 정렬해 리턴

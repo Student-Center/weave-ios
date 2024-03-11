@@ -14,7 +14,7 @@ extension APIEndpoints {
             path: "api/meeting-teams/\(teamId)",
             method: .delete,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

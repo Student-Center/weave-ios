@@ -13,7 +13,7 @@ struct MyMbtiEditRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func editMyMbti(body: MyMbtiEditRequestDTO) -> EndPoint<TempTokenResponseDTO> {
+    static func editMyMbti(body: MyMbtiEditRequestDTO) -> EndPoint<EmptyResponse> {
         return EndPoint(
             path: "api/users/my/mbti",
             method: .patch,
