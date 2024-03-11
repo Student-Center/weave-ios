@@ -62,6 +62,15 @@ struct MeetingTeamListView: View {
                 ) { store in
                     MeetingTeamDetailView(store: store)
                 }
+                .sheet(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MeetingTeamListFeature.Destination.State.filter,
+                    action: MeetingTeamListFeature.Destination.Action.filter
+                ) { store in
+                    MeetingTeamListFilterView(store: store)
+                        .presentationDetents([.fraction(0.8)])
+                        .presentationDragIndicator(.visible)
+                }
             }
         }
     }
@@ -117,5 +126,12 @@ fileprivate struct MeetingListItemView: View {
 }
 
 #Preview {
-    AppTabView(selection: .constant(.home))
+    AppTabView(
+        store: Store(
+            initialState: AppTabViewFeature.State(selection: .myTeam),
+            reducer: {
+                AppTabViewFeature(rootview: .constant(.mainView))
+            }
+        )
+    )
 }

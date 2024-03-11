@@ -11,6 +11,9 @@ import Services
 import ComposableArchitecture
 
 struct LoginView: View {
+    
+    @Binding var rootview: RootViewType
+    
     var body: some View {
         VStack {
             Spacer()
@@ -39,28 +42,39 @@ struct LoginView: View {
     
     private func requestSNSLogin(idToken: String, with type: SNSLoginType) async {
         let endPoint = APIEndpoints.requestSNSLogin(idToken: idToken, with: type)
-        guard let provider = try? await APIProvider().request(with: endPoint) else {
-            // TODO: - SignUpView 연동
-            landingToSignUp(idToken: idToken)
-            return
+        do {
+            let provider = try await APIProvider().requestSNSLogin(with: endPoint)
+            UDManager.accessToken = provider.accessToken
+            UDManager.refreshToken = provider.refreshToken
+            landingToHomeView()
+        } catch {
+            print(error)
+            // 에러로 전달 되는 회원가입 DTO 객체 처리
+            if let networkError = error as? NetworkError {
+                switch networkError {
+                case .urlRequest(let innerError):
+                    if let loginError = innerError as? LoginNetworkError {
+                        switch loginError {
+                        case .needRegist(let registerTokenResponse):
+                            landingToSignUp(idToken: registerTokenResponse.registerToken)
+                            return
+                        }
+                    }
+                default: break
+                }
+            }
         }
-        
-        UDManager.accessToken = provider.accessToken
-        UDManager.refreshToken = provider.refreshToken
-        
-//        landingToHomeView()
     }
     
     private func landingToSignUp(idToken: String) {
-        SignUpView(
-            store: Store(
-                initialState: SignUpFeature.State(registerToken: idToken)) {
-                    SignUpFeature()
-                }
-        )
+        withAnimation {
+            rootview = .signUpView(registToken: idToken)
+        }
     }
     
-//    private func landingToHomeView() {
-//        HomeView()
-//    }
+    private func landingToHomeView() {
+        withAnimation {
+            rootview = .mainView
+        }
+    }
 }

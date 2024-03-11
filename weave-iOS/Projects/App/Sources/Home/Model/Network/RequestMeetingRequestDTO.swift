@@ -19,7 +19,7 @@ extension APIEndpoints {
             method: .post,
             bodyParameters: requestDTO,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

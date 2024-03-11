@@ -58,13 +58,13 @@ struct MeetingMemberDTO: Codable {
 }
 
 extension APIEndpoints {
-    static func getMeetingTeamList() -> EndPoint<MeetingTeamGetListDTO> {
+    static func getMeetingTeamList(requestDTO: MeetingTeamGetListRequestDTO) -> EndPoint<MeetingTeamGetListDTO> {
         return EndPoint(
             path: "api/meeting-teams",
             method: .get,
-            queryParameters: MeetingTeamGetListRequestDTO(),
+            queryParameters: requestDTO,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }
