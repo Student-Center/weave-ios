@@ -67,7 +67,7 @@ extension APIEndpoints {
             method: .get,
             queryParameters: request,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

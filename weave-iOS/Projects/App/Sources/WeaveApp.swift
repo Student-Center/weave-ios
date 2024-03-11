@@ -21,7 +21,7 @@ struct WeaveApp: App {
     
     var body: some Scene {
         WindowGroup {
-            AppTabView(selection: .constant(.home))
+            AppView()
         }
     }
 }

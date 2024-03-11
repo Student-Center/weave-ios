@@ -18,7 +18,7 @@ struct MyTeamFeature: Reducer {
         
         var didDataFetched = false
         var teamInviteLink: String?
-        
+
         init(myTeamList: [MyTeamItemModel] = []) {
             self.myTeamList = myTeamList
         }
@@ -33,6 +33,9 @@ struct MyTeamFeature: Reducer {
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
         case fetchInviteLink(dto: MyTeamInviteResponseDTO)
+        
+        case requestMyTeamList
+        case fetchMyTeamList(dto: MyTeamListResponseDTO)
         case requestDeleteTeam(teamId: String)
         
         case destination(PresentationAction<Destination.Action>)
@@ -69,7 +72,7 @@ struct MyTeamFeature: Reducer {
                 state.teamInviteLink = dto.meetingTeamInvitationLink
                 state.isShowActivityView.toggle()
                 return .none
-                
+
             case .destination(.dismiss):
                 state.destination = nil
                 return .none

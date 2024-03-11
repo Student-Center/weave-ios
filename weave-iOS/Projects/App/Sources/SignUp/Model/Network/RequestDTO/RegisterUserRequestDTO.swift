@@ -17,9 +17,8 @@ struct RegisterUserRequestDTO: Encodable {
 }
 
 extension APIEndpoints {
-    static func registerUser(registerToken: String, body: RegisterUserRequestDTO) -> EndPoint<TempTokenResponseDTO> {
+    static func registerUser(registerToken: String, body: RegisterUserRequestDTO) -> EndPoint<SNSLoginResponseDTO> {
         return EndPoint(
-            baseURL: "http://43.200.117.125:8080/",
             path: "api/users",
             method: .post,
             bodyParameters: body,
