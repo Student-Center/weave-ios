@@ -51,7 +51,7 @@ struct MeetingTeamListFeature: Reducer {
                 // 상세 뷰로 전환
                 state.destination = .teamDetail(.init(teamId: id))
                 return .none
-                
+              
             case .didTappedFilterIcon:
                 state.destination = .filter(.init(filterModel: state.filterModel))
                 return .none
@@ -66,7 +66,6 @@ struct MeetingTeamListFeature: Reducer {
                 return .run { send in
                     await send.callAsFunction(.requestMeetingTeamList)
                 }
-                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
@@ -79,7 +78,6 @@ struct MeetingTeamListFeature: Reducer {
             Destination()
         }
     }
-    
     func requestMeetingTeamList(filter: MeetingTeamFilterModel) async throws -> MeetingTeamGetListDTO {
         let dto = MeetingTeamGetListRequestDTO(
             memberCount: filter.memberCount,
