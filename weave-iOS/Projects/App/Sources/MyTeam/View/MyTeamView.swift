@@ -152,10 +152,7 @@ fileprivate struct MyTeamItemView: View {
                     viewStore.send(.requestDeleteTeam(teamId: teamModel.id))
                 }
             )
-            .padding(.bottom, 19)
-            .padding([.top, .leading, .trailing], 12)
-            .background(DesignSystem.Colors.darkGray)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .weaveBoxStyle()
         }
     }
 }
