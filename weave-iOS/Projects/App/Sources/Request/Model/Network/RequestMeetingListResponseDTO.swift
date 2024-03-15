@@ -76,7 +76,7 @@ struct RequestMeetingMemberInfoResponseDTO: Codable {
             id: id,
             userId: userId,
             universityName: universityName,
-            mbti: MBTIType(rawValue: mbti ?? ""),
+            mbti: mbti,
             birthYear: birthYear,
             animalType: AnimalTypes(rawValue: animalType ?? "")
         )
@@ -118,6 +118,39 @@ struct RequestMeetingItemModel: Equatable {
     let status: String
     let createdAt: String
     let pendingEndAt: String
+    
+    func getTimeDiffString(suffix: String) -> String {
+        guard let timeLeftString = getTimeDiffValueFromNow(to: pendingEndAt) else {
+            return "시간이 초과되었어요!"
+        }
+        return "\(timeLeftString) \(suffix)"
+    }
+    
+    func getTimeDiffValueFromNow(to targetTimeString: String) -> String? {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+
+        guard let targetTime = dateFormatter.date(from: targetTimeString) else {
+            return "잘못된 날짜"
+        }
+        
+        let currentTime = Date()
+        let differenceInSeconds = Calendar.current.dateComponents([.second], from: currentTime, to: targetTime).second ?? 0
+        
+        if differenceInSeconds < 0 {
+            return nil
+        } else {
+            let futureMinutes = differenceInSeconds / 60
+            let futureHours = differenceInSeconds / 3600
+            
+            if futureHours > 0 {
+                return "\(futureHours)시간"
+            } else {
+                return "\(futureMinutes)분"
+            }
+        }
+    }
 }
 
 struct RequestMeetingTeamInfoModel {
@@ -132,9 +165,13 @@ struct RequestMeetingMemberInfoModel {
     let id: String
     let userId: String
     let universityName: String
-    let mbti: MBTIType?
+    let mbti: String?
     let birthYear: Int
     let animalType: AnimalTypes?
+    
+    var memberInfoValue: String {
+        return "\(universityName)•\(birthYear.toShortBirthYear())"
+    }
 }
 
 extension APIEndpoints {

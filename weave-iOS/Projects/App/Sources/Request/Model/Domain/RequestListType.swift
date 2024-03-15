@@ -17,4 +17,11 @@ enum RequestListType {
         case .receiving: return "RECEIVING"
         }
     }
+    
+    var timeDiffSuffixValue: String {
+        switch self {
+        case .requesting: return "뒤에 사라져요!"
+        case .receiving: return "뒤에 취소돼요!"
+        }
+    }
 }

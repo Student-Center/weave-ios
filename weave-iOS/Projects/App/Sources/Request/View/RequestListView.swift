@@ -20,16 +20,43 @@ struct RequestListView: View {
                 SegmentedPicker(items: self.items, selection: self.$selection)
                     .frame(width: 210)
                 TabView(selection: $selection) {
-                    ReceivedMeetingListView(store: store)
+                    if !viewStore.receivedDataSources.isEmpty {
+                        getMeetingListView(
+                            dataSources: viewStore.receivedDataSources,
+                            type: .requesting
+                        ) { meetingId in
+                            print(meetingId)
+                        }
                         .tag(0)
                         .onAppear {
-                            viewStore.send(.onAppear(type: .receiving))
+                            viewStore.send(.onAppear(type: .requesting))
                         }
-                    SentMeetingListView(store: store)
+                    } else {
+                        getEmptyView()
+                            .tag(0)
+                            .onAppear {
+                                viewStore.send(.onAppear(type: .requesting))
+                            }
+                    }
+                    
+                    if !viewStore.sentDataSources.isEmpty {
+                        getMeetingListView(
+                            dataSources: viewStore.sentDataSources,
+                            type: .requesting
+                        ) { meetingId in
+                            print(meetingId)
+                        }
                         .tag(1)
                         .onAppear {
                             viewStore.send(.onAppear(type: .requesting))
                         }
+                    } else {
+                        getEmptyView()
+                            .tag(1)
+                            .onAppear {
+                                viewStore.send(.onAppear(type: .requesting))
+                            }
+                    }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
@@ -37,12 +64,31 @@ struct RequestListView: View {
     }
     
     @ViewBuilder
+    func getMeetingListView(
+        dataSources: [RequestMeetingItemModel],
+        type: RequestListType,
+        handler: @escaping (String) -> Void
+    ) -> some View {
+        VStack {
+            ScrollView {
+                ForEach(dataSources, id: \.id) { meeting in
+                    MeetingItemView(meeting: meeting, type: type)
+                        .onTapGesture {
+                            handler(meeting.id)
+                        }
+                }
+            }
+        }
+        .padding(.vertical, 20)
+        .padding(.horizontal, 16)
+    }
+    
+    @ViewBuilder
     func getEmptyView() -> some View {
-        VStack(spacing: 10) {
-            Text("🙏")
-            Text("조금만 기다려 주세요")
+        VStack(alignment: .center, spacing: 10) {
+            Text("미팅을 요청해 보세요!")
                 .font(.pretendard(._600, size: 22))
-            Text("채팅 기능을 포함한 버전이\n곧 업데이트 될 예정이에요!")
+            Text("아직 받은 요청이 없어요")
                 .font(.pretendard(._500, size: 14))
                 .foregroundStyle(DesignSystem.Colors.gray600)
             Spacer()
@@ -55,81 +101,36 @@ struct RequestListView: View {
     }
 }
 
-fileprivate struct ReceivedMeetingListView: View {
-    let store: StoreOf<RequestListFeature>
+fileprivate struct MeetingItemView: View {
+    let meeting: RequestMeetingItemModel
+    let type: RequestListType
     
-    fileprivate var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 20) {
-                HStack {
-                    RoundCornerBoxedTextView(
-                        "제목최대10글자일듯",
-                        tintColor: DesignSystem.Colors.lightGray
-                    )
-                    Spacer()
-                    Text("5시간 뒤에 사라져요!")
-                        .font(.pretendard(._500, size: 12))
-                        .foregroundStyle(DesignSystem.Colors.defaultBlue)
-                }
-                
-                HStack(alignment: .top) {
-                    Spacer()
-                    MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
-                    )
-                    MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
-                    )
-                    MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
-                    )
-                    Spacer()
-                }
+    var body: some View {
+        VStack(spacing: 20) {
+            HStack {
+                RoundCornerBoxedTextView(
+                    meeting.receivingTeam.teamIntroduce,
+                    tintColor: DesignSystem.Colors.lightGray
+                )
+                Spacer()
+                Text(meeting.getTimeDiffString(suffix: type.timeDiffSuffixValue))
+                    .font(.pretendard(._500, size: 12))
+                    .foregroundStyle(DesignSystem.Colors.defaultBlue)
             }
-            .weaveBoxStyle()
-        }
-    }
-}
-
-fileprivate struct SentMeetingListView: View {
-    let store: StoreOf<RequestListFeature>
-    
-    fileprivate var body: some View {
-        WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack(spacing: 20) {
-                HStack {
-                    RoundCornerBoxedTextView(
-                        "제목최대10글자일듯",
-                        tintColor: DesignSystem.Colors.lightGray
-                    )
-                    Spacer()
-                    Text("5시간 뒤에 사라져요!")
-                        .font(.pretendard(._500, size: 12))
-                        .foregroundStyle(DesignSystem.Colors.defaultBlue)
-                }
+            
+            HStack(alignment: .top) {
+                Spacer()
                 
-                HStack(alignment: .top) {
-                    Spacer()
+                ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
                     MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
+                        title: member.memberInfoValue,
+                        subTitle: member.mbti ?? ""
                     )
-                    MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
-                    )
-                    MemberIconView(
-                        title: "위브대•05",
-                        subTitle: "ENTP"
-                    )
-                    Spacer()
                 }
+                Spacer()
             }
-            .weaveBoxStyle()
         }
+        .weaveBoxStyle()
     }
 }
 
@@ -159,7 +160,7 @@ fileprivate struct MemberIconView: View {
 }
 
 #Preview {
-    RequestListView(store: Store(initialState: RequestListFeature.State(), reducer: {
-        RequestListFeature()
+    AppTabView(store: .init(initialState: AppTabViewFeature.State(selection: .request), reducer: {
+        AppTabViewFeature(rootview: .constant(.mainView))
     }))
 }
