@@ -23,6 +23,8 @@ struct GenerateMyTeamFeature: Reducer {
         @BindingState var teamName: String = ""
         @BindingState var isTeamNameError = false
         
+        @BindingState var isShowNetworkErrorAlert = false
+        
         var myTeamModelFromEdit: MyTeamItemModel?
         var currentTeamMemberCount: Int?
         

@@ -27,6 +27,18 @@ struct MyTeamView: View {
                                 ForEach(viewStore.myTeamList, id: \.id) { team in
                                     MyTeamItemView(store: store, teamModel: team)
                                 }
+                                if !viewStore.myTeamList.isEmpty {
+                                    Text(
+                                    """
+                                    팀원이 다 들어오면 자동으로 팀이 공개되고,
+                                    미팅 요청을 받을 수 있어요!
+                                    """
+                                    )
+                                    .font(.pretendard(._500, size: 14))
+                                    .foregroundStyle(DesignSystem.Colors.lightGray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.vertical, 11)
+                                }
                             }
                             .padding(.vertical, 20)
                             .padding(.horizontal, 16)
@@ -109,6 +121,7 @@ fileprivate struct MyTeamItemView: View {
                         teamModel.teamIntroduce,
                         tintColor: DesignSystem.Colors.lightGray
                     )
+                    locationView(location: teamModel.location)
                     Spacer()
                     DesignSystem.Icons.menu
                         .onTapGesture {
@@ -169,6 +182,15 @@ fileprivate struct MyTeamItemView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
+    
+    @ViewBuilder
+    func locationView(location: String) -> some View {
+        HStack(spacing: 5) {
+            DesignSystem.Icons.mapWhite
+            Text(location)
+                .font(.pretendard(._600, size: 12))
+        }
+    }
 }
 
 fileprivate struct MyTeamMemberView: View {
@@ -218,14 +240,27 @@ fileprivate struct MyTeamEmptyMemberView: View {
     var handler: () -> Void
     
     fileprivate var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                DesignSystem.Icons.dotLineRect
-                    .resizable()
-                if isMyHostTeam {
-                    DesignSystem.Icons.plus
+        GeometryReader(content: { geometry in
+            VStack(spacing: 12) {
+                ZStack {
+                    DesignSystem.Icons.dotLineRect
                         .resizable()
-                        .frame(width: 20, height: 20)
+                    if isMyHostTeam {
+                        DesignSystem.Icons.plus
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                }
+                .frame(width: 48, height: 48)
+                .frame(maxWidth: .infinity)
+                
+                if isMyHostTeam {
+                    WeaveButton(title: "친구 초대", size: .tiny)
+                        .frame(width: 73)
+                } else {
+                    Text("곧 들어와요")
+                        .font(.pretendard(._600, size: 12))
+                        .foregroundStyle(DesignSystem.Colors.gray600)
                 }
             }
             .frame(width: 48, height: 48)
