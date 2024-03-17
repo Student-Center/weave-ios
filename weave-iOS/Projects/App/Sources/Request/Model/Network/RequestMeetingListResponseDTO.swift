@@ -129,7 +129,7 @@ struct RequestMeetingItemModel: Equatable {
     func getTimeDiffValueFromNow(to targetTimeString: String) -> String? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
 
         guard let targetTime = dateFormatter.date(from: targetTimeString) else {
             return "잘못된 날짜"
