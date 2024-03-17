@@ -276,7 +276,7 @@ fileprivate struct MyTeamEmptyMemberView: View {
                     .font(.pretendard(._600, size: 12))
                     .foregroundStyle(DesignSystem.Colors.gray600)
             }
-        }
+        })
     }
 }
 
