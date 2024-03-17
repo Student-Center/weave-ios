@@ -19,6 +19,8 @@ struct RequestListFeature: Reducer {
     
     enum Action: BindableAction {
         //MARK: UserAction
+        case didTappedMeetingView(index: Int, type: RequestListType)
+        
         case onAppear(type: RequestListType)
         case fetchData(dto: RequestMeetingListResponseDTO, type: RequestListType)
         case destination(PresentationAction<Destination.Action>)
@@ -30,12 +32,36 @@ struct RequestListFeature: Reducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-                
-            case .destination(.dismiss):
-                state.destination = nil
+            case .didTappedMeetingView(let index, let type):
+                switch type {
+                case .receiving:
+                    let meeting = state.receivedDataSources[index]
+                    let myTeam = meeting.receivingTeam
+                    let partnerTeam = meeting.requestingTeam
+                    state.destination = .meetingMatch(
+                        .init(
+                            meetingId: meeting.id,
+                            meetingType: type,
+                            myTeamModel: myTeam,
+                            partnerTeamModel: partnerTeam
+                        )
+                    )
+                case .requesting:
+                    let meeting = state.sentDataSources[index]
+                    let partnerTeam = meeting.receivingTeam
+                    let myTeam = meeting.requestingTeam
+                    state.destination = .meetingMatch(
+                        .init(
+                            meetingId: meeting.id,
+                            meetingType: type,
+                            myTeamModel: myTeam,
+                            partnerTeamModel: partnerTeam
+                        )
+                    )
+                }
                 return .none
                 
-            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
+            case .destination(.dismiss):
                 state.destination = nil
                 return .none
                 
@@ -82,14 +108,14 @@ struct RequestListFeature: Reducer {
 extension RequestListFeature {
     struct Destination: Reducer {
         enum State: Equatable {
-            case generateMyTeam(GenerateMyTeamFeature.State)
+            case meetingMatch(MeetingMatchFeature.State)
         }
         enum Action {
-            case generateMyTeam(GenerateMyTeamFeature.Action)
+            case meetingMatch(MeetingMatchFeature.Action)
         }
         var body: some ReducerOf<Self> {
-            Scope(state: /State.generateMyTeam, action: /Action.generateMyTeam) {
-                GenerateMyTeamFeature()
+            Scope(state: /State.meetingMatch, action: /Action.meetingMatch) {
+                MeetingMatchFeature()
             }
         }
     }

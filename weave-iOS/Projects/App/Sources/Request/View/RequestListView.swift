@@ -43,8 +43,9 @@ struct RequestListView: View {
                         getMeetingListView(
                             dataSources: viewStore.sentDataSources,
                             type: .requesting
-                        ) { meetingId in
-                            print(meetingId)
+                        ) { index in
+                            guard let type = RequestListType(rawValue: selection) else { return }
+                            viewStore.send(.didTappedMeetingView(index: index, type: type))
                         }
                         .tag(1)
                         .onAppear {
@@ -60,6 +61,13 @@ struct RequestListView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
             }
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /RequestListFeature.Destination.State.meetingMatch,
+                action: RequestListFeature.Destination.Action.meetingMatch
+            ) { store in
+                MeetingMatchView(store: store)
+            }
         }
     }
     
@@ -67,14 +75,15 @@ struct RequestListView: View {
     func getMeetingListView(
         dataSources: [RequestMeetingItemModel],
         type: RequestListType,
-        handler: @escaping (String) -> Void
+        handler: @escaping (Int) -> Void
     ) -> some View {
         VStack {
             ScrollView {
-                ForEach(dataSources, id: \.id) { meeting in
+                ForEach(0 ..< dataSources.count, id: \.self) { index in
+                    let meeting = dataSources[index]
                     MeetingItemView(meeting: meeting, type: type)
                         .onTapGesture {
-                            handler(meeting.id)
+                            handler(index)
                         }
                 }
             }
@@ -124,8 +133,7 @@ fileprivate struct MeetingItemView: View {
                 ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
                     MemberIconView(
                         title: member.memberInfoValue,
-                        subTitle: member.mbti ?? ""
-                    )
+                        subTitle: member.mbti ?? "") {}
                 }
                 Spacer()
             }
@@ -134,17 +142,35 @@ fileprivate struct MeetingItemView: View {
     }
 }
 
-fileprivate struct MemberIconView: View {
+struct MemberIconView<Content: View>: View {
     let title: String
     let subTitle: String
+    let isStroke: Bool
+    let overlay: () -> Content
     
-    fileprivate var body: some View {
+    init(
+        title: String,
+        subTitle: String,
+        isStroke: Bool = false,
+        @ViewBuilder overlay: @escaping () -> Content
+    ) {
+        self.title = title
+        self.subTitle = subTitle
+        self.isStroke = isStroke
+        self.overlay = overlay
+    }
+    
+    var body: some View {
         VStack(spacing: 8) {
             ZStack {
                 RoundedRectangle(cornerRadius: 12)
                     .inset(by: 1)
-//                    .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                    .stroke(.white, lineWidth: isStroke ? 1 : 0)
+                    .foregroundStyle(DesignSystem.Colors.lightGray)
                     .background(DesignSystem.Colors.lightGray)
+                    .overlay(content: {
+                        overlay()
+                    })
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .frame(width: 48, height: 48)
