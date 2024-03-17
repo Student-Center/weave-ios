@@ -54,7 +54,7 @@ struct RequestListFeature: Reducer {
                     state.destination = .meetingMatch(
                         .init(
                             meetingId: meeting.id,
-                            pendingEndAt: "2024-03-20T22:14:45.409555",
+                            pendingEndAt: meeting.pendingEndAt,
                             meetingType: type,
                             myTeamModel: myTeam,
                             partnerTeamModel: partnerTeam
