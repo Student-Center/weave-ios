@@ -33,7 +33,7 @@ struct MyTeamFeature: Reducer {
         case requestMyTeamList
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
         case fetchInviteLink(dto: MyTeamInviteResponseDTO)
-
+      
         case requestDeleteTeam(teamId: String)
         
         case destination(PresentationAction<Destination.Action>)
