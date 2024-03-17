@@ -77,6 +77,7 @@ struct GenerateMyTeamView: View {
                     .padding(.horizontal, 16)
                 }
                 .scrollDismissesKeyboard(.interactively)
+              
                 WeaveButton(
                     title: "내 팀 만들기",
                     size: .large,
@@ -111,6 +112,7 @@ struct GenerateMyTeamView: View {
             .onAppear {
                 viewStore.send(.onAppear)
             }
+            .weaveNetworkErrorAlert(isPresented: viewStore.$isShowNetworkErrorAlert)
             .navigationBarBackButtonHidden()
             .navigationTitle("내 팀 만들기")
             .toolbar {

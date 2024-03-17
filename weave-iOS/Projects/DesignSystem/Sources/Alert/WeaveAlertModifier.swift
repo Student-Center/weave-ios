@@ -48,5 +48,15 @@ public extension View {
         )
         return modifier(WeaveAlertModifier(isPresented: isPresented, weaveAlert: alert))
     }
+    
+    func weaveNetworkErrorAlert(isPresented: Binding<Bool>) -> some View {
+        let alert = WeaveAlert(
+            isPresented: isPresented,
+            title: "🛜\n네트워크 오류 발생",
+            message: "오류가 발생했어요.\n잠시 후 다시 시도해주세요!",
+            primaryButtonTitle: "확인"
+        )
+        return modifier(WeaveAlertModifier(isPresented: isPresented, weaveAlert: alert))
+    }
 }
 
