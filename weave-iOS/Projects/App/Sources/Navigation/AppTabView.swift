@@ -21,6 +21,9 @@ struct AppTabView: View {
                 }
             }
             .tint(.white)
+            .onAppear {
+                viewStore.send(.onAppear)
+            }
         }
     }
 }

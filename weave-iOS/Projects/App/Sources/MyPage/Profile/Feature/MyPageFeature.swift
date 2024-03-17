@@ -53,7 +53,8 @@ struct MyPageFeature: Reducer {
                 
             case .fetchMyUserInfo(let userInfo):
                 state.myUserInfo = userInfo.toDomain
-                print(userInfo.toDomain)
+                // 글로벌 데이터도 갱신
+                UserInfo.myInfo = userInfo.toDomain
                 return .none
                 
             case .didTappedPreferenceButton:

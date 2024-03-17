@@ -191,13 +191,14 @@ fileprivate struct MeetingMatchTeamView: View {
                 HStack(alignment: .top) {
                     Spacer()
                     ForEach(teamInfo.memberInfos, id: \.id) { member in
+                        let isSelf = member.userId == UserInfo.myInfo?.id
                         MemberIconView(
                             title: member.memberInfoValue,
                             subTitle: member.mbti ?? "",
-                            isStroke: true,
+                            isStroke: isSelf,
                             overlay: {
                                 if member.isAttendance == true {
-                                    DesignSystem.Icons.greenCheck
+                                    isSelf ? DesignSystem.Icons.whiteCheck : DesignSystem.Icons.greenCheck
                                 }
                             }
                         )
