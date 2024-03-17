@@ -49,6 +49,9 @@ struct MyPageView: View {
                         .padding(.horizontal, 16)
                     }
                 }
+                .navigationDestination(isPresented: viewStore.$isShowCompleteUnivVerifyView, destination: {
+                    UnivEmailCompleteView()
+                })
                 .weaveAlert(
                     isPresented: viewStore.$isShowCompleteUnivVerifyAlert,
                     title: "✅\n대학교 인증 완료!",

@@ -19,6 +19,7 @@ struct MyPageFeature: Reducer {
         @BindingState var isShowCameraPermissionAlert: Bool = false
         
         @BindingState var isShowCompleteUnivVerifyAlert: Bool = false
+        @BindingState var isShowCompleteUnivVerifyView: Bool = false
         
         @PresentationState var destination: Destination.State?
     }
@@ -97,7 +98,12 @@ struct MyPageFeature: Reducer {
                         )
                     )
                 case .emailVerification:
+                    if state.myUserInfo?.isUniversityEmailVerified == true {
+                        state.isShowCompleteUnivVerifyView.toggle()
+                        return .none
+                    }
                     state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
+                    
                 default: break
                 }
                 
