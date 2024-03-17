@@ -10,6 +10,7 @@ import Services
 import ComposableArchitecture
 
 struct UnivEmailInputFeature: Reducer {
+    @Dependency(\.dismiss) var dismiss
     
     struct State: Equatable {
         let universityName: String
@@ -17,7 +18,8 @@ struct UnivEmailInputFeature: Reducer {
         @BindingState var emailPrefix = String()
         @BindingState var isShowEmailSendAlert = false
         @BindingState var isShowEmailSendErrorAlert = false
-        @BindingState var pushToNextView = false
+        
+        @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
@@ -28,6 +30,10 @@ struct UnivEmailInputFeature: Reducer {
         case didCompleteSendEmail
         case pushNextView
         case binding(BindingAction<State>)
+        
+        case didCompleteVerifyEmail
+        
+        case destination(PresentationAction<Destination.Action>)
     }
     
     var body: some ReducerOf<Self> {
@@ -68,12 +74,22 @@ struct UnivEmailInputFeature: Reducer {
                 return .none
                 
             case .pushNextView:
-                state.pushToNextView.toggle()
+                guard let univDomain = state.universityInfo?.domainAddress else { return .none }
+                let userEmail = state.emailPrefix + "@" + univDomain
+                state.destination = .emailVerify(.init(userEmail: userEmail))
                 return .none
+                
+            case .destination(.presented(.emailVerify(.didSuccessedVerifyEmail))):
+                return .run { send in
+                    await send.callAsFunction(.didCompleteVerifyEmail)
+                }
                 
             default:
                 return .none
             }
+        }
+        .ifLet(\.$destination, action: /Action.destination) {
+            Destination()
         }
     }
     
@@ -94,5 +110,22 @@ struct UnivEmailInputFeature: Reducer {
     
     enum SendEmailError: Error {
         case statusCodeError
+    }
+}
+
+//MARK: - Destination
+extension UnivEmailInputFeature {
+    struct Destination: Reducer {
+        enum State: Equatable {
+            case emailVerify(UnivEmailVerifyFeature.State)
+        }
+        enum Action {
+            case emailVerify(UnivEmailVerifyFeature.Action)
+        }
+        var body: some ReducerOf<Self> {
+            Scope(state: /State.emailVerify, action: /Action.emailVerify) {
+                UnivEmailVerifyFeature()
+            }
+        }
     }
 }

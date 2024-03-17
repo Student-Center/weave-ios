@@ -18,6 +18,8 @@ struct MyPageFeature: Reducer {
         @BindingState var isShowCamera: Bool = false
         @BindingState var isShowCameraPermissionAlert: Bool = false
         
+        @BindingState var isShowCompleteUnivVerifyAlert: Bool = false
+        
         @PresentationState var destination: Destination.State?
     }
     
@@ -94,8 +96,11 @@ struct MyPageFeature: Reducer {
                             selectedAnimal: animalType
                         )
                     )
+                case .emailVerification:
+                    state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
                 default: break
                 }
+                
                 return .none
                 
             case .destination(.dismiss):
@@ -103,6 +108,11 @@ struct MyPageFeature: Reducer {
                 return .run { send in
                     await send.callAsFunction(.requestMyUserInfo)
                 }
+                
+            case .destination(.presented(.univVerify(.didCompleteVerifyEmail))):
+                state.destination = nil
+                state.isShowCompleteUnivVerifyAlert.toggle()
+                return .none
                 
             case .showPhotoPicker:
                 state.isShowPhotoPicker.toggle()
@@ -176,11 +186,13 @@ extension MyPageFeature {
             case editMbti(MyMbtiEditFeature.State)
             case editAnimal(MyAnimalSelectionFeature.State)
             case editHeight(MyHeightEditFeature.State)
+            case univVerify(UnivEmailInputFeature.State)
         }
         enum Action {
             case editMbti(MyMbtiEditFeature.Action)
             case editAnimal(MyAnimalSelectionFeature.Action)
             case editHeight(MyHeightEditFeature.Action)
+            case univVerify(UnivEmailInputFeature.Action)
         }
         var body: some ReducerOf<Self> {
             Scope(state: /State.editMbti, action: /Action.editMbti) {
@@ -191,6 +203,9 @@ extension MyPageFeature {
             }
             Scope(state: /State.editHeight, action: /Action.editHeight) {
                 MyHeightEditFeature()
+            }
+            Scope(state: /State.univVerify, action: /Action.univVerify) {
+                UnivEmailInputFeature()
             }
         }
     }
