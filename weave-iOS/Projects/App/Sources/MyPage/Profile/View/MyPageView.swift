@@ -49,6 +49,16 @@ struct MyPageView: View {
                         .padding(.horizontal, 16)
                     }
                 }
+                .weaveAlert(
+                    isPresented: viewStore.$isShowCompleteUnivVerifyAlert,
+                    title: "✅\n대학교 인증 완료!",
+                    message: "이제 내 팀을 만들 수 있어요.\n지금 바로 내 팀을 만들러 가볼까요?",
+                    primaryButtonTitle: "네, 좋아요",
+                    secondaryButtonTitle: "나중에",
+                    primaryAction: {
+                        
+                    }
+                )
                 .onAppear {
                     viewStore.send(.requestMyUserInfo)
                 }
@@ -68,6 +78,14 @@ struct MyPageView: View {
                         .foregroundStyle(.white)
                     }
                 })
+            }
+            // 대학교 인증
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.univVerify,
+                action: MyPageFeature.Destination.Action.univVerify
+            ) { store in
+                UnivEmailInputView(store: store)
             }
             // MBTI
             .sheet(
