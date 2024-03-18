@@ -57,7 +57,7 @@ final class PathModel: ObservableObject {
     }
     
     private init() {
-        if !UDManager.isLogin {
+        if UDManager.isLogin {
             currentRoot = .mainView
         } else {
             currentRoot = .loginView

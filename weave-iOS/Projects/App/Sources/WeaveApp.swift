@@ -25,7 +25,12 @@ struct WeaveApp: App {
     var body: some Scene {
         WindowGroup {
             AppView()
-                .environmentObject(pathModel)
+                .onOpenURL(perform: { url in
+                    if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                        AuthController.handleOpenUrl(url: url)
+                    }
+                })
         }
+        .environmentObject(pathModel)
     }
 }
