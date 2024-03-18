@@ -10,8 +10,6 @@ import Services
 import ComposableArchitecture
 
 struct AppTabViewFeature: Reducer {
-    @Binding var rootview: RootViewType
-    
     struct State: Equatable {
         @BindingState var selection: AppScreen = .home
     }
@@ -23,6 +21,8 @@ struct AppTabViewFeature: Reducer {
         case requestMyUserInfo
         case fetchMyUserInfo(userInfo: MyUserInfoResponseDTO)
     }
+    
+    @Dependency(\.pathModel) var pathModel
     
     var body: some ReducerOf<Self> {
         BindingReducer()

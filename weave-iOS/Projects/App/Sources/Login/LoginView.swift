@@ -12,7 +12,7 @@ import ComposableArchitecture
 
 struct LoginView: View {
     
-    @Binding var rootview: RootViewType
+    @Binding var rootview: PathModel.RootViewType
     
     var body: some View {
         VStack {

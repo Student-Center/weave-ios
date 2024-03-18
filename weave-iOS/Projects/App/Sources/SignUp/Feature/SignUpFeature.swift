@@ -11,7 +11,7 @@ import DesignSystem
 import Services
 
 struct SignUpFeature: Reducer {
-    @Binding var rootView: RootViewType
+    @Binding var rootView: PathModel.RootViewType
     
     struct State: Equatable {
         let registerToken: String

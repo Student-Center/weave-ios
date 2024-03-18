@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import Services
 
 struct SettingFeautre: Reducer {
     
@@ -18,8 +19,8 @@ struct SettingFeautre: Reducer {
     enum Action: BindableAction {
         case inform
         case didTappedSubViews(view: SettingCategoryTypes.SettingSubViewTypes)
-        case showLogoutAlert
-        case showUnregisterAlert
+        case showLogoutAlert(model: PathModel)
+        case showUnregisterAlert(model: PathModel)
         case binding(BindingAction<State>)
     }
     
@@ -41,29 +42,30 @@ struct SettingFeautre: Reducer {
                     state.isShowUnregisterAlert = true
                 }
                 return .none
-            case .showLogoutAlert:
+            case .showLogoutAlert(let pathModel):
+                UDManager.accessToken = ""
+                UDManager.refreshToken = ""
+                pathModel.currentRoot = .loginView
                 return .none
+            case .showUnregisterAlert(let pathModel):
+                pathModel.currentRoot = .loginView
+                return .run { send in
+                    // TODO: -
+                    UDManager.accessToken = ""
+                    UDManager.refreshToken = ""
+                } catch: { error, send in
+                    // TODO:
+                }
             case .binding(_):
                 return .none
             }
         }
     }
+    
+    func requestUnregist() async throws -> MeetingTeamDetailResponseDTO {
+        let endPoint = APIEndpoints.getMeetingTeamDetail(teamId: "teamId")
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
+    }
 }
-
-//MARK: - Destination
-//extension SettingFeautre {
-//    struct Destination: Reducer {
-//        enum State: Equatable {
-//            case
-//        }
-//        
-//        enum Action {
-//            
-//        }
-//        
-//        var body: some ReducerOf<Self> {
-//            Scope(state: /State, action: <#T##CaseKeyPath<_, ChildAction>#>, child: <#T##() -> _#>)
-//        }
-//    }
-//    
-//}

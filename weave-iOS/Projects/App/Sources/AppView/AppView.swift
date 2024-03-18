@@ -9,31 +9,23 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-    @State var rootView: RootViewType
-    @StateObject private var pathModel = PathModel()
+    @EnvironmentObject private var pathModel: PathModel
     
-    init() {
-        if UDManager.isLogin {
-            rootView = .mainView
-        } else {
-            rootView = .loginView
-        }
-    }
-
     var body: some View {
         NavigationStack(path: $pathModel.paths) {
-            switch rootView {
+            switch pathModel.currentRoot {
             case .mainView:
                 AppTabView(
                     store: Store(
                         initialState: AppTabViewFeature.State(),
                         reducer: {
-                            AppTabViewFeature(rootview: $rootView)
+                            AppTabViewFeature()
                         }
                     )
                 )
+                .environmentObject(pathModel)
             case .loginView:
-                LoginView(rootview: $rootView)
+                LoginView(rootview: $pathModel.currentRoot)
             case .signUpView(let registToken):
                 SignUpView(
                     store: Store(
@@ -41,7 +33,7 @@ struct AppView: View {
                             registerToken: registToken
                         )
                     ) {
-                        SignUpFeature(rootView: $rootView)
+                        SignUpFeature(rootView: $pathModel.currentRoot)
                     }
                 )
             }
@@ -49,17 +41,26 @@ struct AppView: View {
     }
 }
 
-enum RootViewType: Hashable {
-    case mainView
-    case loginView
-    case signUpView(registToken: String)
-}
 
 
-class PathModel: ObservableObject {
-    @Published var paths: [RootViewType]
+
+final class PathModel: ObservableObject {
+    @Published var paths: [RootViewType] = []
+    @Published var currentRoot: RootViewType
     
-    init(paths: [RootViewType] = []) {
-        self.paths = paths
+    static let shared: PathModel = PathModel()
+    
+    enum RootViewType: Hashable {
+        case mainView
+        case loginView
+        case signUpView(registToken: String)
+    }
+    
+    private init() {
+        if !UDManager.isLogin {
+            currentRoot = .mainView
+        } else {
+            currentRoot = .loginView
+        }
     }
 }
