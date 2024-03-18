@@ -12,12 +12,14 @@ struct SettingFeautre: Reducer {
     
     struct State: Equatable {
         @BindingState var isShowLogoutAlert: Bool = false
+        @BindingState var isShowUnregisterAlert: Bool = false
     }
     
     enum Action: BindableAction {
         case inform
         case didTappedSubViews(view: SettingCategoryTypes.SettingSubViewTypes)
         case showLogoutAlert
+        case showUnregisterAlert
         case binding(BindingAction<State>)
     }
     
@@ -35,7 +37,8 @@ struct SettingFeautre: Reducer {
                     }
                 case .logout:
                     state.isShowLogoutAlert = true
-                case .unregister: break
+                case .unregister:
+                    state.isShowUnregisterAlert = true
                 }
                 return .none
             case .showLogoutAlert:

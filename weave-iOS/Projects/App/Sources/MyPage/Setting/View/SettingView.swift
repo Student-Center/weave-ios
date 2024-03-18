@@ -54,6 +54,16 @@ struct SettingView: View {
                     viewStore.send(.showLogoutAlert)
                 }
             )
+            .weaveAlert(
+                isPresented: viewStore.$isShowUnregisterAlert,
+                title: "정말 떠나시는 건가요..🥲",
+                message: "조금만 있으면 새로운 기능들이 추가돼요!\n 한번 더 생각해보시는 건 어떠세요?",
+                primaryButtonTitle: "탈퇴할래요",
+                secondaryButtonTitle: "아니요",
+                primaryAction: {
+                    viewStore.send(.showUnregisterAlert)
+                }
+            )
         }
     }
 }
