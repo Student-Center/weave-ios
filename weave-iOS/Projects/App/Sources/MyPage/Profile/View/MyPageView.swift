@@ -82,6 +82,13 @@ struct MyPageView: View {
                     }
                 })
             }
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.presentSetting,
+                action: MyPageFeature.Destination.Action.presentSetting
+            ) { store in
+                SettingView(store: store)
+            }
             // 대학교 인증
             .navigationDestination(
                 store: self.store.scope(state: \.$destination, action: { .destination($0) }),
