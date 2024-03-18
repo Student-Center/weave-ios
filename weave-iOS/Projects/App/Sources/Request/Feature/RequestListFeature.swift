@@ -20,7 +20,6 @@ struct RequestListFeature: Reducer {
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedMeetingView(index: Int, type: RequestListType)
-        
         case onAppear(type: RequestListType)
         case fetchData(dto: RequestMeetingListResponseDTO, type: RequestListType)
         case destination(PresentationAction<Destination.Action>)
@@ -67,6 +66,10 @@ struct RequestListFeature: Reducer {
                 state.destination = nil
                 return .none
                 
+            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
+                state.destination = nil
+                return .none
+
             case .binding(_):
                 return .none
                 
