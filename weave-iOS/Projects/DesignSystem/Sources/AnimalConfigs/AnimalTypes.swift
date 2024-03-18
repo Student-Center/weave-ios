@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import DesignSystem
 
-enum AnimalTypes: String, CaseIterable {
+public enum AnimalTypes: String, CaseIterable {
     case puppy = "PUPPY"
     case cat = "CAT"
     case fox = "FOX"
@@ -33,15 +32,15 @@ enum AnimalTypes: String, CaseIterable {
 }
 
 extension AnimalTypes: LeftAlignListFetchable, Identifiable {
-    var text: String {
+    public var text: String {
         return "\(imoji) \(animalName)상"
     }
     
-    var id: String {
+    public var id: String {
         return self.rawValue
     }
     
-    var animalName: String {
+    public var animalName: String {
         switch self {
         case .puppy: return "강아지"
         case .cat: return "고양이"
@@ -67,7 +66,7 @@ extension AnimalTypes: LeftAlignListFetchable, Identifiable {
         }
     }
     
-    var imoji: String {
+    public var imoji: String {
         switch self {
         case .puppy: return "🐶"
         case .cat: return "😸"
@@ -93,7 +92,7 @@ extension AnimalTypes: LeftAlignListFetchable, Identifiable {
         }
     }
     
-    var requestValue: String {
+    public var requestValue: String {
         return self.rawValue
     }
 }
