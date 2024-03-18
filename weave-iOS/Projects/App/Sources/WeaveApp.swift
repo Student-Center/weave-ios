@@ -15,6 +15,8 @@ import KakaoSDKUser
 struct WeaveApp: App {
     
     init() {
+        UDManager.accessToken = SecretKey.token
+        UDManager.refreshToken = SecretKey.token
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
     }

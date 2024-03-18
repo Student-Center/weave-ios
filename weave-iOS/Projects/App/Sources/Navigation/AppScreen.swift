@@ -62,7 +62,9 @@ extension AppScreen {
                 MeetingTeamListFeature()
             }))
         case .request:
-            RequestView()
+            RequestListView(store: Store(initialState: RequestListFeature.State(), reducer: {
+                RequestListFeature()
+            }))
         case .myTeam:
             MyTeamView(store: Store(initialState: MyTeamFeature.State(), reducer: {
                 MyTeamFeature()
