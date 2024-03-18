@@ -88,7 +88,6 @@ struct MyPageView: View {
                 action: MyPageFeature.Destination.Action.presentSetting
             ) { store in
                 SettingView(store: store)
-//                    .environmentObject(PathModel.shared)
             }
             // 대학교 인증
             .navigationDestination(
