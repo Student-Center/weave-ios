@@ -129,7 +129,7 @@ struct RequestMeetingItemModel: Equatable {
     func getTimeDiffValueFromNow(to targetTimeString: String) -> String? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
-        dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+        dateFormatter.timeZone = TimeZone(abbreviation: "KST")
 
         guard let targetTime = dateFormatter.date(from: targetTimeString) else {
             return "잘못된 날짜"
@@ -153,21 +153,32 @@ struct RequestMeetingItemModel: Equatable {
     }
 }
 
-struct RequestMeetingTeamInfoModel {
+struct RequestMeetingTeamInfoModel: Equatable {
     let id: String
     let teamIntroduce: String
     let memberCount: Int
     let gender: String
-    let memberInfos: [RequestMeetingMemberInfoModel]
+    var memberInfos: [RequestMeetingMemberInfoModel]
 }
 
-struct RequestMeetingMemberInfoModel {
+struct RequestMeetingMemberInfoModel: Equatable {
     let id: String
     let userId: String
     let universityName: String
     let mbti: String?
     let birthYear: Int
     let animalType: AnimalTypes?
+    var isAttendance: Bool?
+    
+    init(id: String, userId: String, universityName: String, mbti: String?, birthYear: Int, animalType: AnimalTypes?, isAttendance: Bool? = nil) {
+        self.id = id
+        self.userId = userId
+        self.universityName = universityName
+        self.mbti = mbti
+        self.birthYear = birthYear
+        self.animalType = animalType
+        self.isAttendance = isAttendance
+    }
     
     var memberInfoValue: String {
         return "\(universityName)•\(birthYear.toShortBirthYear())"
