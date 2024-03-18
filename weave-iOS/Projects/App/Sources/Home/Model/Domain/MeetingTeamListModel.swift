@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreKit
 
 struct MeetingTeamListModel: Equatable {
     let items: [MeetingTeamModel]
@@ -34,20 +35,5 @@ struct MeetingMemberModel: Equatable, Hashable {
     var userInfoString: String {
         // ToDo - 알맞게 패턴 처리
         return "\(universityName.toShortUnivName())・\(birthYear.toShortBirthYear())\n\(mbti)"
-    }
-}
-
-//MARK: - Extension - 추후 Core 모듈로
-extension Int {
-    func toShortBirthYear() -> String {
-        let birthYear = String(self)
-        guard birthYear.count > 2 else { return "N/A" }
-        return String(birthYear.suffix(2))
-    }
-}
-
-extension String {
-    func toShortUnivName() -> String {
-        return self.replacingOccurrences(of: "대학교", with: "대")
     }
 }
