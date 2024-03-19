@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 struct AppTabView: View {
     var store: StoreOf<AppTabViewFeature>
-    @EnvironmentObject private var pathModel: PathModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in

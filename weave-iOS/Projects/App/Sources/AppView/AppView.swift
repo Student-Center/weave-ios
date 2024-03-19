@@ -9,11 +9,11 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-    @EnvironmentObject private var pathModel: PathModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     var body: some View {
-        NavigationStack(path: $pathModel.paths) {
-            switch pathModel.currentRoot {
+        NavigationStack(path: $coordinator.paths) {
+            switch coordinator.currentRoot {
             case .mainView:
                 AppTabView(
                     store: Store(
@@ -23,9 +23,10 @@ struct AppView: View {
                         }
                     )
                 )
-                .environmentObject(pathModel)
+                .environmentObject(coordinator)
             case .loginView:
-                LoginView(rootview: $pathModel.currentRoot)
+                LoginView()
+                    .environmentObject(coordinator)
             case .signUpView(let registToken):
                 SignUpView(
                     store: Store(
@@ -33,9 +34,10 @@ struct AppView: View {
                             registerToken: registToken
                         )
                     ) {
-                        SignUpFeature(rootView: $pathModel.currentRoot)
+                        SignUpFeature()
                     }
                 )
+                .environmentObject(coordinator)
             }
         }
     }
@@ -44,11 +46,11 @@ struct AppView: View {
 
 
 
-final class PathModel: ObservableObject {
+@MainActor final class AppCoordinator: ObservableObject {
     @Published var paths: [RootViewType] = []
-    @Published var currentRoot: RootViewType
+    @Published private(set) var currentRoot: RootViewType
     
-    static let shared: PathModel = PathModel()
+    static let shared: AppCoordinator = AppCoordinator()
     
     enum RootViewType: Hashable {
         case mainView
@@ -56,6 +58,13 @@ final class PathModel: ObservableObject {
         case signUpView(registToken: String)
     }
     
+    public func changeRoot(to viewType: RootViewType) {
+        currentRoot = viewType
+    }
+    
+    public func appendPath(_ path: RootViewType) {
+        paths.append(path)
+    }
     private init() {
         if UDManager.isLogin {
             currentRoot = .mainView

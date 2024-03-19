@@ -13,7 +13,7 @@ import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
-    @StateObject private var pathModel: PathModel = PathModel.shared
+    @StateObject private var coordinator: AppCoordinator = AppCoordinator.shared
     
     init() {
         UDManager.accessToken = SecretKey.token
@@ -31,6 +31,6 @@ struct WeaveApp: App {
                     }
                 })
         }
-        .environmentObject(pathModel)
+        .environmentObject(coordinator)
     }
 }

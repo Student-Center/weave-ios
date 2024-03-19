@@ -22,8 +22,6 @@ struct AppTabViewFeature: Reducer {
         case fetchMyUserInfo(userInfo: MyUserInfoResponseDTO)
     }
     
-    @Dependency(\.pathModel) var pathModel
-    
     var body: some ReducerOf<Self> {
         BindingReducer()
         

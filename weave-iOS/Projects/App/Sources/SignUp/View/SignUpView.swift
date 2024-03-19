@@ -85,7 +85,7 @@ struct SignUpView: View {
                 registerToken: ""
             )
         ) {
-            SignUpFeature(rootView: .constant(.mainView))
+            SignUpFeature()
         }
     )
 }

@@ -19,8 +19,8 @@ struct SettingFeautre: Reducer {
     enum Action: BindableAction {
         case inform
         case didTappedSubViews(view: SettingCategoryTypes.SettingSubViewTypes)
-        case showLogoutAlert(model: PathModel)
-        case showUnregisterAlert(model: PathModel)
+        case showLogoutAlert(model: AppCoordinator)
+        case showUnregisterAlert(model: AppCoordinator)
         case binding(BindingAction<State>)
     }
     
@@ -42,19 +42,22 @@ struct SettingFeautre: Reducer {
                     state.isShowUnregisterAlert = true
                 }
                 return .none
-            case .showLogoutAlert(let pathModel):
-                UDManager.accessToken = ""
-                UDManager.refreshToken = ""
-                pathModel.currentRoot = .loginView
-                return .none
-            case .showUnregisterAlert(let pathModel):
-                pathModel.currentRoot = .loginView
+            case .showLogoutAlert(let coordinator):
                 return .run { send in
-                    // TODO: -
-                    UDManager.accessToken = ""
-                    UDManager.refreshToken = ""
+                    try await requestLogout()
+                    resetLoginToken(with: coordinator)
                 } catch: { error, send in
-                    // TODO:
+                    print(error)
+                    resetLoginToken(with: coordinator)
+                }
+                
+            case .showUnregisterAlert(let coordinator):
+                return .run { send in
+                    try await requestUnregist()
+                    resetLoginToken(with: coordinator)
+                } catch: { error, send in
+                    print(error)
+                    resetLoginToken(with: coordinator)
                 }
             case .binding(_):
                 return .none
@@ -62,10 +65,23 @@ struct SettingFeautre: Reducer {
         }
     }
     
-    func requestUnregist() async throws -> MeetingTeamDetailResponseDTO {
-        let endPoint = APIEndpoints.getMeetingTeamDetail(teamId: "teamId")
+    private func requestLogout() async throws {
+        let endPoint = APIEndpoints.postLogout()
         let provider = APIProvider()
-        let response = try await provider.request(with: endPoint)
-        return response
+        try await provider.requestWithNoResponse(with: endPoint, successCode: 200)
+    }
+    
+    private func requestUnregist() async throws {
+        let endPoint = APIEndpoints.deleteUnregister()
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
+    }
+    
+    private func resetLoginToken(with coordinator: AppCoordinator) {
+        UDManager.accessToken = ""
+        UDManager.refreshToken = ""
+        Task {
+            await coordinator.changeRoot(to: .loginView)
+        }
     }
 }

@@ -9,18 +9,8 @@ import SwiftUI
 import ComposableArchitecture
 import DesignSystem
 
-enum PathModelKey: DependencyKey {
-    static var liveValue: PathModel = PathModel.shared
-}
-
-extension DependencyValues {
-    var pathModel: PathModel {
-        get { self[PathModelKey.self] }
-        set { self[PathModelKey.self] = newValue }
-    }
-}
 struct SettingView: View {
-    @EnvironmentObject private var pathModel: PathModel
+    @EnvironmentObject private var coordinator: AppCoordinator
     let store: StoreOf<SettingFeautre>
     
     var body: some View {
@@ -60,8 +50,7 @@ struct SettingView: View {
                 primaryButtonTitle: "네, 할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showLogoutAlert(model: pathModel))
-//                    viewStore.send(.showLogoutAlert)
+                    viewStore.send(.showLogoutAlert(model: coordinator))
                 }
             )
             .weaveAlert(
@@ -71,8 +60,7 @@ struct SettingView: View {
                 primaryButtonTitle: "탈퇴할래요",
                 secondaryButtonTitle: "아니요",
                 primaryAction: {
-                    viewStore.send(.showUnregisterAlert(model: pathModel))
-//                    viewStore.send(.showUnregisterAlert)
+                    viewStore.send(.showUnregisterAlert(model: coordinator))
                 }
             )
         }
