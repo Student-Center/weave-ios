@@ -13,10 +13,9 @@ import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
+    @StateObject private var coordinator: AppCoordinator = AppCoordinator.shared
     
     init() {
-        UDManager.accessToken = SecretKey.token
-        UDManager.refreshToken = SecretKey.token
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
     }
@@ -24,6 +23,12 @@ struct WeaveApp: App {
     var body: some Scene {
         WindowGroup {
             AppView()
+                .onOpenURL(perform: { url in
+                    if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                        AuthController.handleOpenUrl(url: url)
+                    }
+                })
         }
+        .environmentObject(coordinator)
     }
 }

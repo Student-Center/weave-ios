@@ -41,7 +41,7 @@ struct ChatView: View {
         store: Store(
             initialState: AppTabViewFeature.State(selection: .chat),
             reducer: {
-                AppTabViewFeature(rootview: .constant(.mainView))
+                AppTabViewFeature()
             }
         )
     )

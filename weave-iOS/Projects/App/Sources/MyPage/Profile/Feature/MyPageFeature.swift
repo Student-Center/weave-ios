@@ -62,6 +62,7 @@ struct MyPageFeature: Reducer {
                 return .none
                 
             case .didTappedPreferenceButton:
+                state.destination = .presentSetting(.init())
                 return .none
                 
             case .didTappedProfileView:
@@ -190,18 +191,23 @@ struct MyPageFeature: Reducer {
 extension MyPageFeature {
     struct Destination: Reducer {
         enum State: Equatable {
+            case presentSetting(SettingFeautre.State)
             case editMbti(MyMbtiEditFeature.State)
             case editAnimal(MyAnimalSelectionFeature.State)
             case editHeight(MyHeightEditFeature.State)
             case univVerify(UnivEmailInputFeature.State)
         }
         enum Action {
+            case presentSetting(SettingFeautre.Action)
             case editMbti(MyMbtiEditFeature.Action)
             case editAnimal(MyAnimalSelectionFeature.Action)
             case editHeight(MyHeightEditFeature.Action)
             case univVerify(UnivEmailInputFeature.Action)
         }
         var body: some ReducerOf<Self> {
+            Scope(state: /State.presentSetting, action: /Action.presentSetting) {
+                SettingFeautre()
+            }
             Scope(state: /State.editMbti, action: /Action.editMbti) {
                 MyMbtiEditFeature()
             }

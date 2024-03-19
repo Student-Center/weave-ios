@@ -11,7 +11,7 @@ import DesignSystem
 import Services
 
 struct SignUpFeature: Reducer {
-    @Binding var rootView: RootViewType
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     struct State: Equatable {
         let registerToken: String
@@ -183,11 +183,11 @@ struct SignUpFeature: Reducer {
                 return .none
                 
             case .didCompleteSignUp:
-                rootView = .mainView
+                coordinator.changeRoot(to: .mainView)
                 return .none
                 
             case .dismissSignUp:
-                rootView = .loginView
+                coordinator.changeRoot(to: .loginView)
                 return .none
                 
             default: return .none

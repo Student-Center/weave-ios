@@ -10,8 +10,6 @@ import Services
 import ComposableArchitecture
 
 struct AppTabViewFeature: Reducer {
-    @Binding var rootview: RootViewType
-    
     struct State: Equatable {
         @BindingState var selection: AppScreen = .home
     }

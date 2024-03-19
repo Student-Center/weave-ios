@@ -9,31 +9,24 @@ import SwiftUI
 import ComposableArchitecture
 
 struct AppView: View {
-    @State var rootView: RootViewType
-    @StateObject private var pathModel = PathModel()
+    @EnvironmentObject private var coordinator: AppCoordinator
     
-    init() {
-        if UDManager.isLogin {
-            rootView = .mainView
-        } else {
-            rootView = .loginView
-        }
-    }
-
     var body: some View {
-        NavigationStack(path: $pathModel.paths) {
-            switch rootView {
+        NavigationStack(path: $coordinator.paths) {
+            switch coordinator.currentRoot {
             case .mainView:
                 AppTabView(
                     store: Store(
                         initialState: AppTabViewFeature.State(),
                         reducer: {
-                            AppTabViewFeature(rootview: $rootView)
+                            AppTabViewFeature()
                         }
                     )
                 )
+                .environmentObject(coordinator)
             case .loginView:
-                LoginView(rootview: $rootView)
+                LoginView()
+                    .environmentObject(coordinator)
             case .signUpView(let registToken):
                 SignUpView(
                     store: Store(
@@ -41,25 +34,42 @@ struct AppView: View {
                             registerToken: registToken
                         )
                     ) {
-                        SignUpFeature(rootView: $rootView)
+                        SignUpFeature()
                     }
                 )
+                .environmentObject(coordinator)
             }
         }
     }
 }
 
-enum RootViewType: Hashable {
-    case mainView
-    case loginView
-    case signUpView(registToken: String)
-}
 
 
-class PathModel: ObservableObject {
-    @Published var paths: [RootViewType]
+
+@MainActor final class AppCoordinator: ObservableObject {
+    @Published var paths: [RootViewType] = []
+    @Published private(set) var currentRoot: RootViewType
     
-    init(paths: [RootViewType] = []) {
-        self.paths = paths
+    static let shared: AppCoordinator = AppCoordinator()
+    
+    enum RootViewType: Hashable {
+        case mainView
+        case loginView
+        case signUpView(registToken: String)
+    }
+    
+    public func changeRoot(to viewType: RootViewType) {
+        currentRoot = viewType
+    }
+    
+    public func appendPath(_ path: RootViewType) {
+        paths.append(path)
+    }
+    private init() {
+        if UDManager.isLogin {
+            currentRoot = .mainView
+        } else {
+            currentRoot = .loginView
+        }
     }
 }

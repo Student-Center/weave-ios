@@ -285,7 +285,7 @@ fileprivate struct MyTeamEmptyMemberView: View {
         store: Store(
             initialState: AppTabViewFeature.State(selection: .myTeam),
             reducer: {
-                AppTabViewFeature(rootview: .constant(.mainView))
+                AppTabViewFeature()
             }
         )
     )
