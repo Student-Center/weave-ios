@@ -9,7 +9,7 @@ import Foundation
 
 enum RequestListType: Int {
     case requesting = 1
-    case receiving = 
+    case receiving = 0
     
     var requestValue: String {
         switch self {

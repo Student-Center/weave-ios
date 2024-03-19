@@ -65,10 +65,6 @@ struct RequestListFeature: Reducer {
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
-                
-            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
-                state.destination = nil
-                return .none
 
             case .binding(_):
                 return .none
