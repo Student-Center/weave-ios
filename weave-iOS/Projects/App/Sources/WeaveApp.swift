@@ -16,8 +16,6 @@ struct WeaveApp: App {
     @StateObject private var coordinator: AppCoordinator = AppCoordinator.shared
     
     init() {
-        UDManager.accessToken = SecretKey.token
-        UDManager.refreshToken = SecretKey.token
         // Kakao SDK 초기화
         KakaoSDK.initSDK(appKey: SecretKey.kakaoNativeKey)
     }
