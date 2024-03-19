@@ -24,6 +24,10 @@ struct MeetingMatchView: View {
                                 title: "상대 팀",
                                 teamInfo: viewStore.partnerTeamModel
                             )
+                            .containerShape(Rectangle())
+                            .onTapGesture {
+                                viewStore.send(.didTappedPartnerTeam)
+                            }
                             MeetingMatchTeamView(
                                 title: "내 팀",
                                 teamInfo: viewStore.myTeamModel
@@ -106,6 +110,13 @@ struct MeetingMatchView: View {
                     message: "다른 인원들이 의사를 결정할 때 까지 조금만 기다려주세요!",
                     primaryButtonTitle: "네 알겠어요!"
                 )
+                .navigationDestination(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MeetingMatchFeature.Destination.State.matchProfile,
+                    action: MeetingMatchFeature.Destination.Action.matchProfile
+                ) { store in
+                    MeetingMatchProfileView(store: store)
+                }
                 .onAppear {
                     viewStore.send(.onAppear)
                 }

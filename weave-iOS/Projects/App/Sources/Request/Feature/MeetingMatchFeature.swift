@@ -35,6 +35,8 @@ struct MeetingMatchFeature: Reducer {
         case didTappedBackButton
         case didTappedAttendButton
         case didTappedPassButton
+        case didTappedPartnerTeam
+        
         case requestAttend
         case requestPass
         case completeRequest(type: MatchActionType)
@@ -71,6 +73,10 @@ struct MeetingMatchFeature: Reducer {
                 
             case .didTappedPassButton:
                 state.isShowPassAlert.toggle()
+                return .none
+                
+            case .didTappedPartnerTeam:
+                state.destination  = .matchProfile(.init())
                 return .none
                 
             case .requestAttend:
@@ -111,10 +117,6 @@ struct MeetingMatchFeature: Reducer {
                 return .none
                 
             case .destination(.dismiss):
-                state.destination = nil
-                return .none
-                
-            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
                 state.destination = nil
                 return .none
                 
@@ -208,14 +210,14 @@ struct MeetingMatchFeature: Reducer {
 extension MeetingMatchFeature {
     struct Destination: Reducer {
         enum State: Equatable {
-            case generateMyTeam(GenerateMyTeamFeature.State)
+            case matchProfile(MeetingMatchProfileFeature.State)
         }
         enum Action {
-            case generateMyTeam(GenerateMyTeamFeature.Action)
+            case matchProfile(MeetingMatchProfileFeature.Action)
         }
         var body: some ReducerOf<Self> {
-            Scope(state: /State.generateMyTeam, action: /Action.generateMyTeam) {
-                GenerateMyTeamFeature()
+            Scope(state: /State.matchProfile, action: /Action.matchProfile) {
+                MeetingMatchProfileFeature()
             }
         }
     }
