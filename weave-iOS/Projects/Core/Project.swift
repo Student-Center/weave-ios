@@ -1,6 +1,6 @@
 import ProjectDescription
 
-let target = Target(
+let Services = Target(
     name: "Services",
     platform: .iOS,
     product: .staticFramework,
@@ -8,7 +8,19 @@ let target = Target(
     deploymentTarget: .iOS(targetVersion: "17.0",
                            devices: .iphone,
                            supportsMacDesignedForIOS: false),
-    sources: ["Sources/**"],
+    sources: ["Sources/Network/**"],
+    dependencies: []
+)
+
+let CoreKit = Target(
+    name: "CoreKit",
+    platform: .iOS,
+    product: .staticFramework,
+    bundleId: "com.studentcenter.weaveios.corekit",
+    deploymentTarget: .iOS(targetVersion: "17.0",
+                           devices: .iphone,
+                           supportsMacDesignedForIOS: false),
+    sources: ["Sources/CoreKit/**"],
     dependencies: []
 )
 
@@ -18,7 +30,7 @@ let project = Project(
     options: .options(),
     packages: [],
     settings: nil,
-    targets: [target],
+    targets: [Services, CoreKit],
     schemes: [],
     fileHeaderTemplate: nil,
     additionalFiles: [],

@@ -10,7 +10,10 @@ let target = Target(
                            supportsMacDesignedForIOS: false),
     sources: ["Sources/**"],
     resources: ["Resources/**"],
-    dependencies: []
+    dependencies: [
+        .project(target: "CoreKit",
+                 path: .relativeToRoot("Projects/Core")),
+    ]
 )
 
 let project = Project(

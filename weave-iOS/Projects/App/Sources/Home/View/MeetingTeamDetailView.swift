@@ -25,7 +25,16 @@ struct MeetingTeamDetailView: View {
                             
                             // 유저
                             ForEach(teamModel.members, id: \.userId) { member in
-                                MeetingTeamUserProfileView(member: member)
+                                let profileConfig = UserProfileBoxConfig(
+                                    mbti: member.mbti,
+                                    animal: member.animalType,
+                                    height: member.height,
+                                    univName: member.universityName,
+                                    majorName: member.majorName,
+                                    birthYear: member.birthYear,
+                                    isUnivVerified: member.isUnivVerified
+                                )
+                                UserProfileBoxView(config: profileConfig)
                             }
                         }
                         .padding(.vertical, 10)
@@ -145,61 +154,6 @@ struct MeetingTeamDetailView: View {
         }
     }
 }
-
-fileprivate struct MeetingTeamUserProfileView: View {
-    
-    let member: MeetingTeamDetailMemberModel
-    
-    var univVerifiedIcon: Image {
-        member.isUnivVerified ? DesignSystem.Icons.certified : DesignSystem.Icons.nonCertified
-    }
-    
-    fileprivate var body: some View {
-        VStack(spacing: 20) {
-            HStack(spacing: 8) {
-                if let mbti = member.mbti {
-                    RoundCornerBoxedTextView(mbti.description)
-                }
-                if let animalType = member.animalType {
-                    RoundCornerBoxedTextView(animalType.text)
-                }
-                if let height = member.height {
-                    RoundCornerBoxedTextView("📏 \(height)cm")
-                }
-                Spacer()
-            }
-            
-            HStack {
-                VStack(alignment: .leading, spacing: 5) {
-                    Spacer()
-                    HStack(spacing: 3) {
-                        Text(member.universityName)
-                        univVerifiedIcon
-                    }
-                    Text(member.majorName)
-                    Text("\(member.birthYear.toShortBirthYear())년생")
-                }
-                .font(.pretendard(._500, size: 16))
-                
-                Spacer()
-                
-                RoundedRectangle(cornerRadius: 10)
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(DesignSystem.Colors.lightGray)
-            }
-            .padding(.horizontal, 4)
-        }
-        .padding(.all, 12)
-        .background(DesignSystem.Colors.darkGray)
-        .clipShape(
-            RoundedRectangle(cornerRadius: 12)
-        )
-        .padding(.horizontal, 16)
-        .frame(height: 180)
-    }
-}
-
-
 
 #Preview {
     MeetingTeamDetailView(store: Store(initialState: MeetingTeamDetailFeature.State(teamId: ""), reducer: {
