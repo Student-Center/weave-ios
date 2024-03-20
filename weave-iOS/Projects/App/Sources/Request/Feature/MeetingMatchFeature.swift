@@ -36,6 +36,7 @@ struct MeetingMatchFeature: Reducer {
         case didTappedAttendButton
         case didTappedPassButton
         case didTappedPartnerTeam
+        case didTappedMyTeam
         
         case requestAttend
         case requestPass
@@ -76,7 +77,21 @@ struct MeetingMatchFeature: Reducer {
                 return .none
                 
             case .didTappedPartnerTeam:
-                state.destination  = .matchProfile(.init())
+                state.destination = .teamDetail(
+                    .init(
+                        viewType: .matchingPartner,
+                        teamId: state.partnerTeamModel.id
+                    )
+                )
+                return .none
+                
+            case .didTappedMyTeam:
+                state.destination = .teamDetail(
+                    .init(
+                        viewType: .myTeam,
+                        teamId: state.myTeamModel.id
+                    )
+                )
                 return .none
                 
             case .requestAttend:
@@ -84,16 +99,6 @@ struct MeetingMatchFeature: Reducer {
                     try await requestMatchAction(teamId: meetingId, actionType: .attend)
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
-//                    if let networkError = error as? NetworkError {
-//                        switch networkError {
-//                        case .invalidHttpStatusCode(let statusCode):
-//                            if statusCode == 400 {
-//                                await send.callAsFunction(.alreadyResponsed)
-//                            }
-//                        default: break
-//                            print("디폴트?")
-//                        }
-//                    }
                 }
                 
             case .requestPass:
@@ -210,30 +215,27 @@ struct MeetingMatchFeature: Reducer {
 extension MeetingMatchFeature {
     struct Destination: Reducer {
         enum State: Equatable {
-            case matchProfile(MeetingMatchProfileFeature.State)
+            case teamDetail(MeetingTeamDetailFeature.State)
         }
         enum Action {
-            case matchProfile(MeetingMatchProfileFeature.Action)
+            case teamDetail(MeetingTeamDetailFeature.Action)
         }
         var body: some ReducerOf<Self> {
-            Scope(state: /State.matchProfile, action: /Action.matchProfile) {
-                MeetingMatchProfileFeature()
+            Scope(state: /State.teamDetail, action: /Action.teamDetail) {
+                MeetingTeamDetailFeature()
             }
         }
     }
 }
 
-
-extension MeetingMatchFeature {
-    enum MatchActionType {
-        case attend
-        case pass
-        
-        var requestValue: String {
-            switch self {
-            case .attend: return "attend"
-            case .pass: return "pass"
-            }
+enum MatchActionType {
+    case attend
+    case pass
+    
+    var requestValue: String {
+        switch self {
+        case .attend: return "attend"
+        case .pass: return "pass"
         }
     }
 }

@@ -29,30 +29,48 @@ struct MeetingMatchProfileView: View {
                     }
                     
                     VStack {
-                        let profileViewConfig = UserProfileBoxConfig(
-                            mbti: .ENTJ,
-                            animal: .cat,
-                            height: 184,
-                            univName: "위브대학교",
-                            majorName: "위브어때학과",
-                            birthYear: 2005,
-                            isUnivVerified: true
-                        )
-                        UserProfileBoxView(config: profileViewConfig)
+                        ForEach(viewStore.partnerTeamModel.memberInfos, id: \.id) { member in
+                            let mbtiType = MBTIType(rawValue: member.mbti ?? "")
+                            let profileViewConfig = UserProfileBoxConfig(
+                                mbti: mbtiType,
+                                animal: member.animalType,
+                                height: nil,
+                                univName: member.universityName,
+                                majorName: "학과정보없음",
+                                birthYear: member.birthYear,
+                                isUnivVerified: true
+                            )
+                            UserProfileBoxView(config: profileViewConfig)
+                        }
                     }
                     .padding(.vertical, 20)
                 }
                 WeaveButton(title: "매칭 페이지로 이동", size: .large)
                     .padding(.horizontal, 16)
             }
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
-            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        viewStore.send(.didTappedBackButton)
+                    }, label: {
+                        HStack {
+                            Image(systemName: "chevron.left")
+                            Text(viewStore.partnerTeamModel.teamIntroduce)
+                                .font(.pretendard(._600, size: 16))
+                        }
+                    })
+                    .foregroundStyle(.white)
+                }
+            }
         }
     }
 }
 
 #Preview {
-    MeetingMatchProfileView(store: Store(initialState: MeetingMatchProfileFeature.State(), reducer: {
+    MeetingMatchProfileView(store: Store(initialState: MeetingMatchProfileFeature.State(meetingId: "", partnerTeamModel: .init(id: "", teamIntroduce: "", memberCount: 2, gender: "", memberInfos: [])), reducer: {
         MeetingMatchProfileFeature()
     }))
 }

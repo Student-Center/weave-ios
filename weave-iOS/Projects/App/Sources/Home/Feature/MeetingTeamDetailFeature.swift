@@ -13,13 +13,21 @@ struct MeetingTeamDetailFeature: Reducer {
     @Dependency(\.dismiss) var dismiss
     
     struct State: Equatable {
-        let teamId: String
+        var viewType: ViewType = .teamDetail
         
+        let teamId: String
         @BindingState var teamModel: MeetingTeamDetailModel?
         @BindingState var isShowRequestMeetingConfirmAlert = false
         @BindingState var isShowNeedUnivVerifyAlert = false
         @BindingState var isShowNoTeamAlert = false
         @BindingState var isShowRequestSuccessAlert = false
+        
+        var meetingId: String?
+        @BindingState var isShowAttendAlert = false
+        @BindingState var isShowPassAlert = false
+        @BindingState var isShowCompleteAttendAlert = false
+        @BindingState var isShowCompletePassAlert = false
+        @BindingState var isShowAlreadyResponseAlert = false
     }
     
     enum Action: BindableAction {
@@ -27,6 +35,14 @@ struct MeetingTeamDetailFeature: Reducer {
         case didTappedBackButton
         case didTappedShareButton
         case didTappedRequestMeetingButton
+        
+        // 매치 뷰에서 접근한 경우
+        case didTappedAttendButton
+        case didTappedPassButton
+        case requestAttend
+        case requestPass
+        case completeRequest(type: MatchActionType)
+        case alreadyResponsed
         
         //MARK: Alert Effect
         case makeTeamAction
@@ -74,6 +90,40 @@ struct MeetingTeamDetailFeature: Reducer {
                 state.isShowRequestSuccessAlert.toggle()
                 return .none
                 
+            // 미팅 참가
+            case .didTappedAttendButton:
+                state.isShowAttendAlert.toggle()
+                return .none
+                
+            case .didTappedPassButton:
+                state.isShowPassAlert.toggle()
+                return .none
+                
+            case .requestAttend:
+                guard let meetingId = state.meetingId else { return .none }
+                return .run { send in
+                    try await requestMatchAction(teamId: meetingId, actionType: .attend)
+                } catch: { error, send in
+                    await send.callAsFunction(.alreadyResponsed)
+                }
+                
+            case .requestPass:
+                guard let meetingId = state.meetingId else { return .none }
+                return .run { send in
+                    try await requestMatchAction(teamId: meetingId, actionType: .pass)
+                } catch: { error, send in
+                    await send.callAsFunction(.alreadyResponsed)
+                }
+                
+            case .completeRequest(let type):
+                switch type {
+                case .attend:
+                    state.isShowCompleteAttendAlert.toggle()
+                case .pass:
+                    state.isShowCompletePassAlert.toggle()
+                }
+                return .none
+                
             case .dismiss:
                 return .run { send in
                     await dismiss()
@@ -96,5 +146,19 @@ struct MeetingTeamDetailFeature: Reducer {
         let endPoint = APIEndpoints.getRequestMeeting(requestDTO: requestDTO)
         let provider = APIProvider()
         try await provider.requestWithNoResponse(with: endPoint)
+    }
+    
+    func requestMatchAction(teamId: String, actionType: MatchActionType) async throws {
+        let endPoint = APIEndpoints.getMeetingMatchAction(teamId: teamId, actionType: actionType)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint, successCode: 201)
+    }
+}
+
+extension MeetingTeamDetailFeature {
+    enum ViewType {
+        case teamDetail
+        case matchingPartner
+        case myTeam
     }
 }

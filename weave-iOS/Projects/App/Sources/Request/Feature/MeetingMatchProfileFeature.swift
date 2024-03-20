@@ -13,8 +13,10 @@ struct MeetingMatchProfileFeature: Reducer {
     @Dependency(\.dismiss) var dismiss
     
     struct State: Equatable {
+        let meetingId: String
+        @BindingState var partnerTeamModel: RequestMeetingTeamInfoModel
+        
         @PresentationState var destination: Destination.State?
-
     }
     
     enum Action: BindableAction {
@@ -22,6 +24,8 @@ struct MeetingMatchProfileFeature: Reducer {
         case didTappedBackButton
 
         case onAppear
+        case requestKakaoId
+        case fetchKakaoId(dto: MeetingTeamKakaoIdResponseDTO)
         case destination(PresentationAction<Destination.Action>)
         
         // bind
@@ -51,6 +55,20 @@ struct MeetingMatchProfileFeature: Reducer {
             case .onAppear:
                 return .none
                 
+            case .requestKakaoId:
+                return .run { [meetingId = state.meetingId] send in
+                    let response = try await requestKakaoId(meetingId: meetingId)
+                    await send.callAsFunction(.fetchKakaoId(dto: response))
+                }
+                
+            case .fetchKakaoId(let dto):
+                dto.members.forEach { member in
+                    if let index = state.partnerTeamModel.memberInfos.firstIndex(where: { $0.id == member.memberId }) {
+                        state.partnerTeamModel.memberInfos[index].kakaoId = member.kakaoId
+                    }
+                }
+                return .none
+                
             case .destination:
                 return .none
             }
@@ -58,6 +76,13 @@ struct MeetingMatchProfileFeature: Reducer {
         .ifLet(\.$destination, action: /Action.destination) {
             Destination()
         }
+    }
+    
+    func requestKakaoId(meetingId: String) async throws -> MeetingTeamKakaoIdResponseDTO {
+        let endPoint = APIEndpoints.getOtherTeamKakaoId(meetingId: meetingId)
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
     }
 }
 

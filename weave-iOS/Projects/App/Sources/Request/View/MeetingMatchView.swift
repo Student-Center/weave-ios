@@ -32,6 +32,10 @@ struct MeetingMatchView: View {
                                 title: "내 팀",
                                 teamInfo: viewStore.myTeamModel
                             )
+                            .containerShape(Rectangle())
+                            .onTapGesture {
+                                viewStore.send(.didTappedMyTeam)
+                            }
                             
                             Text("""
                                 모든 멤버가 참가 상태면
@@ -112,10 +116,10 @@ struct MeetingMatchView: View {
                 )
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-                    state: /MeetingMatchFeature.Destination.State.matchProfile,
-                    action: MeetingMatchFeature.Destination.Action.matchProfile
+                    state: /MeetingMatchFeature.Destination.State.teamDetail,
+                    action: MeetingMatchFeature.Destination.Action.teamDetail
                 ) { store in
-                    MeetingMatchProfileView(store: store)
+                    MeetingTeamDetailView(store: store)
                 }
                 .onAppear {
                     viewStore.send(.onAppear)
