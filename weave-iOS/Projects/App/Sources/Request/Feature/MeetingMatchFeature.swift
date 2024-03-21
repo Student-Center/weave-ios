@@ -89,7 +89,8 @@ struct MeetingMatchFeature: Reducer {
                 state.destination = .teamDetail(
                     .init(
                         viewType: .myTeam,
-                        teamId: state.myTeamModel.id
+                        teamId: state.myTeamModel.id,
+                        meetingId: state.meetingId
                     )
                 )
                 return .none
@@ -121,13 +122,20 @@ struct MeetingMatchFeature: Reducer {
                 case .pass:
                     state.isShowCompletePassAlert.toggle()
                 }
-                return .none
+                return .run { [id = state.meetingId] send in
+                    let response = try await requestAttendanceStatus(meetingId: id)
+                    await send.callAsFunction(.fetchData(dto: response))
+                }
                 
             case .alreadyResponsed:
                 state.isShowAlreadyResponseAlert.toggle()
                 return .none
                 
             case .destination(.dismiss):
+                state.destination = nil
+                return .none
+                
+            case .destination(.presented(.teamDetail(.completeRequest(_)))):
                 state.destination = nil
                 return .none
                 
