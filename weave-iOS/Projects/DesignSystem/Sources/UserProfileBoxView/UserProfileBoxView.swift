@@ -78,6 +78,7 @@ public struct UserProfileBoxView: View {
                     }
                     Text(config.majorName)
                     Text("\(config.birthYear.toShortBirthYear())년생")
+                    
                     if let kakaoId = config.kakaoId {
                         Text("ID : \(kakaoId)")
                             .foregroundStyle(DesignSystem.Colors.defaultBlue)

@@ -185,9 +185,3 @@ struct MemberIconView<Content: View>: View {
         }
     }
 }
-
-#Preview {
-    AppTabView(store: .init(initialState: AppTabViewFeature.State(selection: .request), reducer: {
-        AppTabViewFeature(rootview: .constant(.mainView))
-    }))
-}
