@@ -24,18 +24,19 @@ struct RequestListView: View {
                         getMeetingListView(
                             dataSources: viewStore.receivedDataSources,
                             type: .requesting
-                        ) { meetingId in
-                            print(meetingId)
+                        ) { index in
+                            guard let type = RequestListType(rawValue: selection) else { return }
+                            viewStore.send(.didTappedMeetingView(index: index, type: type))
                         }
                         .tag(0)
                         .onAppear {
-                            viewStore.send(.onAppear(type: .requesting))
+                            viewStore.send(.onAppear(type: .receiving))
                         }
                     } else {
                         getEmptyView()
                             .tag(0)
                             .onAppear {
-                                viewStore.send(.onAppear(type: .requesting))
+                                viewStore.send(.onAppear(type: .receiving))
                             }
                     }
                     
@@ -183,10 +184,4 @@ struct MemberIconView<Content: View>: View {
             .font(.pretendard(._600, size: 12))
         }
     }
-}
-
-#Preview {
-    AppTabView(store: .init(initialState: AppTabViewFeature.State(selection: .request), reducer: {
-        AppTabViewFeature(rootview: .constant(.mainView))
-    }))
 }

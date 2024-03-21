@@ -25,7 +25,7 @@ extension AppScreen {
         switch self {
         case .chat:
             Label {
-                Text("채팅")
+                Text("매칭")
             } icon: {
                 DesignSystem.Icons.chat
             }
@@ -56,7 +56,9 @@ extension AppScreen {
     var destination: some View {
         switch self {
         case .chat:
-            ChatView()
+            MatchedMeetingListView(store: Store(initialState: MatchedMeetingListFeature.State(), reducer: {
+                MatchedMeetingListFeature()
+            }))
         case .home:
             MeetingTeamListView(store: Store(initialState: MeetingTeamListFeature.State(), reducer: {
                 MeetingTeamListFeature()

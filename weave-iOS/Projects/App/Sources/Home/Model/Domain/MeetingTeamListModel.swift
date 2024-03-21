@@ -21,16 +21,22 @@ struct MeetingTeamModel: Equatable, Hashable {
     let memberCount: Int
     let gender: String?
     let location: String
-    let memberInfos: [MeetingMemberModel]
+    var memberInfos: [MeetingMemberModel]
 }
 
 // MARK: - MemberInfo
 struct MeetingMemberModel: Equatable, Hashable {
     let id: String
+    let UserId: String?
     let universityName: String
+    let majorName: String?
     let mbti: String
     let birthYear: Int
     let animalType: String?
+    let height: Int?
+    let isUnivVerified: Bool?
+    let avatar: String?
+    var kakaoId: String?
     
     var userInfoString: String {
         // ToDo - 알맞게 패턴 처리

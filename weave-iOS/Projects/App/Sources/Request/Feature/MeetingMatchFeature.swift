@@ -35,6 +35,9 @@ struct MeetingMatchFeature: Reducer {
         case didTappedBackButton
         case didTappedAttendButton
         case didTappedPassButton
+        case didTappedPartnerTeam
+        case didTappedMyTeam
+        
         case requestAttend
         case requestPass
         case completeRequest(type: MatchActionType)
@@ -73,26 +76,41 @@ struct MeetingMatchFeature: Reducer {
                 state.isShowPassAlert.toggle()
                 return .none
                 
+            case .didTappedPartnerTeam:
+                state.destination = .teamDetail(
+                    .init(
+                        viewType: .matchingPartner,
+                        teamId: state.partnerTeamModel.id
+                    )
+                )
+                return .none
+                
+            case .didTappedMyTeam:
+                state.destination = .teamDetail(
+                    .init(
+                        viewType: .myTeam,
+                        teamId: state.myTeamModel.id,
+                        meetingId: state.meetingId
+                    )
+                )
+                return .none
+                
             case .requestAttend:
                 return .run { [meetingId = state.meetingId] send in
                     try await requestMatchAction(teamId: meetingId, actionType: .attend)
+                    await send.callAsFunction(.completeRequest(type: .attend))
+                    let response = try await requestAttendanceStatus(meetingId: meetingId)
+                    await send.callAsFunction(.fetchData(dto: response))
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
-//                    if let networkError = error as? NetworkError {
-//                        switch networkError {
-//                        case .invalidHttpStatusCode(let statusCode):
-//                            if statusCode == 400 {
-//                                await send.callAsFunction(.alreadyResponsed)
-//                            }
-//                        default: break
-//                            print("디폴트?")
-//                        }
-//                    }
                 }
                 
             case .requestPass:
                 return .run { [meetingId = state.meetingId] send in
                     try await requestMatchAction(teamId: meetingId, actionType: .pass)
+                    await send.callAsFunction(.completeRequest(type: .pass))
+                    let response = try await requestAttendanceStatus(meetingId: meetingId)
+                    await send.callAsFunction(.fetchData(dto: response))
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
                 }
@@ -104,7 +122,10 @@ struct MeetingMatchFeature: Reducer {
                 case .pass:
                     state.isShowCompletePassAlert.toggle()
                 }
-                return .none
+                return .run { [id = state.meetingId] send in
+                    let response = try await requestAttendanceStatus(meetingId: id)
+                    await send.callAsFunction(.fetchData(dto: response))
+                }
                 
             case .alreadyResponsed:
                 state.isShowAlreadyResponseAlert.toggle()
@@ -114,7 +135,7 @@ struct MeetingMatchFeature: Reducer {
                 state.destination = nil
                 return .none
                 
-            case .destination(.presented(.generateMyTeam(.didSuccessedGenerateTeam))):
+            case .destination(.presented(.teamDetail(.completeRequest(_)))):
                 state.destination = nil
                 return .none
                 
@@ -208,30 +229,27 @@ struct MeetingMatchFeature: Reducer {
 extension MeetingMatchFeature {
     struct Destination: Reducer {
         enum State: Equatable {
-            case generateMyTeam(GenerateMyTeamFeature.State)
+            case teamDetail(MeetingTeamDetailFeature.State)
         }
         enum Action {
-            case generateMyTeam(GenerateMyTeamFeature.Action)
+            case teamDetail(MeetingTeamDetailFeature.Action)
         }
         var body: some ReducerOf<Self> {
-            Scope(state: /State.generateMyTeam, action: /Action.generateMyTeam) {
-                GenerateMyTeamFeature()
+            Scope(state: /State.teamDetail, action: /Action.teamDetail) {
+                MeetingTeamDetailFeature()
             }
         }
     }
 }
 
-
-extension MeetingMatchFeature {
-    enum MatchActionType {
-        case attend
-        case pass
-        
-        var requestValue: String {
-            switch self {
-            case .attend: return "attend"
-            case .pass: return "pass"
-            }
+enum MatchActionType {
+    case attend
+    case pass
+    
+    var requestValue: String {
+        switch self {
+        case .attend: return "attend"
+        case .pass: return "pass"
         }
     }
 }

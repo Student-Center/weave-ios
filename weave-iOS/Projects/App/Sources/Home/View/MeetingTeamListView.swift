@@ -76,9 +76,10 @@ struct MeetingTeamListView: View {
     }
 }
 
-fileprivate struct MeetingListItemView: View {
+struct MeetingListItemView: View {
     
     let teamModel: MeetingTeamModel
+    
     
     var body: some View {
         VStack(spacing: 20) {

@@ -169,8 +169,9 @@ struct RequestMeetingMemberInfoModel: Equatable {
     let birthYear: Int
     let animalType: AnimalTypes?
     var isAttendance: Bool?
+    var kakaoId: String?
     
-    init(id: String, userId: String, universityName: String, mbti: String?, birthYear: Int, animalType: AnimalTypes?, isAttendance: Bool? = nil) {
+    init(id: String, userId: String, universityName: String, mbti: String?, birthYear: Int, animalType: AnimalTypes?, isAttendance: Bool? = nil, kakoId: String? = nil) {
         self.id = id
         self.userId = userId
         self.universityName = universityName
@@ -178,6 +179,7 @@ struct RequestMeetingMemberInfoModel: Equatable {
         self.birthYear = birthYear
         self.animalType = animalType
         self.isAttendance = isAttendance
+//        self.kakaoId = kakaoId
     }
     
     var memberInfoValue: String {

@@ -17,6 +17,7 @@ public struct UserProfileBoxConfig {
     let majorName: String
     let birthYear: Int
     let isUnivVerified: Bool
+    let kakaoId: String?
     
     public init(
         mbti: MBTIType?,
@@ -26,7 +27,8 @@ public struct UserProfileBoxConfig {
         univName: String,
         majorName: String,
         birthYear: Int,
-        isUnivVerified: Bool
+        isUnivVerified: Bool,
+        kakaoId: String? = nil
     ) {
         self.mbti = mbti
         self.animal = animal
@@ -36,6 +38,7 @@ public struct UserProfileBoxConfig {
         self.majorName = majorName
         self.birthYear = birthYear
         self.isUnivVerified = isUnivVerified
+        self.kakaoId = kakaoId
     }
 }
 
@@ -75,6 +78,11 @@ public struct UserProfileBoxView: View {
                     }
                     Text(config.majorName)
                     Text("\(config.birthYear.toShortBirthYear())년생")
+                    
+                    if let kakaoId = config.kakaoId {
+                        Text("ID : \(kakaoId)")
+                            .foregroundStyle(DesignSystem.Colors.defaultBlue)
+                    }
                 }
                 .font(.pretendard(._500, size: 16))
                 
