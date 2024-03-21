@@ -16,11 +16,6 @@ struct MatchedMeetingListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                if viewStore.teamList == nil {
-                    getEmptyView {
-                        // ToDo - 홈 뷰로 이동
-                    }
-                }
                 ScrollView {
                     if let teamList = viewStore.teamList {
                         LazyVGrid(columns: [column], spacing: 16, content: {
@@ -33,6 +28,10 @@ struct MatchedMeetingListView: View {
                             }
                         })
                         .padding(.top, 20)
+                    } else {
+                        getEmptyView {
+                            // ToDo
+                        }
                     }
                 }
                 .onAppear {
