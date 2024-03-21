@@ -14,7 +14,7 @@ struct MeetingMatchProfileFeature: Reducer {
     
     struct State: Equatable {
         let meetingId: String
-        @BindingState var partnerTeamModel: RequestMeetingTeamInfoModel
+        @BindingState var partnerTeamModel: MeetingTeamModel
         
         @PresentationState var destination: Destination.State?
     }
@@ -22,6 +22,7 @@ struct MeetingMatchProfileFeature: Reducer {
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedBackButton
+        case didTappedGoToMatchingView
 
         case onAppear
         case requestKakaoId
@@ -45,6 +46,11 @@ struct MeetingMatchProfileFeature: Reducer {
                     await dismiss()
                 }
                 
+            case .didTappedGoToMatchingView:
+                return .run { send in
+                    await dismiss()
+                }
+                
             case .destination(.dismiss):
                 state.destination = nil
                 return .none
@@ -58,7 +64,7 @@ struct MeetingMatchProfileFeature: Reducer {
             case .requestKakaoId:
                 return .run { [meetingId = state.meetingId] send in
                     let response = try await requestKakaoId(meetingId: meetingId)
-                    await send.callAsFunction(.fetchKakaoId(dto: response))
+                    await send.callAsFunction(.fetchKakaoId(dto: response), animation: .easeInOut)
                 }
                 
             case .fetchKakaoId(let dto):

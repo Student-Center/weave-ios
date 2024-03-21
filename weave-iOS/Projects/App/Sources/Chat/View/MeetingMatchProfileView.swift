@@ -27,26 +27,35 @@ struct MeetingMatchProfileView: View {
                             .font(.pretendard(._400, size: 12))
                             .lineSpacing(4)
                     }
+                    .padding(.vertical, 16)
                     
                     VStack {
                         ForEach(viewStore.partnerTeamModel.memberInfos, id: \.id) { member in
-                            let mbtiType = MBTIType(rawValue: member.mbti ?? "")
+                            let mbtiType = MBTIType(rawValue: member.mbti)
+                            let animalType = AnimalTypes(rawValue: member.animalType ?? "")
                             let profileViewConfig = UserProfileBoxConfig(
                                 mbti: mbtiType,
-                                animal: member.animalType,
-                                height: nil,
+                                animal: animalType,
+                                height: member.height,
                                 univName: member.universityName,
                                 majorName: "학과정보없음",
                                 birthYear: member.birthYear,
-                                isUnivVerified: true
+                                isUnivVerified: true,
+                                kakaoId: member.kakaoId
                             )
                             UserProfileBoxView(config: profileViewConfig)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    viewStore.send(.requestKakaoId)
+                                }
                         }
                     }
                     .padding(.vertical, 20)
                 }
-                WeaveButton(title: "매칭 페이지로 이동", size: .large)
-                    .padding(.horizontal, 16)
+                WeaveButton(title: "매칭 페이지로 이동", size: .large) {
+                    viewStore.send(.didTappedGoToMatchingView)
+                }
+                .padding(.horizontal, 16)
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
@@ -67,10 +76,4 @@ struct MeetingMatchProfileView: View {
             }
         }
     }
-}
-
-#Preview {
-    MeetingMatchProfileView(store: Store(initialState: MeetingMatchProfileFeature.State(meetingId: "", partnerTeamModel: .init(id: "", teamIntroduce: "", memberCount: 2, gender: "", memberInfos: [])), reducer: {
-        MeetingMatchProfileFeature()
-    }))
 }

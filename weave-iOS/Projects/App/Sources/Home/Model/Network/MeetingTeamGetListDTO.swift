@@ -15,23 +15,7 @@ struct MeetingTeamGetListDTO: Codable {
     
     var toDomain: MeetingTeamListModel {
         return MeetingTeamListModel(
-            items: items.map { MeetingTeamModel(
-                id: $0.id,
-                teamIntroduce: $0.teamIntroduce,
-                memberCount: $0.memberCount,
-                gender: $0.gender,
-                location: $0.location,
-                memberInfos: $0.memberInfos.map { memberDTO in
-                    MeetingMemberModel(
-                        id: memberDTO.id,
-                        universityName: memberDTO.universityName,
-                        mbti: memberDTO.mbti,
-                        birthYear: memberDTO.birthYear,
-                        animalType: memberDTO.animalType
-                    )
-                }
-            )
-            },
+            items: items.map { $0.toDomain },
             next: next,
             total: total
         )
@@ -46,6 +30,17 @@ struct MeetingTeamDTO: Codable {
     let gender: String?
     let location: String
     let memberInfos: [MeetingMemberDTO]
+    
+    var toDomain: MeetingTeamModel {
+        MeetingTeamModel(
+            id: id,
+            teamIntroduce: teamIntroduce,
+            memberCount: memberCount,
+            gender: gender,
+            location: location,
+            memberInfos: memberInfos.map { $0.toDomain }
+        )
+    }
 }
 
 // MARK: - MemberInfo
@@ -55,6 +50,21 @@ struct MeetingMemberDTO: Codable {
     let mbti: String
     let birthYear: Int
     let animalType: String?
+    
+    var toDomain: MeetingMemberModel {
+        MeetingMemberModel(
+            id: id,
+            UserId: nil,
+            universityName: universityName,
+            majorName: nil,
+            mbti: mbti,
+            birthYear: birthYear,
+            animalType: animalType, 
+            height: nil,
+            isUnivVerified: nil,
+            avatar: nil
+        )
+    }
 }
 
 extension APIEndpoints {
