@@ -82,44 +82,52 @@ struct MyPageView: View {
                     }
                 })
             }
-//            // 대학교 인증
-//            .navigationDestination(
-//                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-//                state: /MyPageFeature.Destination.State.univVerify,
-//                action: MyPageFeature.Destination.Action.univVerify
-//            ) { store in
-//                UnivEmailInputView(store: store)
-//            }
-//            // MBTI
-//            .sheet(
-//                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-//                state: /MyPageFeature.Destination.State.editMbti,
-//                action: MyPageFeature.Destination.Action.editMbti
-//            ) { store in
-//                MyMbtiEditView(store: store)
-//                    .presentationDetents([.fraction(0.8)])
-//                    .presentationDragIndicator(.visible)
-//            }
-//            // 닮은 동물 선택
-//            .sheet(
-//                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-//                state: /MyPageFeature.Destination.State.editAnimal,
-//                action: MyPageFeature.Destination.Action.editAnimal
-//            ) { store in
-//                MyAnimalSelectionView(store: store)
-//                    .presentationDetents([.fraction(0.8)])
-//                    .presentationDragIndicator(.visible)
-//            }
-//            // 키 변경
-//            .sheet(
-//                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
-//                state: /MyPageFeature.Destination.State.editHeight,
-//                action: MyPageFeature.Destination.Action.editHeight
-//            ) { store in
-//                MyHeightEditView(store: store)
-//                    .presentationDetents([.fraction(0.8)])
-//                    .presentationDragIndicator(.visible)
-//            }
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.presentSetting,
+                action: MyPageFeature.Destination.Action.presentSetting
+            ) { store in
+                SettingView(store: store)
+                    .environmentObject(AppCoordinator.shared)
+            }
+            // 대학교 인증
+            .navigationDestination(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.univVerify,
+                action: MyPageFeature.Destination.Action.univVerify
+            ) { store in
+                UnivEmailInputView(store: store)
+            }
+            // MBTI
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editMbti,
+                action: MyPageFeature.Destination.Action.editMbti
+            ) { store in
+                MyMbtiEditView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
+            // 닮은 동물 선택
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editAnimal,
+                action: MyPageFeature.Destination.Action.editAnimal
+            ) { store in
+                MyAnimalSelectionView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
+            // 키 변경
+            .sheet(
+                store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                state: /MyPageFeature.Destination.State.editHeight,
+                action: MyPageFeature.Destination.Action.editHeight
+            ) { store in
+                MyHeightEditView(store: store)
+                    .presentationDetents([.fraction(0.8)])
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 }

@@ -11,8 +11,7 @@ import Services
 import ComposableArchitecture
 
 struct LoginView: View {
-    
-    @Binding var rootview: RootViewType
+    @EnvironmentObject private var coordinator: AppCoordinator
     
     var body: some View {
         VStack {
@@ -68,13 +67,13 @@ struct LoginView: View {
     
     private func landingToSignUp(idToken: String) {
         withAnimation {
-            rootview = .signUpView(registToken: idToken)
+            coordinator.changeRoot(to: .signUpView(registToken: idToken))
         }
     }
     
     private func landingToHomeView() {
         withAnimation {
-            rootview = .mainView
+            coordinator.changeRoot(to: .mainView)
         }
     }
 }

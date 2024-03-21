@@ -13,6 +13,7 @@ import KakaoSDKUser
 
 @main
 struct WeaveApp: App {
+    @StateObject private var coordinator: AppCoordinator = AppCoordinator.shared
     
     init() {
         // Kakao SDK 초기화
@@ -22,6 +23,12 @@ struct WeaveApp: App {
     var body: some Scene {
         WindowGroup {
             AppView()
+                .onOpenURL(perform: { url in
+                    if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                        AuthController.handleOpenUrl(url: url)
+                    }
+                })
         }
+        .environmentObject(coordinator)
     }
 }
