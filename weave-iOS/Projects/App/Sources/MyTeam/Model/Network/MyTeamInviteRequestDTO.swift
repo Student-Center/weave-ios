@@ -19,7 +19,7 @@ extension APIEndpoints {
             path: "api/meeting-teams/\(teamId)/invitation",
             method: .post,
             headers: [
-                "Authorization": "Bearer \(SecretKey.token)"
+                "Authorization": "Bearer \(UDManager.accessToken)"
             ]
         )
     }

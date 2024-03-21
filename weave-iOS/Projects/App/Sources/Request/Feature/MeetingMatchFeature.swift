@@ -97,6 +97,9 @@ struct MeetingMatchFeature: Reducer {
             case .requestAttend:
                 return .run { [meetingId = state.meetingId] send in
                     try await requestMatchAction(teamId: meetingId, actionType: .attend)
+                    await send.callAsFunction(.completeRequest(type: .attend))
+                    let response = try await requestAttendanceStatus(meetingId: meetingId)
+                    await send.callAsFunction(.fetchData(dto: response))
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
                 }
@@ -104,6 +107,9 @@ struct MeetingMatchFeature: Reducer {
             case .requestPass:
                 return .run { [meetingId = state.meetingId] send in
                     try await requestMatchAction(teamId: meetingId, actionType: .pass)
+                    await send.callAsFunction(.completeRequest(type: .pass))
+                    let response = try await requestAttendanceStatus(meetingId: meetingId)
+                    await send.callAsFunction(.fetchData(dto: response))
                 } catch: { error, send in
                     await send.callAsFunction(.alreadyResponsed)
                 }
