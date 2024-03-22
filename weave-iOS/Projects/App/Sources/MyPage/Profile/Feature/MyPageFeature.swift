@@ -111,6 +111,8 @@ struct MyPageFeature: Reducer {
                         return .none
                     }
                     state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
+                    return .none
+                }
                 
                 return .none
                 
