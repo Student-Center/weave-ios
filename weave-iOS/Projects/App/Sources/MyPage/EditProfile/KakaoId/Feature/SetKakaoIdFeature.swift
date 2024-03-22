@@ -44,7 +44,7 @@ struct SetKakaoIdFeature: Reducer {
             case .requestSetId:
                 return .run { [id = state.kakaoIdText] send in
                     try await requestSetKakaoId(id: id)
-                    await send.callAsFunction(.dismiss)
+                    await send.callAsFunction(.didCompleteSetId)
                 } catch: { error, send in
                     print(error)
                 }

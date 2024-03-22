@@ -19,7 +19,7 @@ struct SetKakaoIdView: View {
                 Text("카카오톡 ID를 입력해 주세요")
                     .frame(height: 80)
                     .font(.pretendard(._500, size: 24))
-                    .padding(.top, 40)
+                    .padding(.top, 25)
                 
                 Text("미팅 날짜와 시간을 잡기 위해\n필요해요!")
                     .font(.pretendard(._500, size: 16))
@@ -49,13 +49,13 @@ struct SetKakaoIdView: View {
                     viewStore.send(.didTappedSaveButton)
                 }
                 .weaveAlert(
-                    isPresented: viewStore.$isShowCompleteAlert,
+                    isPresented: viewStore.$isShowConfirmAlert,
                     title: "✅\n확인해주세요",
-                    message: "입력하신 Id는\n\(viewStore.kakaoIdText)입니다.\n정확히 입력하셨나요??",
+                    message: "입력하신 카카오톡 ID는\n\(viewStore.kakaoIdText)입니다.\n정확히 입력하셨나요??",
                     primaryButtonTitle: "네 맞아요",
                     secondaryButtonTitle: "다시 입력",
                     primaryAction: {
-                        viewStore.send(.didTappedSaveButton)
+                        viewStore.send(.requestSetId)
                     }
                 )
                 .weaveAlert(
@@ -68,8 +68,12 @@ struct SetKakaoIdView: View {
                     }
                 )
             }
+            .onAppear {
+                UIApplication.shared.hideKeyboard()
+            }
             .padding(.horizontal, 16)
             .navigationTitle("연락 수단")
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
