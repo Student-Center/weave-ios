@@ -20,20 +20,23 @@ struct MeetingTeamListView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 ScrollView {
-                    if let teamList = viewStore.teamList {
-                        LazyVGrid(columns: [column], spacing: 16, content: {
-                            ForEach(teamList.items, id: \.self) { team in
-                                MeetingListItemView(teamModel: team)
-                                    .onTapGesture {
-                                        viewStore.send(.didTappedTeamView(id: team.id))
-                                    }
-                            }
-                        })
-                        .padding(.top, 20)
-                    }
+                    LazyVGrid(columns: [column], spacing: 16, content: {
+                        ForEach(viewStore.teamList, id: \.self) { team in
+                            MeetingListItemView(teamModel: team)
+                                .onTapGesture {
+                                    viewStore.send(.didTappedTeamView(id: team.id))
+                                }
+                        }
+                        if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                            ProgressView()
+                                .onAppear {
+                                    viewStore.send(.requestMeetingTeamListNextPage)
+                                }
+                        }
+                    })
+                    .padding(.top, 20)
                 }
                 .onLoad {
-                    print("온로드")
                     viewStore.send(.requestMeetingTeamList)
                 }
                 .toolbar {
