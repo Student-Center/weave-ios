@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import CoreKit
 
 struct MyTeamView: View {
     
@@ -48,7 +49,7 @@ struct MyTeamView: View {
                         }
                     }
                 }
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMyTeamList)
                 }
                 .navigationDestination(

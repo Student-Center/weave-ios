@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignSystem
+import CoreKit
 
 struct MyPageView: View {
     
@@ -62,7 +63,7 @@ struct MyPageView: View {
                         
                     }
                 )
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMyUserInfo)
                 }
                 .toolbar(content: {

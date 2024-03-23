@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import CoreKit
 
 struct RequestListView: View {
     @State var selection: Int = 0
@@ -29,13 +30,10 @@ struct RequestListView: View {
                             viewStore.send(.didTappedMeetingView(index: index, type: type))
                         }
                         .tag(0)
-                        .onAppear {
-                            viewStore.send(.onAppear(type: .receiving))
-                        }
                     } else {
                         getEmptyView()
                             .tag(0)
-                            .onAppear {
+                            .onLoad {
                                 viewStore.send(.onAppear(type: .receiving))
                             }
                     }
@@ -49,13 +47,10 @@ struct RequestListView: View {
                             viewStore.send(.didTappedMeetingView(index: index, type: type))
                         }
                         .tag(1)
-                        .onAppear {
-                            viewStore.send(.onAppear(type: .requesting))
-                        }
                     } else {
                         getEmptyView()
                             .tag(1)
-                            .onAppear {
+                            .onLoad {
                                 viewStore.send(.onAppear(type: .requesting))
                             }
                     }

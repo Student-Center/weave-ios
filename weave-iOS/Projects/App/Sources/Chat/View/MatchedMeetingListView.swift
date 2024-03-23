@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import CoreKit
 
 struct MatchedMeetingListView: View {
     let store: StoreOf<MatchedMeetingListFeature>
@@ -34,7 +35,7 @@ struct MatchedMeetingListView: View {
                         }
                     }
                 }
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMeetingTeamList)
                 }
                 .navigationDestination(

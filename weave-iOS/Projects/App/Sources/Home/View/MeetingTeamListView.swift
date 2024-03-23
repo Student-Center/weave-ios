@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import CoreKit
 
 struct MeetingTeamListView: View {
     
@@ -31,7 +32,8 @@ struct MeetingTeamListView: View {
                         .padding(.top, 20)
                     }
                 }
-                .onAppear {
+                .onLoad {
+                    print("온로드")
                     viewStore.send(.requestMeetingTeamList)
                 }
                 .toolbar {
