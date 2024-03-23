@@ -90,7 +90,7 @@ struct AppTabView: View {
                 }
             }
             .tint(.white)
-            .onAppear {
+            .onLoad {
                 viewStore.send(.onAppear)
             }
         }
