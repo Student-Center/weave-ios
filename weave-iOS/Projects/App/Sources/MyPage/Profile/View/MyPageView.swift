@@ -50,6 +50,9 @@ struct MyPageView: View {
                         .padding(.horizontal, 16)
                     }
                 }
+                .refreshable {
+                    viewStore.send(.requestMyUserInfo)
+                }
                 .navigationDestination(isPresented: viewStore.$isShowCompleteUnivVerifyView, destination: {
                     UnivEmailCompleteView()
                 })
