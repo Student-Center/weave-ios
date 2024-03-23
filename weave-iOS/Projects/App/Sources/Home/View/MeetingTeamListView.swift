@@ -122,6 +122,9 @@ struct MeetingListItemView: View {
                     KFImage(URL(string: mbtiType.mbtiProfileImage))
                         .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 12)
+                        )
                         .frame(width: 48, height: 48)
                 } else {
                     RoundedRectangle(cornerRadius: 12)
