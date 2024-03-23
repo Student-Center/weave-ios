@@ -41,6 +41,9 @@ struct MatchedMeetingListView: View {
                             })
                             .padding(.top, 20)
                         }
+                        .refreshable {
+                            viewStore.send(.requestMeetingTeamList)
+                        }
                     }
                 }
                 .onLoad {

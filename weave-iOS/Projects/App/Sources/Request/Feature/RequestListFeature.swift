@@ -83,6 +83,16 @@ struct RequestListFeature: Reducer {
                 }
                 
             case .requestList(let type):
+                switch type {
+                case .receiving:
+                    state.receiveDataNextCallId = nil
+                    state.isReceiveDataRequested = false
+                    state.receivedDataSources = []
+                case .requesting:
+                    state.sentDataNextCallId = nil
+                    state.isSentDataRequested = false
+                    state.sentDataSources = []
+                }
                 return .run { send in
                     let response = try await requestMeetingList(type: type)
                     await send.callAsFunction(.fetchData(dto: response, type: type))

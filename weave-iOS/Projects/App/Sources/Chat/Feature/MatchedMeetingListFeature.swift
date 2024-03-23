@@ -52,6 +52,9 @@ struct MatchedMeetingListFeature: Reducer {
                     print(error)
                 }
             case .requestMeetingTeamList:
+                state.teamList = []
+                state.isNetworkRequested = false
+                state.nextCallId = nil
                 return .run { send in
                     let response = try await requestMatchedTeamList(nextId: nil)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))

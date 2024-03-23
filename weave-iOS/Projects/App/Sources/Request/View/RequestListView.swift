@@ -37,6 +37,9 @@ struct RequestListView: View {
                                 },
                                 nextPageHandler: { type in
                                     viewStore.send(.requestNextPage(type: type))
+                                },
+                                scrollRefreshHandler: { type in
+                                    viewStore.send(.requestList(type: type))
                                 }
                             )
                         }
@@ -62,6 +65,9 @@ struct RequestListView: View {
                                 },
                                 nextPageHandler: { type in
                                     viewStore.send(.requestNextPage(type: type))
+                                }, 
+                                scrollRefreshHandler: { type in
+                                    viewStore.send(.requestList(type: type))
                                 }
                             )
                         }
@@ -89,7 +95,8 @@ struct RequestListView: View {
         dataSources: [RequestMeetingItemModel],
         needShowNextPage: Bool,
         tapHandler: @escaping (Int) -> Void,
-        nextPageHandler: @escaping (RequestListType) -> Void
+        nextPageHandler: @escaping (RequestListType) -> Void,
+        scrollRefreshHandler: @escaping (RequestListType) -> Void
     ) -> some View {
         VStack {
             ScrollView {
@@ -106,6 +113,9 @@ struct RequestListView: View {
                             nextPageHandler(type)
                         }
                 }
+            }
+            .refreshable {
+                scrollRefreshHandler(type)
             }
         }
         .padding(.vertical, 20)
