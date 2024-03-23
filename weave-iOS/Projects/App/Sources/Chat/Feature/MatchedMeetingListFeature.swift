@@ -87,7 +87,7 @@ struct MatchedMeetingListFeature: Reducer {
         }
     }
     func requestMatchedTeamList(nextId: String?) async throws -> MatchedMeetingTeamListResponseDTO {
-        let endPoint = APIEndpoints.getMatchedMeetingTeam()
+        let endPoint = APIEndpoints.getMatchedMeetingTeam(next: nextId)
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
         return response
