@@ -18,7 +18,9 @@ struct MyTeamView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack {
-                    if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
+                    if !viewStore.didDataFetched {
+                        ProgressView()
+                    } else if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
                         getEmptyView() {
                             viewStore.send(.didTappedGenerateMyTeam)
                         }
@@ -28,6 +30,14 @@ struct MyTeamView: View {
                                 ForEach(viewStore.myTeamList, id: \.id) { team in
                                     MyTeamItemView(store: store, teamModel: team)
                                 }
+                                
+                                if !viewStore.myTeamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMyTeamListNextPage)
+                                        }
+                                }
+                                
                                 if !viewStore.myTeamList.isEmpty {
                                     Text(
                                     """

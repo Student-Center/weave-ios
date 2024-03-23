@@ -40,6 +40,9 @@ struct MeetingTeamListFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .requestMeetingTeamList:
+                state.teamList = []
+                state.isNetworkRequested = false
+                state.nextCallId = nil
                 return .run { [filter = state.filterModel] send in
                     let response = try await requestMeetingTeamList(filter: filter)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))
@@ -80,6 +83,8 @@ struct MeetingTeamListFeature: Reducer {
                 }
                 state.destination = nil
                 state.teamList = []
+                state.isNetworkRequested = false
+                state.nextCallId = nil
                 return .run { send in
                     await send.callAsFunction(.requestMeetingTeamList)
                 }

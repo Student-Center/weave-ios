@@ -16,6 +16,7 @@ struct MyTeamFeature: Reducer {
         
         @PresentationState var destination: Destination.State?
         
+        var nextCallId: String?
         var didDataFetched = false
         var teamInviteLink: String?
 
@@ -31,6 +32,7 @@ struct MyTeamFeature: Reducer {
         case didTappedInviteButton(team: MyTeamItemModel)
         
         case requestMyTeamList
+        case requestMyTeamListNextPage
         case fetchMyTeamList(dto: MyTeamListResponseDTO)
         case fetchInviteLink(dto: MyTeamInviteResponseDTO)
       
@@ -77,8 +79,19 @@ struct MyTeamFeature: Reducer {
                 
                 
             case .requestMyTeamList:
+                state.didDataFetched = false
+                state.nextCallId = nil
+                state.myTeamList = []
                 return .run { send in
-                    let response = try await requestMyUserInfo()
+                    let response = try await requestMyUserInfo(nextId: nil)
+                    await send.callAsFunction(.fetchMyTeamList(dto: response))
+                } catch: { error, send in
+                    print(error)
+                }
+                
+            case .requestMyTeamListNextPage:
+                return .run { [nextId = state.nextCallId] send in
+                    let response = try await requestMyUserInfo(nextId: nextId)
                     await send.callAsFunction(.fetchMyTeamList(dto: response))
                 } catch: { error, send in
                     print(error)
@@ -86,7 +99,8 @@ struct MyTeamFeature: Reducer {
                 
             case .fetchMyTeamList(let dto):
                 state.didDataFetched = true
-                state.myTeamList = dto.toDomain
+                state.nextCallId = dto.next
+                state.myTeamList.append(contentsOf: dto.toDomain)
                 return .none
                 
             case .requestDeleteTeam(let teamId):
@@ -123,7 +137,7 @@ struct MyTeamFeature: Reducer {
         return response
     }
     
-    func requestMyUserInfo() async throws -> MyTeamListResponseDTO {
+    func requestMyUserInfo(nextId: String?) async throws -> MyTeamListResponseDTO {
         let endPoint = APIEndpoints.getMyTeamList()
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
