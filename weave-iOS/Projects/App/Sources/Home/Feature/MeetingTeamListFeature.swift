@@ -14,6 +14,7 @@ struct MeetingTeamListFeature: Reducer {
         @BindingState var teamList = [MeetingTeamModel]()
         
         var nextCallId: String?
+        var isNetworkRequested = false
         var filterModel = MeetingTeamFilterModel()
         @PresentationState var destination: Destination.State?
     }
@@ -57,6 +58,7 @@ struct MeetingTeamListFeature: Reducer {
                 }
                 
             case .fetchMeetingTeamList(let response):
+                state.isNetworkRequested = true
                 state.teamList.append(contentsOf: response.toDomain.items)
                 state.nextCallId = response.next
                 return .none

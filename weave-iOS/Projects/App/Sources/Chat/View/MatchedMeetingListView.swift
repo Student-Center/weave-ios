@@ -17,21 +17,29 @@ struct MatchedMeetingListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                ScrollView {
-                    if let teamList = viewStore.teamList {
-                        LazyVGrid(columns: [column], spacing: 16, content: {
-                            ForEach(teamList.items, id: \.id) { team in
-                                MeetingListItemView(teamModel: team.otherTeam)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        viewStore.send(.didTappedTeamView(team: team))
-                                    }
-                            }
-                        })
-                        .padding(.top, 20)
+                VStack {
+                    if !viewStore.isNetworkRequested {
+                        ProgressView()
+                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
+                        getEmptyView {}
                     } else {
-                        getEmptyView {
-                            // ToDo
+                        ScrollView {
+                            LazyVGrid(columns: [column], spacing: 16, content: {
+                                ForEach(viewStore.teamList, id: \.id) { team in
+                                    MeetingListItemView(teamModel: team.otherTeam)
+                                        .contentShape(Rectangle())
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedTeamView(team: team))
+                                        }
+                                }
+                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMeetingTeamListNextPage)
+                                        }
+                                }
+                            })
+                            .padding(.top, 20)
                         }
                     }
                 }

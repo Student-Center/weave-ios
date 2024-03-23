@@ -11,12 +11,15 @@ import ComposableArchitecture
 
 struct MatchedMeetingListFeature: Reducer {
     struct State: Equatable {
-        @BindingState var teamList: MatchedMeetingTeamList?
+        @BindingState var teamList = [MatchedMeetingTeamInfo]()
+        var nextCallId: String?
+        var isNetworkRequested = false
         @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
         case requestMeetingTeamList
+        case requestMeetingTeamListNextPage
         case fetchMeetingTeamList(response: MatchedMeetingTeamListResponseDTO)
         
         //MARK: UserAction
@@ -38,16 +41,27 @@ struct MatchedMeetingListFeature: Reducer {
                 return .run { send in
                     await send.callAsFunction(.requestMeetingTeamList)
                 }
-                
+            case .requestMeetingTeamListNextPage:
+                guard let nextId = state.nextCallId else {
+                    return .none
+                }
+                return .run { send in
+                    let response = try await requestMatchedTeamList(nextId: nextId)
+                    await send.callAsFunction(.fetchMeetingTeamList(response: response))
+                } catch: { error, send in
+                    print(error)
+                }
             case .requestMeetingTeamList:
                 return .run { send in
-                    let response = try await requestMatchedTeamList()
+                    let response = try await requestMatchedTeamList(nextId: nil)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))
                 } catch: { error, send in
                     print(error)
                 }
             case .fetchMeetingTeamList(let response):
-                state.teamList = response.toDomain
+                state.isNetworkRequested = true
+                state.teamList.append(contentsOf: response.toDomain.items)
+                state.nextCallId = response.next
                 return .none
                 
             case .didTappedTeamView(let team):
@@ -72,7 +86,7 @@ struct MatchedMeetingListFeature: Reducer {
             Destination()
         }
     }
-    func requestMatchedTeamList() async throws -> MatchedMeetingTeamListResponseDTO {
+    func requestMatchedTeamList(nextId: String?) async throws -> MatchedMeetingTeamListResponseDTO {
         let endPoint = APIEndpoints.getMatchedMeetingTeam()
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)

@@ -19,22 +19,34 @@ struct MeetingTeamListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                ScrollView {
-                    LazyVGrid(columns: [column], spacing: 16, content: {
-                        ForEach(viewStore.teamList, id: \.self) { team in
-                            MeetingListItemView(teamModel: team)
-                                .onTapGesture {
-                                    viewStore.send(.didTappedTeamView(id: team.id))
+                VStack {
+                    if !viewStore.isNetworkRequested {
+                        ProgressView()
+                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
+                        // 미팅팀이 없을 때
+                        EmptyView()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: [column], spacing: 16, content: {
+                                ForEach(viewStore.teamList, id: \.self) { team in
+                                    MeetingListItemView(teamModel: team)
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedTeamView(id: team.id))
+                                        }
                                 }
-                        }
-                        if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
-                            ProgressView()
-                                .onAppear {
-                                    viewStore.send(.requestMeetingTeamListNextPage)
+                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMeetingTeamListNextPage)
+                                        }
                                 }
+                            })
+                            .padding(.top, 20)
                         }
-                    })
-                    .padding(.top, 20)
+                        .refreshable {
+                            viewStore.send(.requestMeetingTeamList)
+                        }
+                    }
                 }
                 .onLoad {
                     viewStore.send(.requestMeetingTeamList)
