@@ -15,7 +15,7 @@ struct MeetingMatchProfileFeature: Reducer {
     struct State: Equatable {
         let meetingId: String
         @BindingState var partnerTeamModel: MeetingTeamModel
-        
+        @BindingState var isProfileOpen = false
         @PresentationState var destination: Destination.State?
     }
     
@@ -25,6 +25,8 @@ struct MeetingMatchProfileFeature: Reducer {
         case didTappedGoToMatchingView
 
         case onAppear
+        case didProfileTapped
+        case setProfileOpen
         case requestKakaoId
         case fetchKakaoId(dto: MeetingTeamKakaoIdResponseDTO)
         case destination(PresentationAction<Destination.Action>)
@@ -59,6 +61,24 @@ struct MeetingMatchProfileFeature: Reducer {
                 return .none
                 
             case .onAppear:
+                return .none
+                
+            case .didProfileTapped:
+                if state.isProfileOpen == false {
+                    state.isProfileOpen.toggle()
+                    return .run { send in
+                        await send.callAsFunction(.requestKakaoId)
+                        await send.callAsFunction(.setProfileOpen)
+                    } catch: { error, send in
+                        print(error)
+                    }
+                } else {
+                    state.isProfileOpen.toggle()
+                }
+                return .none
+                
+            case .setProfileOpen:
+                state.isProfileOpen = true
                 return .none
                 
             case .requestKakaoId:

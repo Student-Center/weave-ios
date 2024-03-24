@@ -132,9 +132,12 @@ fileprivate struct MeetingItemView: View {
                 Spacer()
                 
                 ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
+                    let mbtiType = MBTIType(rawValue: member.mbti.uppercased())
                     MemberIconView(
                         title: member.memberInfoValue,
-                        subTitle: member.mbti ?? "") {}
+                        subTitle: member.mbti,
+                        imageURL: mbtiType?.mbtiProfileImage
+                    ) {}
                 }
                 Spacer()
             }
@@ -147,17 +150,20 @@ struct MemberIconView<Content: View>: View {
     let title: String
     let subTitle: String
     let isStroke: Bool
+    let imageURL: String?
     let overlay: () -> Content
     
     init(
         title: String,
         subTitle: String,
         isStroke: Bool = false,
+        imageURL: String?,
         @ViewBuilder overlay: @escaping () -> Content
     ) {
         self.title = title
         self.subTitle = subTitle
         self.isStroke = isStroke
+        self.imageURL = imageURL
         self.overlay = overlay
     }
     

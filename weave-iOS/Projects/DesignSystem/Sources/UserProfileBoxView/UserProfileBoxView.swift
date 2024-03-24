@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 import CoreKit
 
 public struct UserProfileBoxConfig {
@@ -23,7 +24,7 @@ public struct UserProfileBoxConfig {
         mbti: MBTIType?,
         animal: AnimalTypes?,
         height: Int?,
-        profileImage: String? = nil,
+        profileImage: String?,
         univName: String,
         majorName: String,
         birthYear: Int,
@@ -88,9 +89,19 @@ public struct UserProfileBoxView: View {
                 
                 Spacer()
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(DesignSystem.Colors.lightGray)
+                if let profileImage = config.profileImage {
+                    KFImage(URL(string: profileImage))
+                        .placeholder{
+                            ProgressView()
+                        }
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                }
             }
             .padding(.horizontal, 4)
         }
