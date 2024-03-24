@@ -67,8 +67,8 @@ struct MyTeamFeature: Reducer {
                 }
                 
             case .fetchInviteLink(let dto):
-                state.teamInviteLink = dto.meetingTeamInvitationLink
-                state.isShowActivityView.toggle()
+                let message = KakaoShareManager.getInviteTeamShareMessage(code: dto.meetingTeamInvitationCode)
+                KakaoShareManager.shareMessage(with: message)
                 return .none
 
             case .destination(.dismiss):

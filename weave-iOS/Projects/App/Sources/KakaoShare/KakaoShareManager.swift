@@ -33,7 +33,33 @@ class KakaoShareManager {
                         {
                             "title": "팀 상세보기",
                             "link": {
-                                "ios_execution_params": "type=vteam&teamId=\(teamId)",
+                                "ios_execution_params": "type=team&teamId=\(teamId)",
+                                "web_url": "https://developers.kakao.com"
+                            }
+                        }
+                    ]
+                }
+                """
+                .data(using: .utf8)!
+    }
+    
+    static func getInviteTeamShareMessage(code: String) -> Data {
+        return """
+                {
+                    "object_type": "feed",
+                    "content": {
+                        "title": "[WEAVE] 친구야 같이 미팅하자",
+                        "image_url": "\(SecretKey.serverResourcePath)/share_image.png",
+                        "link": {
+                            "mobile_web_url": "https://weave-server-dev-bucket.s3.ap-northeast-2.amazonaws.com/resource/share_image.png",
+                            "web_url": "https://weave-server-dev-bucket.s3.ap-northeast-2.amazonaws.com/resource/share_image.png"
+                        },
+                    },
+                    "buttons": [
+                        {
+                            "title": "팀 상세보기",
+                            "link": {
+                                "ios_execution_params": "type=invitation&code=\(code)",
                                 "web_url": "https://developers.kakao.com"
                             }
                         }

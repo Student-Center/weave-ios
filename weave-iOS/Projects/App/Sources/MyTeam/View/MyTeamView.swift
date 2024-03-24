@@ -255,26 +255,15 @@ fileprivate struct MyTeamEmptyMemberView: View {
                 .frame(maxWidth: .infinity)
                 
                 if isMyHostTeam {
-                    WeaveButton(title: "친구 초대", size: .tiny)
-                        .frame(width: 73)
+                    WeaveButton(title: "친구 초대", size: .tiny) {
+                        handler()
+                    }
+                    .frame(width: 73)
                 } else {
                     Text("곧 들어와요")
                         .font(.pretendard(._600, size: 12))
                         .foregroundStyle(DesignSystem.Colors.gray600)
                 }
-            }
-            .frame(width: 48, height: 48)
-            .frame(maxWidth: .infinity)
-            
-            if isMyHostTeam {
-                WeaveButton(title: "친구 초대", size: .tiny) {
-                    handler()
-                }
-                .frame(width: 73)
-            } else {
-                Text("곧 들어와요")
-                    .font(.pretendard(._600, size: 12))
-                    .foregroundStyle(DesignSystem.Colors.gray600)
             }
         })
     }
