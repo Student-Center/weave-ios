@@ -148,6 +148,9 @@ fileprivate struct MyProfileHeaderSectionView: View {
                                     ProgressView()
                                 }
                                 .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 72, height: 72)
+                                .clipped()
                                 .clipShape(RoundedRectangle(cornerRadius: 20))
                                 .padding([.trailing, .bottom], 8)
                                 .onTapGesture {

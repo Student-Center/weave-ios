@@ -207,6 +207,8 @@ fileprivate struct MyTeamMemberView: View {
             ZStack {
                 if let mbtiType = MBTIType(rawValue: member.mbti.uppercased()) {
                     KFImage(URL(string: mbtiType.mbtiProfileImage))
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
                         .overlay {
                             RoundedRectangle(cornerRadius: 12)
                                 .inset(by: 1)
