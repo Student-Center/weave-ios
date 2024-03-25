@@ -11,7 +11,7 @@ import CoreKit
 
 public struct UserProfileBoxConfig {
     let mbti: MBTIType?
-    let animal: AnimalTypes?
+    let animal: String?
     let height: Int?
     let profileImage: String?
     let univName: String
@@ -22,7 +22,7 @@ public struct UserProfileBoxConfig {
     
     public init(
         mbti: MBTIType?,
-        animal: AnimalTypes?,
+        animal: String?,
         height: Int?,
         profileImage: String?,
         univName: String,
@@ -62,7 +62,7 @@ public struct UserProfileBoxView: View {
                     RoundCornerBoxedTextView(mbti.description)
                 }
                 if let animalType = config.animal {
-                    RoundCornerBoxedTextView(animalType.text)
+                    RoundCornerBoxedTextView(animalType)
                 }
                 if let height = config.height {
                     RoundCornerBoxedTextView("📏 \(height)cm")

@@ -26,7 +26,7 @@ struct MeetingTeamDetailMemberModel: Equatable {
     let mbti: MBTIType?
     let birthYear: Int
     let role: String
-    let animalType: AnimalTypes?
+    let animalType: String?
     let height: Int?
     let isUnivVerified: Bool
 }
