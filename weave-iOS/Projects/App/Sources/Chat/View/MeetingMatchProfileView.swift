@@ -32,7 +32,7 @@ struct MeetingMatchProfileView: View {
                     VStack {
                         ForEach(viewStore.partnerTeamModel.memberInfos, id: \.id) { member in
                             let mbtiType = MBTIType(rawValue: member.mbti)
-                            let animalType = member.animalType
+                            let animalType = AnimalTypes(rawValue: member.animalType ?? "")
                             let profileViewConfig = UserProfileBoxConfig(
                                 mbti: mbtiType,
                                 animal: animalType,

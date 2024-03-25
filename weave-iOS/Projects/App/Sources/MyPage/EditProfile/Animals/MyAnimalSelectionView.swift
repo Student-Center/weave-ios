@@ -22,12 +22,8 @@ struct MyAnimalSelectionView: View {
                 }
                 
                 AnimalSelectionList(
-                    allAvailableAnimal: viewStore.allAvailableAnimals,
                     selectedItem: $selectedAnimal
                 )
-                .onChange(of: viewStore.selectedAnimal) { oldValue, newValue in
-                    self.selectedAnimal = newValue
-                }
                 
                 Spacer()
                 
@@ -37,7 +33,7 @@ struct MyAnimalSelectionView: View {
                     isEnabled: selectedAnimal != nil
                 ) {
                     guard let selectedAnimal,
-                          let animal = selectedAnimal as? AnimalModel else {
+                          let animal = selectedAnimal as? AnimalTypes else {
                         return
                     }
                     viewStore.send(.didTappedSaveButton(animal: animal))
@@ -46,7 +42,6 @@ struct MyAnimalSelectionView: View {
             }
             .onAppear {
                 self.selectedAnimal = viewStore.selectedAnimal
-                viewStore.send(.onAppear)
             }
         }
     }
@@ -54,7 +49,6 @@ struct MyAnimalSelectionView: View {
 
 struct AnimalSelectionList: View {
     
-    let allAvailableAnimal: [AnimalModel]
     @Binding var selectedItem: (any LeftAlignListFetchable)?
     
     var body: some View {
@@ -63,7 +57,7 @@ struct AnimalSelectionList: View {
                 VStack(alignment: .leading) {
                     LeftAlignTextCapsuleListView(
                         selectedItem: $selectedItem,
-                        dataSources: allAvailableAnimal,
+                        dataSources: AnimalTypes.allCases,
                         viewWidth: UIScreen.main.bounds.width - 36
                     )
                 }
