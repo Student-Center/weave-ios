@@ -12,6 +12,14 @@ import ComposableArchitecture
 struct AppTabViewFeature: Reducer {
     struct State: Equatable {
         @BindingState var selection: AppScreen = .home
+        
+        // Tap SubView States
+        var matchedMeeting = MatchedMeetingListFeature.State()
+        var requestList = RequestListFeature.State()
+        var meetingTeamList = MeetingTeamListFeature.State()
+        var myTeamList = MyTeamFeature.State()
+        var myPage = MyPageFeature.State()
+        
     }
     
     enum Action: BindableAction {
@@ -20,6 +28,13 @@ struct AppTabViewFeature: Reducer {
         
         case requestMyUserInfo
         case fetchMyUserInfo(userInfo: MyUserInfoResponseDTO)
+        
+        // Tap SubView Actions
+        case matchedMeeting(MatchedMeetingListFeature.Action)
+        case requestList(RequestListFeature.Action)
+        case meetingTeamList(MeetingTeamListFeature.Action)
+        case myTeamList(MyTeamFeature.Action)
+        case myPage(MyPageFeature.Action)
     }
     
     var body: some ReducerOf<Self> {
@@ -44,8 +59,27 @@ struct AppTabViewFeature: Reducer {
             
             case .binding:
                 return .none
+                
+            default:
+                return .none
             }
         }
+        Scope(state: \.matchedMeeting, action: /Action.matchedMeeting) {
+            MatchedMeetingListFeature()
+        }
+        Scope(state: \State.requestList, action: /Action.requestList) {
+            RequestListFeature()
+        }
+        Scope(state: \State.meetingTeamList, action: /Action.meetingTeamList) {
+            MeetingTeamListFeature()
+        }
+        Scope(state: \State.myTeamList, action: /Action.myTeamList) {
+            MyTeamFeature()
+        }
+        Scope(state: \State.myPage, action: /Action.myPage) {
+            MyPageFeature()
+        }
+
     }
     
     func requestMyUserInfo() async throws -> MyUserInfoResponseDTO {

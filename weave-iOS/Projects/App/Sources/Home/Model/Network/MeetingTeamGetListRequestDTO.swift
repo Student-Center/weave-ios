@@ -20,7 +20,7 @@ struct MeetingTeamGetListRequestDTO: Codable {
         youngestMemberBirthYear: Int = 2006,
         oldestMemberBirthYear: Int = 1996,
         preferredLocations: [String]? = nil,
-        next: String? = nil,
+        next: String?,
         limit: Int = 10
     ) {
         self.memberCount = memberCount

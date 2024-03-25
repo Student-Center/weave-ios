@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignSystem
+import CoreKit
 
 struct MyPageView: View {
     
@@ -49,6 +50,9 @@ struct MyPageView: View {
                         .padding(.horizontal, 16)
                     }
                 }
+                .refreshable {
+                    viewStore.send(.requestMyUserInfo)
+                }
                 .navigationDestination(isPresented: viewStore.$isShowCompleteUnivVerifyView, destination: {
                     UnivEmailCompleteView()
                 })
@@ -62,7 +66,7 @@ struct MyPageView: View {
                         
                     }
                 )
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMyUserInfo)
                 }
                 .toolbar(content: {

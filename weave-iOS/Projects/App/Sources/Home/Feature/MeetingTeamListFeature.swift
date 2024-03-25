@@ -11,13 +11,17 @@ import ComposableArchitecture
 
 struct MeetingTeamListFeature: Reducer {
     struct State: Equatable {
-        @BindingState var teamList: MeetingTeamListModel?
+        @BindingState var teamList = [MeetingTeamModel]()
+        
+        var nextCallId: String?
+        var isNetworkRequested = false
         var filterModel = MeetingTeamFilterModel()
         @PresentationState var destination: Destination.State?
     }
     
     enum Action: BindableAction {
         case requestMeetingTeamList
+        case requestMeetingTeamListNextPage
         case fetchMeetingTeamList(response: MeetingTeamGetListDTO)
         
         //MARK: UserAction
@@ -36,14 +40,30 @@ struct MeetingTeamListFeature: Reducer {
         Reduce { state, action in
             switch action {
             case .requestMeetingTeamList:
+                state.teamList = []
+                state.isNetworkRequested = false
+                state.nextCallId = nil
                 return .run { [filter = state.filterModel] send in
                     let response = try await requestMeetingTeamList(filter: filter)
                     await send.callAsFunction(.fetchMeetingTeamList(response: response))
                 } catch: { error, send in
                     print(error)
                 }
+            case .requestMeetingTeamListNextPage:
+                guard let nextId = state.nextCallId else {
+                    return .none
+                }
+                return .run { [filter = state.filterModel] send in
+                    let response = try await requestMeetingTeamList(filter: filter, nextId: nextId)
+                    await send.callAsFunction(.fetchMeetingTeamList(response: response))
+                } catch: { error, send in
+                    print(error)
+                }
+                
             case .fetchMeetingTeamList(let response):
-                state.teamList = response.toDomain
+                state.isNetworkRequested = true
+                state.teamList.append(contentsOf: response.toDomain.items)
+                state.nextCallId = response.next
                 return .none
                 
             case .didTappedTeamView(let id):
@@ -62,6 +82,9 @@ struct MeetingTeamListFeature: Reducer {
                     state.filterModel = filter.filterModel
                 }
                 state.destination = nil
+                state.teamList = []
+                state.isNetworkRequested = false
+                state.nextCallId = nil
                 return .run { send in
                     await send.callAsFunction(.requestMeetingTeamList)
                 }
@@ -77,12 +100,17 @@ struct MeetingTeamListFeature: Reducer {
             Destination()
         }
     }
-    func requestMeetingTeamList(filter: MeetingTeamFilterModel) async throws -> MeetingTeamGetListDTO {
+    
+    func requestMeetingTeamList(
+        filter: MeetingTeamFilterModel,
+        nextId: String? = nil
+    ) async throws -> MeetingTeamGetListDTO {
         let dto = MeetingTeamGetListRequestDTO(
             memberCount: filter.memberCount,
             youngestMemberBirthYear: filter.youngestMemberBirthYear,
             oldestMemberBirthYear: filter.oldestMemberBirthYear,
-            preferredLocations: filter.preferredLocations
+            preferredLocations: filter.preferredLocations,
+            next: nextId
         )
         let endPoint = APIEndpoints.getMeetingTeamList(requestDTO: dto)
         let provider = APIProvider()
