@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 import PhotosUI
 
 public struct PhotoPickerView: UIViewControllerRepresentable {
@@ -14,12 +15,12 @@ public struct PhotoPickerView: UIViewControllerRepresentable {
     
     let filter: PHPickerFilter
     var limit: Int
-    let onComplete: ([Image]) -> Void
+    let onComplete: ([UIImage]) -> Void
     
     public init(
         filter: PHPickerFilter = .images,
         limit: Int = 1,
-        onComplete: @escaping ([Image]) -> Void
+        onComplete: @escaping ([UIImage]) -> Void
     ) {
         self.filter = filter
         self.limit = limit
@@ -50,7 +51,7 @@ public struct PhotoPickerView: UIViewControllerRepresentable {
         }
         
         public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            var selectedImages: [Image] = []
+            var selectedImages: [UIImage] = []
             
             // 취소 버튼으로 눌렀을 때
             if results.isEmpty {
@@ -61,7 +62,7 @@ public struct PhotoPickerView: UIViewControllerRepresentable {
                 result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, _ ) in
                     guard let image = image as? UIImage,
                           let self else { return }
-                    selectedImages.append(Image(uiImage: image))
+                    selectedImages.append(image)
                     self.parent.onComplete(selectedImages)
                     DispatchQueue.main.async {
                         picker.dismiss(animated: true)
@@ -76,7 +77,7 @@ public extension View {
     /// PhotoPickerView를 present 합니다.
     func photoPicker(
         isPresented: Binding<Bool>,
-        imageHandler: @escaping ([Image]) -> Void
+        imageHandler: @escaping ([UIImage]) -> Void
     ) -> some View {
         fullScreenCover(isPresented: isPresented, content: {
             PhotoPickerView { images in

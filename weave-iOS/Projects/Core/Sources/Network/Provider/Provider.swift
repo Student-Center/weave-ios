@@ -116,10 +116,34 @@ extension APIProvider {
     }
 }
 
+extension APIProvider {
+    public func requestUploadData<E: RequestResponsable>(with endPoint: E, data: Data) async throws {
+        do {
+            let urlRequest = try endPoint.getUrlRequest()
+            let (data, urlResponse) = try await session.upload(for: urlRequest, from: data)
+            endPoint.responseLogger(response: urlResponse, data: data)
+            guard let response = urlResponse as? HTTPURLResponse,
+                  (200...399).contains(response.statusCode) else {
+                throw NetworkError.unknownError // 또는 적절한 오류 처리
+            }
+            guard 200 <= response.statusCode && response.statusCode <= 299 else {
+                throw NetworkError.invalidHttpStatusCode(response.statusCode)
+            }
+            return
+        } catch {
+            throw error
+        }
+    }
+}
+
 public enum LoginNetworkError: Error {
     case needRegist(registerToken: SignUpRegisterTokenResponse)
 }
 
 public struct SignUpRegisterTokenResponse: Decodable {
     public let registerToken: String
+}
+
+public enum ImageUploadError: Error {
+    case convertImageToDataError
 }

@@ -12,9 +12,9 @@ struct ImagePicker: UIViewControllerRepresentable {
     typealias UIViewControllerType = UIImagePickerController
     typealias Coordinator = ImagePickerCoordinator
     
-    var imageHandler: (Image) -> Void
+    var imageHandler: (UIImage) -> Void
     
-    init(imageHandler: @escaping (Image) -> Void) {
+    init(imageHandler: @escaping (UIImage) -> Void) {
         self.imageHandler = imageHandler
     }
     
@@ -38,15 +38,15 @@ struct ImagePicker: UIViewControllerRepresentable {
     
     class ImagePickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         
-        var imageHandler: (Image) -> Void
+        var imageHandler: (UIImage) -> Void
         
-        init(imageHandler: @escaping (Image) -> Void) {
+        init(imageHandler: @escaping (UIImage) -> Void) {
             self.imageHandler = imageHandler
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                imageHandler(Image(uiImage: uiImage))
+                imageHandler(uiImage)
                 picker.dismiss(animated: true)
             }
         }
@@ -61,7 +61,7 @@ public extension View {
     /// CameraView를 present 합니다.
     func camera(
         isPresented: Binding<Bool>,
-        imageHandler: @escaping (Image) -> Void
+        imageHandler: @escaping (UIImage) -> Void
     ) -> some View {
         fullScreenCover(isPresented: isPresented, content: {
             ImagePicker(imageHandler: imageHandler)

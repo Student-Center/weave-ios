@@ -37,7 +37,7 @@ struct MyPageFeature: Reducer {
         case didCameraPermissionDenied
         case showCamera
         case showAppPreference
-        case didPickPhotoCompleted(image: Image)
+        case didPickPhotoCompleted(image: UIImage)
         case destination(PresentationAction<Destination.Action>)
         // bind
         case binding(BindingAction<State>)
@@ -146,9 +146,16 @@ struct MyPageFeature: Reducer {
                 return .none
                 
             case .didPickPhotoCompleted(let image):
-                // 프로필 이미지 변경 필요
-                print(image)
-                return .none
+                // 1. presigned URL 요청
+                return .run { send in
+                    let response = try await requestGetPresignedURL()
+                    try await requestUploadImage(url: response.uploadUrl, image: image)
+                    try await requestImageUploadCallback(imageId: response.imageId)
+                    let userResponse = try await requestMyUserInfo()
+                    await send.callAsFunction(.fetchMyUserInfo(userInfo: userResponse))
+                } catch: { error, send in
+                    print(error)
+                }
                 
             case .showAppPreference:
                 if let appSetting = URL(string: UIApplication.openSettingsURLString) {
@@ -172,6 +179,29 @@ struct MyPageFeature: Reducer {
         let provider = APIProvider(session: URLSession.shared)
         let response = try await provider.request(with: endPoint)
         return response
+    }
+    
+    func requestGetPresignedURL() async throws -> ProfileImageUploadPresignedURLResponseDTO {
+        let endPoint = APIEndpoints.getProfileImageUploadPresignedURL()
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
+    }
+    
+    func requestUploadImage(url: String, image: UIImage) async throws {
+        guard let imageData = image.jpegData(compressionQuality: 0.7) else {
+            throw ImageUploadError.convertImageToDataError
+        }
+        
+        let endPoint = APIEndpoints.getProfileImageUpload(presignedURL: url)
+        let provider = APIProvider()
+        try await provider.requestUploadData(with: endPoint, data: imageData)
+    }
+    
+    func requestImageUploadCallback(imageId: String) async throws {
+        let endPoint = APIEndpoints.getProfileImageUploadCallback(imageId: imageId)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
     }
     
     func checkCameraAuthorization() async -> Bool {
