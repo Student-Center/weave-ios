@@ -8,6 +8,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignSystem
+import Kingfisher
 
 struct MyPageView: View {
     
@@ -141,13 +142,26 @@ fileprivate struct MyProfileHeaderSectionView: View {
             VStack(spacing: 20) {
                 HStack {
                     ZStack {
-                        DesignSystem.Icons.profileImage
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding([.trailing, .bottom], 8)
-                            .onTapGesture {
-                                viewStore.send(.didTappedProfileView)
-                            }
+                        if let profileURL = viewStore.myUserInfo?.avatar {
+                            KFImage(URL(string: profileURL))
+                                .placeholder{
+                                    ProgressView()
+                                }
+                                .resizable()
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .padding([.trailing, .bottom], 8)
+                                .onTapGesture {
+                                    viewStore.send(.didTappedProfileView)
+                                }
+                        } else {
+                            DesignSystem.Icons.profileImage
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding([.trailing, .bottom], 8)
+                                .onTapGesture {
+                                    viewStore.send(.didTappedProfileView)
+                                }
+                        }
                         VStack {
                             Spacer()
                             HStack {
