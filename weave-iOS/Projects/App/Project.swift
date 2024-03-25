@@ -21,6 +21,8 @@ let target = Target(
         .package(product: "KakaoSDKCommon", type: .macro),
         .package(product: "KakaoSDKAuth", type: .macro),
         .package(product: "KakaoSDKUser", type: .macro),
+        .package(product: "KakaoSDKShare", type: .macro),
+        .package(product: "KakaoSDKTemplate", type: .macro),
         .external(name: "Kingfisher"),
     ]
 )
