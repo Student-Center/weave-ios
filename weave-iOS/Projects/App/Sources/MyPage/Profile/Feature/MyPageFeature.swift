@@ -89,10 +89,10 @@ struct MyPageFeature: Reducer {
                         )
                     )
                 case .similarAnimal:
-                    var animalType: AnimalTypes?
+                    var animalType: AnimalModel?
                     if let animalName = state.myUserInfo?.animalType {
                         print(animalName)
-                        animalType = AnimalTypes(rawValue: animalName)
+                        animalType = .init(name: "", description: animalName)
                     }
                     state.destination = .editAnimal(
                         .init(
