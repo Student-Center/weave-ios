@@ -45,7 +45,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let uiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            if let uiImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
                 imageHandler(uiImage)
                 picker.dismiss(animated: true)
             }
