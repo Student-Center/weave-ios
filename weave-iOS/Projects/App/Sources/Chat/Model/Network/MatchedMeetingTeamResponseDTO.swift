@@ -88,11 +88,25 @@ struct MatchedMeetingTeamMemberResponseDTO: Codable {
     }
 }
 
+struct MatchedMeetingTeamRequestDTO: Codable {
+    let next: String?
+    let limit: Int
+     
+    init(next: String?, limit: Int = 10) {
+        self.next = next
+        self.limit = limit
+    }
+}
+
 extension APIEndpoints {
-    static func getMatchedMeetingTeam() -> EndPoint<MatchedMeetingTeamListResponseDTO> {
+    static func getMatchedMeetingTeam(next: String?) -> EndPoint<MatchedMeetingTeamListResponseDTO> {
+        let requestDTO = MatchedMeetingTeamRequestDTO(
+            next: next
+        )
         return EndPoint(
             path: "api/meetings/status/prepared",
             method: .get,
+            queryParameters: requestDTO,
             headers: [
                 "Authorization": "Bearer \(UDManager.accessToken)"
             ]

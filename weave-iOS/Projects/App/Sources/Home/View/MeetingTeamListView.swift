@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import ComposableArchitecture
 import Kingfisher
+import CoreKit
 
 struct MeetingTeamListView: View {
     
@@ -19,20 +20,36 @@ struct MeetingTeamListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                ScrollView {
-                    if let teamList = viewStore.teamList {
-                        LazyVGrid(columns: [column], spacing: 16, content: {
-                            ForEach(teamList.items, id: \.self) { team in
-                                MeetingListItemView(teamModel: team)
-                                    .onTapGesture {
-                                        viewStore.send(.didTappedTeamView(id: team.id))
-                                    }
-                            }
-                        })
-                        .padding(.top, 20)
+                VStack {
+                    if !viewStore.isNetworkRequested {
+                        ProgressView()
+                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
+                        // 미팅팀이 없을 때
+                        EmptyView()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: [column], spacing: 16, content: {
+                                ForEach(viewStore.teamList, id: \.self) { team in
+                                    MeetingListItemView(teamModel: team)
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedTeamView(id: team.id))
+                                        }
+                                }
+                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMeetingTeamListNextPage)
+                                        }
+                                }
+                            })
+                            .padding(.top, 20)
+                        }
+                        .refreshable {
+                            viewStore.send(.requestMeetingTeamList)
+                        }
                     }
                 }
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMeetingTeamList)
                 }
                 .toolbar {

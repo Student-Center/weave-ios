@@ -14,13 +14,21 @@ struct RequestListFeature: Reducer {
         @PresentationState var destination: Destination.State?
         
         @BindingState var receivedDataSources: [RequestMeetingItemModel] = []
+        var receiveDataNextCallId: String?
+        var isReceiveDataRequested = false
         @BindingState var sentDataSources: [RequestMeetingItemModel] = []
+        var sentDataNextCallId: String?
+        var isSentDataRequested = false
     }
     
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedMeetingView(index: Int, type: RequestListType)
         case onAppear(type: RequestListType)
+        
+        case requestList(type: RequestListType)
+        case requestNextPage(type: RequestListType)
+        
         case fetchData(dto: RequestMeetingListResponseDTO, type: RequestListType)
         case destination(PresentationAction<Destination.Action>)
         // bind
@@ -71,7 +79,31 @@ struct RequestListFeature: Reducer {
                 
             case .onAppear(let type):
                 return .run { send in
+                    await send.callAsFunction(.requestList(type: type))
+                }
+                
+            case .requestList(let type):
+                switch type {
+                case .receiving:
+                    state.receiveDataNextCallId = nil
+                    state.isReceiveDataRequested = false
+                    state.receivedDataSources = []
+                case .requesting:
+                    state.sentDataNextCallId = nil
+                    state.isSentDataRequested = false
+                    state.sentDataSources = []
+                }
+                return .run { send in
                     let response = try await requestMeetingList(type: type)
+                    await send.callAsFunction(.fetchData(dto: response, type: type))
+                } catch: { error, send in
+                    print(error)
+                }
+                
+            case .requestNextPage(let type):
+                return .run { [nextReceivedId = state.receiveDataNextCallId, nextSentId = state.sentDataNextCallId] send in
+                    let nextId = type == .receiving ? nextReceivedId : nextSentId
+                    let response = try await requestMeetingList(type: type, nextId: nextId)
                     await send.callAsFunction(.fetchData(dto: response, type: type))
                 } catch: { error, send in
                     print(error)
@@ -81,10 +113,12 @@ struct RequestListFeature: Reducer {
                 switch type {
                 case .receiving:
                     let data = response.toDomain.items
-                    state.receivedDataSources = data
+                    state.isReceiveDataRequested = true
+                    state.receivedDataSources.append(contentsOf: data)
                 case .requesting:
                     let data = response.toDomain.items
-                    state.sentDataSources = data
+                    state.isSentDataRequested = true
+                    state.sentDataSources.append(contentsOf: data)
                 }
                 return .none
                 
@@ -96,8 +130,8 @@ struct RequestListFeature: Reducer {
         }
     }
     
-    func requestMeetingList(type: RequestListType) async throws -> RequestMeetingListResponseDTO {
-        let requestDTO = RequestMeetingListRequestDTO(teamType: type)
+    func requestMeetingList(type: RequestListType, nextId: String? = nil) async throws -> RequestMeetingListResponseDTO {
+        let requestDTO = RequestMeetingListRequestDTO(teamType: type, next: nextId)
         let endPoint = APIEndpoints.getRequestMeetingTeamList(request: requestDTO)
         let provider = APIProvider()
         let response = try await provider.request(with: endPoint)
