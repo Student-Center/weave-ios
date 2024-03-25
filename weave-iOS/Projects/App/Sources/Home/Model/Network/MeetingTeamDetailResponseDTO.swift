@@ -34,7 +34,7 @@ struct MeetingTeamDetailResponseDTO: Codable {
                     mbti: MBTIType(rawValue: $0.mbti),
                     birthYear: $0.birthYear,
                     role: $0.role,
-                    animalType: AnimalTypes(rawValue: $0.animalType),
+                    animalType: $0.animalType,
                     height: $0.height,
                     isUnivVerified: $0.isUnivVerified
                 )
