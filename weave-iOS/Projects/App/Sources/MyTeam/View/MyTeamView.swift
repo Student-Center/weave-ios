@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import Kingfisher
 import CoreKit
 
 struct MyTeamView: View {
@@ -215,11 +216,23 @@ fileprivate struct MyTeamMemberView: View {
     fileprivate var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .inset(by: 1)
-                    .stroke(.white, lineWidth: isLeader ? 1 : 0)
-                    .background(DesignSystem.Colors.lightGray)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if let mbtiType = MBTIType(rawValue: member.mbti.uppercased()) {
+                    KFImage(URL(string: mbtiType.mbtiProfileImage))
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 12)
+                                .inset(by: 1)
+                                .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .inset(by: 1)
+                        .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                        .background(DesignSystem.Colors.lightGray)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
                 if isLeader {
                     HStack {
                         VStack {

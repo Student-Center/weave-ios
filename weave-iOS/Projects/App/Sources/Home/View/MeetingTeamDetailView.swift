@@ -29,6 +29,7 @@ struct MeetingTeamDetailView: View {
                                     mbti: member.mbti,
                                     animal: member.animalType,
                                     height: member.height,
+                                    profileImage: member.mbti?.mbtiProfileImage,
                                     univName: member.universityName,
                                     majorName: member.majorName,
                                     birthYear: member.birthYear,

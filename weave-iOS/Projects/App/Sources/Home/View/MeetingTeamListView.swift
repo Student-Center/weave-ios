@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import Kingfisher
 import CoreKit
 
 struct MeetingTeamListView: View {
@@ -128,9 +129,27 @@ struct MeetingListItemView: View {
     @ViewBuilder
     func userIconView(_ user: MeetingMemberModel) -> some View {
         VStack(spacing: 5) {
-            RoundedRectangle(cornerRadius: 12)
-                .frame(width: 48, height: 48)
-                .foregroundStyle(DesignSystem.Colors.lightGray)
+            if let avatar = user.avatar {
+                KFImage(URL(string: avatar))
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 48, height: 48)
+            } else {
+                if let mbtiType = user.mbtiType {
+                    KFImage(URL(string: mbtiType.mbtiProfileImage))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 12)
+                        )
+                        .frame(width: 48, height: 48)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .frame(width: 48, height: 48)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                }
+            }
+            
             Text(user.userInfoString)
                 .multilineTextAlignment(.center)
                 .font(.pretendard(._600, size: 12))
