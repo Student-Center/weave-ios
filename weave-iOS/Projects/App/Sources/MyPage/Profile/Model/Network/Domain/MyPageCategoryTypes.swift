@@ -82,7 +82,7 @@ enum MyPageCategoryTypes: CaseIterable {
         func isSubMenuFilled(_ userModel: MyUserInfoModel) -> Bool {
             switch self {
             case .kakaoTalkId:
-                return false
+                return userModel.kakaoId != ""
             case .mbti:
                 return userModel.mbti != ""
             case .similarAnimal:
@@ -100,7 +100,7 @@ enum MyPageCategoryTypes: CaseIterable {
             }
             
             switch self {
-            case .kakaoTalkId: return ""
+            case .kakaoTalkId: return userModel.kakaoId ?? ""
             case .mbti: return userModel.mbti
             case .similarAnimal: return userModel.animalType ?? ""
             case .physicalHeight: return String(userModel.height ?? 0)

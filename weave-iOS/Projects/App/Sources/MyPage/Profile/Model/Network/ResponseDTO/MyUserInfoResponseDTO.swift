@@ -18,6 +18,7 @@ struct MyUserInfoResponseDTO: Decodable {
     let mbti: String
     let animalType: String?
     let height: Int?
+    let kakaoId: String?
     let isUniversityEmailVerified: Bool
     let sil: Int
     
@@ -32,6 +33,7 @@ struct MyUserInfoResponseDTO: Decodable {
             mbti: mbti,
             animalType: animalType,
             height: height,
+            kakaoId: kakaoId,
             isUniversityEmailVerified: isUniversityEmailVerified,
             sil: `sil`
         )

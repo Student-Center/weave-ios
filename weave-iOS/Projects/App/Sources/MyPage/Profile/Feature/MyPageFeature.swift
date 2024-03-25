@@ -74,6 +74,12 @@ struct MyPageFeature: Reducer {
                 
             case .didTappedSubViews(let type):
                 switch type {
+                case .kakaoTalkId:
+                    if state.myUserInfo?.kakaoId == "" || state.myUserInfo?.kakaoId == nil {
+                        state.destination = .setKakaoId(.init())
+                    }
+                    return .none
+                    
                 case .mbti:
                     state.destination = .editMbti(
                         .init(
@@ -105,8 +111,7 @@ struct MyPageFeature: Reducer {
                         return .none
                     }
                     state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
-                    
-                default: break
+                    return .none
                 }
                 
                 return .none
@@ -192,6 +197,7 @@ extension MyPageFeature {
     struct Destination: Reducer {
         enum State: Equatable {
             case presentSetting(SettingFeautre.State)
+            case setKakaoId(SetKakaoIdFeature.State)
             case editMbti(MyMbtiEditFeature.State)
             case editAnimal(MyAnimalSelectionFeature.State)
             case editHeight(MyHeightEditFeature.State)
@@ -199,6 +205,7 @@ extension MyPageFeature {
         }
         enum Action {
             case presentSetting(SettingFeautre.Action)
+            case setKakaoId(SetKakaoIdFeature.Action)
             case editMbti(MyMbtiEditFeature.Action)
             case editAnimal(MyAnimalSelectionFeature.Action)
             case editHeight(MyHeightEditFeature.Action)
@@ -207,6 +214,9 @@ extension MyPageFeature {
         var body: some ReducerOf<Self> {
             Scope(state: /State.presentSetting, action: /Action.presentSetting) {
                 SettingFeautre()
+            }
+            Scope(state: /State.setKakaoId, action: /Action.setKakaoId) {
+                SetKakaoIdFeature()
             }
             Scope(state: /State.editMbti, action: /Action.editMbti) {
                 MyMbtiEditFeature()

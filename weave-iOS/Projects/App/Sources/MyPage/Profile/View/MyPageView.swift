@@ -89,6 +89,14 @@ struct MyPageView: View {
                     SettingView(store: store)
                         .environmentObject(AppCoordinator.shared)
                 }
+                // 카카오 Id 설정
+                .navigationDestination(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MyPageFeature.Destination.State.setKakaoId,
+                    action: MyPageFeature.Destination.Action.setKakaoId
+                ) { store in
+                    SetKakaoIdView(store: store)
+                }
                 // 대학교 인증
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
