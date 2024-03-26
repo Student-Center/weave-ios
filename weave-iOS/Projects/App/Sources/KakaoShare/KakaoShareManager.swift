@@ -20,8 +20,8 @@ class KakaoShareManager {
                         "title": "[WEAVE] 친구야 이 팀 어때?",
                         "image_url": "\(SecretKey.serverResourcePath)/share_image.png",
                         "link": {
-                            "mobile_web_url": "\(SecretKey.serverResourcePath)/share_image.png",
-                            "web_url": "\(SecretKey.serverResourcePath)/share_image.png"
+                            "ios_execution_params": "type=team&teamId=\(teamId)",
+                            "androidExecutionParams": "type=team&teamId=\(teamId)"
                         },
                     },
                     "buttons": [
@@ -29,7 +29,7 @@ class KakaoShareManager {
                             "title": "팀 상세보기",
                             "link": {
                                 "ios_execution_params": "type=team&teamId=\(teamId)",
-                                "web_url": "https://developers.kakao.com"
+                                "androidExecutionParams": "type=team&teamId=\(teamId)"
                             }
                         }
                     ]
@@ -46,16 +46,16 @@ class KakaoShareManager {
                         "title": "[WEAVE] 친구야 같이 미팅하자",
                         "image_url": "\(SecretKey.serverResourcePath)/share_image.png",
                         "link": {
-                            "mobile_web_url": "\(SecretKey.serverResourcePath)/share_image.png",
-                            "web_url": "\(SecretKey.serverResourcePath)/share_image.png"
+                                "androidExecutionParams": "type=invitation&code=\(code)",
+                                "ios_execution_params": "type=invitation&code=\(code)"
                         },
                     },
                     "buttons": [
                         {
-                            "title": "팀 상세보기",
+                            "title": "초대장 확인하기",
                             "link": {
                                 "ios_execution_params": "type=invitation&code=\(code)",
-                                "web_url": "https://developers.kakao.com"
+                                "androidExecutionParams": "type=invitation&code=\(code)"
                             }
                         }
                     ]

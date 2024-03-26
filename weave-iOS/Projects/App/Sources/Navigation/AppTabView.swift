@@ -93,6 +93,33 @@ struct AppTabView: View {
             .onLoad {
                 viewStore.send(.onAppear)
             }
+            .onOpenURL { url in
+                guard url.host(percentEncoded: true)?.contains("kakaolink") == true else { return }
+                
+                guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                      let queryItems = components.queryItems else { return }
+                
+                let type = queryItems.first { $0.name == "type" }?.value
+                let code = queryItems.first { $0.name == "code" }?.value
+                
+                if type == "invitation", 
+                    let invitationCode = code {
+                    viewStore.send(.didInvitationReceived(invitationCode: invitationCode))
+                }
+            }
+            .weaveAlert(
+                isPresented: viewStore.$isShowInvitationConfirmAlert,
+                title: "✉️\n팀 초대장 도착!",
+                message: "\(viewStore.invitedTeamInfo?.teamIntroduce ?? "") 팀의 초대를 수락할까요?",
+                primaryButtonTitle: "수락할께요",
+                secondaryButtonTitle: "나중에",
+                primaryAction: {
+                    viewStore.send(.didTappedAcceptInvitation)
+                },
+                secondaryAction: {
+                    viewStore.send(.didTappedCancelInvitation)
+                }
+            )
         }
     }
 }
