@@ -13,6 +13,7 @@ let target = Target(
     dependencies: [
         .project(target: "CoreKit",
                  path: .relativeToRoot("Projects/Core")),
+        .external(name: "Kingfisher")
     ]
 )
 
