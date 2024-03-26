@@ -59,7 +59,9 @@ struct AppView: View {
     }
     
     public func changeRoot(to viewType: RootViewType) {
-        currentRoot = viewType
+        withAnimation {
+            currentRoot = viewType
+        }
     }
     
     public func appendPath(_ path: RootViewType) {
