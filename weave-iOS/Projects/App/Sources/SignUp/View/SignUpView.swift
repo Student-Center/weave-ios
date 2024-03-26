@@ -26,6 +26,7 @@ struct SignUpView: View {
                     
                     Text(viewStore.currentStep.title)
                         .multilineTextAlignment(.center)
+                        .lineSpacing(5)
                         .font(.pretendard(._500, size: 22))
                         .frame(height: 100)
                     
@@ -45,13 +46,15 @@ struct SignUpView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 1)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button(action: {
-                            viewStore.send(.didTappedPreviousButton)
-                        }, label: {
-                            Image(systemName: "arrow.left")
-                                .foregroundStyle(.white)
-                        })
+                    if viewStore.currentStep.rawValue > 0 {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button(action: {
+                                viewStore.send(.didTappedPreviousButton)
+                            }, label: {
+                                Image(systemName: "arrow.left")
+                                    .foregroundStyle(.white)
+                            })
+                        }
                     }
                     
                     ToolbarItem(placement: .topBarTrailing) {
