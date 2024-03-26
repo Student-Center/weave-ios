@@ -94,7 +94,6 @@ struct AppTabView: View {
                 viewStore.send(.onAppear)
             }
             .onOpenURL { url in
-                print(url)
                 guard url.host(percentEncoded: true)?.contains("kakaolink") == true else { return }
                 
                 guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
@@ -105,7 +104,6 @@ struct AppTabView: View {
                 
                 if type == "invitation", 
                     let invitationCode = code {
-                    print("Invitation Code: \(invitationCode)")
                     viewStore.send(.didInvitationReceived(invitationCode: invitationCode))
                 }
             }

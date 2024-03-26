@@ -73,6 +73,20 @@ struct MeetingTeamListView: View {
                     }
                 }
                 .toolbar(.visible, for: .tabBar)
+                .onOpenURL(perform: { url in
+                    guard url.host(percentEncoded: true)?.contains("kakaolink") == true else { return }
+                    
+                    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                          let queryItems = components.queryItems else { return }
+                    
+                    let type = queryItems.first { $0.name == "type" }?.value
+                    let code = queryItems.first { $0.name == "teamId" }?.value
+                    
+                    if type == "team",
+                        let teamId = code {
+                        viewStore.send(.didTappedTeamView(id: teamId))
+                    }
+                })
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
                     state: /MeetingTeamListFeature.Destination.State.teamDetail,
