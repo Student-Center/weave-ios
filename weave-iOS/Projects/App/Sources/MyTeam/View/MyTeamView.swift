@@ -8,6 +8,8 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import Kingfisher
+import CoreKit
 
 struct MyTeamView: View {
     
@@ -17,7 +19,9 @@ struct MyTeamView: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
                 VStack {
-                    if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
+                    if !viewStore.didDataFetched {
+                        ProgressView()
+                    } else if viewStore.didDataFetched && viewStore.myTeamList.isEmpty {
                         getEmptyView() {
                             viewStore.send(.didTappedGenerateMyTeam)
                         }
@@ -27,6 +31,14 @@ struct MyTeamView: View {
                                 ForEach(viewStore.myTeamList, id: \.id) { team in
                                     MyTeamItemView(store: store, teamModel: team)
                                 }
+                                
+                                if !viewStore.myTeamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMyTeamListNextPage)
+                                        }
+                                }
+                                
                                 if !viewStore.myTeamList.isEmpty {
                                     Text(
                                     """
@@ -48,7 +60,7 @@ struct MyTeamView: View {
                         }
                     }
                 }
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMyTeamList)
                 }
                 .navigationDestination(
@@ -204,11 +216,23 @@ fileprivate struct MyTeamMemberView: View {
     fileprivate var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .inset(by: 1)
-                    .stroke(.white, lineWidth: isLeader ? 1 : 0)
-                    .background(DesignSystem.Colors.lightGray)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                if let mbtiType = MBTIType(rawValue: member.mbti.uppercased()) {
+                    KFImage(URL(string: mbtiType.mbtiProfileImage))
+                        .resizable()
+                        .aspectRatio(1, contentMode: .fill)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 12)
+                                .inset(by: 1)
+                                .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .inset(by: 1)
+                        .stroke(.white, lineWidth: isLeader ? 1 : 0)
+                        .background(DesignSystem.Colors.lightGray)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
                 if isLeader {
                     HStack {
                         VStack {
@@ -255,26 +279,15 @@ fileprivate struct MyTeamEmptyMemberView: View {
                 .frame(maxWidth: .infinity)
                 
                 if isMyHostTeam {
-                    WeaveButton(title: "친구 초대", size: .tiny)
-                        .frame(width: 73)
+                    WeaveButton(title: "친구 초대", size: .tiny) {
+                        handler()
+                    }
+                    .frame(width: 73)
                 } else {
                     Text("곧 들어와요")
                         .font(.pretendard(._600, size: 12))
                         .foregroundStyle(DesignSystem.Colors.gray600)
                 }
-            }
-            .frame(width: 48, height: 48)
-            .frame(maxWidth: .infinity)
-            
-            if isMyHostTeam {
-                WeaveButton(title: "친구 초대", size: .tiny) {
-                    handler()
-                }
-                .frame(width: 73)
-            } else {
-                Text("곧 들어와요")
-                    .font(.pretendard(._600, size: 12))
-                    .foregroundStyle(DesignSystem.Colors.gray600)
             }
         })
     }

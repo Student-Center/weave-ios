@@ -37,7 +37,7 @@ struct MyPageFeature: Reducer {
         case didCameraPermissionDenied
         case showCamera
         case showAppPreference
-        case didPickPhotoCompleted(image: Image)
+        case didPickPhotoCompleted(image: UIImage)
         case destination(PresentationAction<Destination.Action>)
         // bind
         case binding(BindingAction<State>)
@@ -74,6 +74,12 @@ struct MyPageFeature: Reducer {
                 
             case .didTappedSubViews(let type):
                 switch type {
+                case .kakaoTalkId:
+                    if state.myUserInfo?.kakaoId == "" || state.myUserInfo?.kakaoId == nil {
+                        state.destination = .setKakaoId(.init())
+                    }
+                    return .none
+                    
                 case .mbti:
                     state.destination = .editMbti(
                         .init(
@@ -89,10 +95,10 @@ struct MyPageFeature: Reducer {
                         )
                     )
                 case .similarAnimal:
-                    var animalType: AnimalTypes?
+                    var animalType: AnimalModel?
                     if let animalName = state.myUserInfo?.animalType {
                         print(animalName)
-                        animalType = AnimalTypes(rawValue: animalName)
+                        animalType = .init(name: "", description: animalName)
                     }
                     state.destination = .editAnimal(
                         .init(
@@ -105,8 +111,7 @@ struct MyPageFeature: Reducer {
                         return .none
                     }
                     state.destination = .univVerify(.init(universityName: state.myUserInfo?.universityName ?? ""))
-                    
-                default: break
+                    return .none
                 }
                 
                 return .none
@@ -146,9 +151,16 @@ struct MyPageFeature: Reducer {
                 return .none
                 
             case .didPickPhotoCompleted(let image):
-                // 프로필 이미지 변경 필요
-                print(image)
-                return .none
+                // 1. presigned URL 요청
+                return .run { send in
+                    let response = try await requestGetPresignedURL()
+                    try await requestUploadImage(url: response.uploadUrl, image: image)
+                    try await requestImageUploadCallback(imageId: response.imageId)
+                    let userResponse = try await requestMyUserInfo()
+                    await send.callAsFunction(.fetchMyUserInfo(userInfo: userResponse))
+                } catch: { error, send in
+                    print(error)
+                }
                 
             case .showAppPreference:
                 if let appSetting = URL(string: UIApplication.openSettingsURLString) {
@@ -174,6 +186,29 @@ struct MyPageFeature: Reducer {
         return response
     }
     
+    func requestGetPresignedURL() async throws -> ProfileImageUploadPresignedURLResponseDTO {
+        let endPoint = APIEndpoints.getProfileImageUploadPresignedURL()
+        let provider = APIProvider()
+        let response = try await provider.request(with: endPoint)
+        return response
+    }
+    
+    func requestUploadImage(url: String, image: UIImage) async throws {
+        guard let imageData = image.jpegData(compressionQuality: 0.7) else {
+            throw ImageUploadError.convertImageToDataError
+        }
+        
+        let endPoint = APIEndpoints.getProfileImageUpload(presignedURL: url)
+        let provider = APIProvider()
+        try await provider.requestUploadData(with: endPoint, data: imageData)
+    }
+    
+    func requestImageUploadCallback(imageId: String) async throws {
+        let endPoint = APIEndpoints.getProfileImageUploadCallback(imageId: imageId)
+        let provider = APIProvider()
+        try await provider.requestWithNoResponse(with: endPoint)
+    }
+    
     func checkCameraAuthorization() async -> Bool {
         //권한 여부 확인
         let status = AVCaptureDevice.authorizationStatus(for: .video)
@@ -192,6 +227,7 @@ extension MyPageFeature {
     struct Destination: Reducer {
         enum State: Equatable {
             case presentSetting(SettingFeautre.State)
+            case setKakaoId(SetKakaoIdFeature.State)
             case editMbti(MyMbtiEditFeature.State)
             case editAnimal(MyAnimalSelectionFeature.State)
             case editHeight(MyHeightEditFeature.State)
@@ -199,6 +235,7 @@ extension MyPageFeature {
         }
         enum Action {
             case presentSetting(SettingFeautre.Action)
+            case setKakaoId(SetKakaoIdFeature.Action)
             case editMbti(MyMbtiEditFeature.Action)
             case editAnimal(MyAnimalSelectionFeature.Action)
             case editHeight(MyHeightEditFeature.Action)
@@ -207,6 +244,9 @@ extension MyPageFeature {
         var body: some ReducerOf<Self> {
             Scope(state: /State.presentSetting, action: /Action.presentSetting) {
                 SettingFeautre()
+            }
+            Scope(state: /State.setKakaoId, action: /Action.setKakaoId) {
+                SetKakaoIdFeature()
             }
             Scope(state: /State.editMbti, action: /Action.editMbti) {
                 MyMbtiEditFeature()

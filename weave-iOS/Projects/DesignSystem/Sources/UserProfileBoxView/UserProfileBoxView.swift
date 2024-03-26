@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import Kingfisher
 import CoreKit
 
 public struct UserProfileBoxConfig {
     let mbti: MBTIType?
-    let animal: AnimalTypes?
+    let animal: String?
     let height: Int?
     let profileImage: String?
     let univName: String
@@ -21,9 +22,9 @@ public struct UserProfileBoxConfig {
     
     public init(
         mbti: MBTIType?,
-        animal: AnimalTypes?,
+        animal: String?,
         height: Int?,
-        profileImage: String? = nil,
+        profileImage: String?,
         univName: String,
         majorName: String,
         birthYear: Int,
@@ -61,7 +62,7 @@ public struct UserProfileBoxView: View {
                     RoundCornerBoxedTextView(mbti.description)
                 }
                 if let animalType = config.animal {
-                    RoundCornerBoxedTextView(animalType.text)
+                    RoundCornerBoxedTextView(animalType)
                 }
                 if let height = config.height {
                     RoundCornerBoxedTextView("📏 \(height)cm")
@@ -88,9 +89,19 @@ public struct UserProfileBoxView: View {
                 
                 Spacer()
                 
-                RoundedRectangle(cornerRadius: 10)
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(DesignSystem.Colors.lightGray)
+                if let profileImage = config.profileImage {
+                    KFImage(URL(string: profileImage))
+                        .placeholder{
+                            ProgressView()
+                        }
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                }
             }
             .padding(.horizontal, 4)
         }

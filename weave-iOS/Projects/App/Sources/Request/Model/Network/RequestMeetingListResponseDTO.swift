@@ -67,7 +67,7 @@ struct RequestMeetingMemberInfoResponseDTO: Codable {
     let id: String
     let userId: String
     let universityName: String
-    let mbti: String?
+    let mbti: String
     let birthYear: Int
     let animalType: String?
     
@@ -78,7 +78,7 @@ struct RequestMeetingMemberInfoResponseDTO: Codable {
             universityName: universityName,
             mbti: mbti,
             birthYear: birthYear,
-            animalType: AnimalTypes(rawValue: animalType ?? "")
+            animalType: animalType
         )
     }
 }
@@ -165,13 +165,13 @@ struct RequestMeetingMemberInfoModel: Equatable {
     let id: String
     let userId: String
     let universityName: String
-    let mbti: String?
+    let mbti: String
     let birthYear: Int
-    let animalType: AnimalTypes?
+    let animalType: String?
     var isAttendance: Bool?
     var kakaoId: String?
     
-    init(id: String, userId: String, universityName: String, mbti: String?, birthYear: Int, animalType: AnimalTypes?, isAttendance: Bool? = nil, kakoId: String? = nil) {
+    init(id: String, userId: String, universityName: String, mbti: String, birthYear: Int, animalType: String?, isAttendance: Bool? = nil, kakoId: String? = nil) {
         self.id = id
         self.userId = userId
         self.universityName = universityName

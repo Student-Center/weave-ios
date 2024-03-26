@@ -8,6 +8,8 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import Kingfisher
+import CoreKit
 
 struct MeetingTeamListView: View {
     
@@ -18,20 +20,36 @@ struct MeetingTeamListView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationView {
-                ScrollView {
-                    if let teamList = viewStore.teamList {
-                        LazyVGrid(columns: [column], spacing: 16, content: {
-                            ForEach(teamList.items, id: \.self) { team in
-                                MeetingListItemView(teamModel: team)
-                                    .onTapGesture {
-                                        viewStore.send(.didTappedTeamView(id: team.id))
-                                    }
-                            }
-                        })
-                        .padding(.top, 20)
+                VStack {
+                    if !viewStore.isNetworkRequested {
+                        ProgressView()
+                    } else if viewStore.isNetworkRequested && viewStore.teamList.isEmpty {
+                        // 미팅팀이 없을 때
+                        EmptyView()
+                    } else {
+                        ScrollView {
+                            LazyVGrid(columns: [column], spacing: 16, content: {
+                                ForEach(viewStore.teamList, id: \.self) { team in
+                                    MeetingListItemView(teamModel: team)
+                                        .onTapGesture {
+                                            viewStore.send(.didTappedTeamView(id: team.id))
+                                        }
+                                }
+                                if !viewStore.teamList.isEmpty && viewStore.nextCallId != nil {
+                                    ProgressView()
+                                        .onAppear {
+                                            viewStore.send(.requestMeetingTeamListNextPage)
+                                        }
+                                }
+                            })
+                            .padding(.top, 20)
+                        }
+                        .refreshable {
+                            viewStore.send(.requestMeetingTeamList)
+                        }
                     }
                 }
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMeetingTeamList)
                 }
                 .toolbar {
@@ -55,6 +73,20 @@ struct MeetingTeamListView: View {
                     }
                 }
                 .toolbar(.visible, for: .tabBar)
+                .onOpenURL(perform: { url in
+                    guard url.host(percentEncoded: true)?.contains("kakaolink") == true else { return }
+                    
+                    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                          let queryItems = components.queryItems else { return }
+                    
+                    let type = queryItems.first { $0.name == "type" }?.value
+                    let code = queryItems.first { $0.name == "teamId" }?.value
+                    
+                    if type == "team",
+                        let teamId = code {
+                        viewStore.send(.didTappedTeamView(id: teamId))
+                    }
+                })
                 .navigationDestination(
                     store: self.store.scope(state: \.$destination, action: { .destination($0) }),
                     state: /MeetingTeamListFeature.Destination.State.teamDetail,
@@ -111,9 +143,27 @@ struct MeetingListItemView: View {
     @ViewBuilder
     func userIconView(_ user: MeetingMemberModel) -> some View {
         VStack(spacing: 5) {
-            RoundedRectangle(cornerRadius: 12)
-                .frame(width: 48, height: 48)
-                .foregroundStyle(DesignSystem.Colors.lightGray)
+            if let avatar = user.avatar {
+                KFImage(URL(string: avatar))
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 48, height: 48)
+            } else {
+                if let mbtiType = user.mbtiType {
+                    KFImage(URL(string: mbtiType.mbtiProfileImage))
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 12)
+                        )
+                        .frame(width: 48, height: 48)
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .frame(width: 48, height: 48)
+                        .foregroundStyle(DesignSystem.Colors.lightGray)
+                }
+            }
+            
             Text(user.userInfoString)
                 .multilineTextAlignment(.center)
                 .font(.pretendard(._600, size: 12))

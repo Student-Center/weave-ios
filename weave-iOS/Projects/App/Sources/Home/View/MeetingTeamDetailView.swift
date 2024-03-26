@@ -29,6 +29,7 @@ struct MeetingTeamDetailView: View {
                                     mbti: member.mbti,
                                     animal: member.animalType,
                                     height: member.height,
+                                    profileImage: member.mbti?.mbtiProfileImage,
                                     univName: member.universityName,
                                     majorName: member.majorName,
                                     birthYear: member.birthYear,
@@ -48,7 +49,10 @@ struct MeetingTeamDetailView: View {
                                 size: .large,
                                 textColor: DesignSystem.Colors.gray500,
                                 backgroundColor: DesignSystem.Colors.gray500
-                            )
+                            ) {
+                                let message = KakaoShareManager.getMeetingTeamShareMessage(teamId: teamModel.id)
+                                KakaoShareManager.shareMessage(with: message)
+                            }
                             .frame(width: (UIScreen.main.bounds.size.width - 32) * 0.3)
                             
                             WeaveButton(

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import DesignSystem
 import CoreKit
 
 struct MeetingTeamListModel: Equatable {
@@ -37,6 +38,10 @@ struct MeetingMemberModel: Equatable, Hashable {
     let isUnivVerified: Bool?
     let avatar: String?
     var kakaoId: String?
+    
+    var mbtiType: MBTIType? {
+        return MBTIType(rawValue: mbti.uppercased())
+    }
     
     var userInfoString: String {
         // ToDo - 알맞게 패턴 처리

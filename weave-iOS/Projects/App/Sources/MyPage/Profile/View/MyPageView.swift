@@ -8,6 +8,8 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignSystem
+import Kingfisher
+import CoreKit
 
 struct MyPageView: View {
     
@@ -49,6 +51,9 @@ struct MyPageView: View {
                         .padding(.horizontal, 16)
                     }
                 }
+                .refreshable {
+                    viewStore.send(.requestMyUserInfo)
+                }
                 .navigationDestination(isPresented: viewStore.$isShowCompleteUnivVerifyView, destination: {
                     UnivEmailCompleteView()
                 })
@@ -62,7 +67,7 @@ struct MyPageView: View {
                         
                     }
                 )
-                .onAppear {
+                .onLoad {
                     viewStore.send(.requestMyUserInfo)
                 }
                 .toolbar(content: {
@@ -88,6 +93,14 @@ struct MyPageView: View {
                 ) { store in
                     SettingView(store: store)
                         .environmentObject(AppCoordinator.shared)
+                }
+                // 카카오 Id 설정
+                .navigationDestination(
+                    store: self.store.scope(state: \.$destination, action: { .destination($0) }),
+                    state: /MyPageFeature.Destination.State.setKakaoId,
+                    action: MyPageFeature.Destination.Action.setKakaoId
+                ) { store in
+                    SetKakaoIdView(store: store)
                 }
                 // 대학교 인증
                 .navigationDestination(
@@ -141,13 +154,29 @@ fileprivate struct MyProfileHeaderSectionView: View {
             VStack(spacing: 20) {
                 HStack {
                     ZStack {
-                        DesignSystem.Icons.profileImage
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding([.trailing, .bottom], 8)
-                            .onTapGesture {
-                                viewStore.send(.didTappedProfileView)
-                            }
+                        if let profileURL = viewStore.myUserInfo?.avatar {
+                            KFImage(URL(string: profileURL))
+                                .placeholder{
+                                    ProgressView()
+                                }
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 72, height: 72)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 20))
+                                .padding([.trailing, .bottom], 8)
+                                .onTapGesture {
+                                    viewStore.send(.didTappedProfileView)
+                                }
+                        } else {
+                            DesignSystem.Icons.profileImage
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .padding([.trailing, .bottom], 8)
+                                .onTapGesture {
+                                    viewStore.send(.didTappedProfileView)
+                                }
+                        }
                         VStack {
                             Spacer()
                             HStack {

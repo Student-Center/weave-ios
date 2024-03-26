@@ -32,21 +32,25 @@ struct MeetingMatchProfileView: View {
                     VStack {
                         ForEach(viewStore.partnerTeamModel.memberInfos, id: \.id) { member in
                             let mbtiType = MBTIType(rawValue: member.mbti)
-                            let animalType = AnimalTypes(rawValue: member.animalType ?? "")
+                            let animalType = member.animalType
+                            let profileImage = viewStore.isProfileOpen ? member.avatar : mbtiType?.mbtiProfileImage
+                            let kakaoId = viewStore.isProfileOpen ? member.kakaoId : nil
+                            
                             let profileViewConfig = UserProfileBoxConfig(
                                 mbti: mbtiType,
                                 animal: animalType,
                                 height: member.height,
+                                profileImage: profileImage,
                                 univName: member.universityName,
-                                majorName: "학과정보없음",
+                                majorName: "학과정보없음", // ToDo - 학과
                                 birthYear: member.birthYear,
                                 isUnivVerified: true,
-                                kakaoId: member.kakaoId
+                                kakaoId: kakaoId
                             )
                             UserProfileBoxView(config: profileViewConfig)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    viewStore.send(.requestKakaoId)
+                                    viewStore.send(.didProfileTapped)
                                 }
                         }
                     }

@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import ComposableArchitecture
+import CoreKit
 
 struct RequestListView: View {
     @State var selection: Int = 0
@@ -20,44 +21,60 @@ struct RequestListView: View {
                 SegmentedPicker(items: self.items, selection: self.$selection)
                     .frame(width: 210)
                 TabView(selection: $selection) {
-                    if !viewStore.receivedDataSources.isEmpty {
-                        getMeetingListView(
-                            dataSources: viewStore.receivedDataSources,
-                            type: .requesting
-                        ) { index in
-                            guard let type = RequestListType(rawValue: selection) else { return }
-                            viewStore.send(.didTappedMeetingView(index: index, type: type))
+                    VStack {
+                        if !viewStore.isReceiveDataRequested {
+                            ProgressView()
+                        } else if viewStore.isReceiveDataRequested && viewStore.receivedDataSources.isEmpty {
+                            getEmptyView()
+                        } else {
+                            getMeetingListView(
+                                type: .receiving,
+                                dataSources: viewStore.receivedDataSources,
+                                needShowNextPage: viewStore.receiveDataNextCallId != nil,
+                                tapHandler: { index in
+                                    guard let type = RequestListType(rawValue: selection) else { return }
+                                    viewStore.send(.didTappedMeetingView(index: index, type: type))
+                                },
+                                nextPageHandler: { type in
+                                    viewStore.send(.requestNextPage(type: type))
+                                },
+                                scrollRefreshHandler: { type in
+                                    viewStore.send(.requestList(type: type))
+                                }
+                            )
                         }
-                        .tag(0)
-                        .onAppear {
-                            viewStore.send(.onAppear(type: .receiving))
-                        }
-                    } else {
-                        getEmptyView()
-                            .tag(0)
-                            .onAppear {
-                                viewStore.send(.onAppear(type: .receiving))
-                            }
+                    }
+                    .tag(0)
+                    .onLoad {
+                        viewStore.send(.onAppear(type: .receiving))
                     }
                     
-                    if !viewStore.sentDataSources.isEmpty {
-                        getMeetingListView(
-                            dataSources: viewStore.sentDataSources,
-                            type: .requesting
-                        ) { index in
-                            guard let type = RequestListType(rawValue: selection) else { return }
-                            viewStore.send(.didTappedMeetingView(index: index, type: type))
+                    VStack {
+                        if !viewStore.isSentDataRequested {
+                            ProgressView()
+                        } else if viewStore.isSentDataRequested && viewStore.sentDataSources.isEmpty {
+                            getEmptyView()
+                        } else {
+                            getMeetingListView(
+                                type: .requesting,
+                                dataSources: viewStore.sentDataSources,
+                                needShowNextPage: viewStore.sentDataNextCallId != nil,
+                                tapHandler: { index in
+                                    guard let type = RequestListType(rawValue: selection) else { return }
+                                    viewStore.send(.didTappedMeetingView(index: index, type: type))
+                                },
+                                nextPageHandler: { type in
+                                    viewStore.send(.requestNextPage(type: type))
+                                }, 
+                                scrollRefreshHandler: { type in
+                                    viewStore.send(.requestList(type: type))
+                                }
+                            )
                         }
-                        .tag(1)
-                        .onAppear {
-                            viewStore.send(.onAppear(type: .requesting))
-                        }
-                    } else {
-                        getEmptyView()
-                            .tag(1)
-                            .onAppear {
-                                viewStore.send(.onAppear(type: .requesting))
-                            }
+                    }
+                    .tag(1)
+                    .onLoad {
+                        viewStore.send(.onAppear(type: .requesting))
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -74,9 +91,12 @@ struct RequestListView: View {
     
     @ViewBuilder
     func getMeetingListView(
-        dataSources: [RequestMeetingItemModel],
         type: RequestListType,
-        handler: @escaping (Int) -> Void
+        dataSources: [RequestMeetingItemModel],
+        needShowNextPage: Bool,
+        tapHandler: @escaping (Int) -> Void,
+        nextPageHandler: @escaping (RequestListType) -> Void,
+        scrollRefreshHandler: @escaping (RequestListType) -> Void
     ) -> some View {
         VStack {
             ScrollView {
@@ -84,9 +104,18 @@ struct RequestListView: View {
                     let meeting = dataSources[index]
                     MeetingItemView(meeting: meeting, type: type)
                         .onTapGesture {
-                            handler(index)
+                            tapHandler(index)
                         }
                 }
+                if !dataSources.isEmpty && needShowNextPage {
+                    ProgressView()
+                        .onAppear {
+                            nextPageHandler(type)
+                        }
+                }
+            }
+            .refreshable {
+                scrollRefreshHandler(type)
             }
         }
         .padding(.vertical, 20)
@@ -132,9 +161,12 @@ fileprivate struct MeetingItemView: View {
                 Spacer()
                 
                 ForEach(meeting.receivingTeam.memberInfos, id: \.id) { member in
+                    let mbtiType = MBTIType(rawValue: member.mbti.uppercased())
                     MemberIconView(
                         title: member.memberInfoValue,
-                        subTitle: member.mbti ?? "") {}
+                        subTitle: member.mbti,
+                        imageURL: mbtiType?.mbtiProfileImage
+                    ) {}
                 }
                 Spacer()
             }
@@ -147,17 +179,20 @@ struct MemberIconView<Content: View>: View {
     let title: String
     let subTitle: String
     let isStroke: Bool
+    let imageURL: String?
     let overlay: () -> Content
     
     init(
         title: String,
         subTitle: String,
         isStroke: Bool = false,
+        imageURL: String?,
         @ViewBuilder overlay: @escaping () -> Content
     ) {
         self.title = title
         self.subTitle = subTitle
         self.isStroke = isStroke
+        self.imageURL = imageURL
         self.overlay = overlay
     }
     
