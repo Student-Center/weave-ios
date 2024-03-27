@@ -17,12 +17,18 @@ struct MeetingMatchProfileFeature: Reducer {
         @BindingState var partnerTeamModel: MeetingTeamModel
         @BindingState var isProfileOpen = false
         @PresentationState var destination: Destination.State?
+        @BindingState var isShowUserMenu = false
+        @BindingState var isShowCompleteReportAlert = false
+        
+        var menuTargetUserId: String?
     }
     
     enum Action: BindableAction {
         //MARK: UserAction
         case didTappedBackButton
         case didTappedGoToMatchingView
+        case didTappedUserMenu(id: String)
+        case requestReportUser
 
         case onAppear
         case didProfileTapped
@@ -52,6 +58,16 @@ struct MeetingMatchProfileFeature: Reducer {
                 return .run { send in
                     await dismiss()
                 }
+                
+            case .requestReportUser:
+                guard let userId = state.menuTargetUserId else { return .none }
+                state.isShowCompleteReportAlert.toggle()
+                return .none
+                
+            case .didTappedUserMenu(let id):
+                state.menuTargetUserId = id
+                state.isShowUserMenu.toggle()
+                return .none
                 
             case .destination(.dismiss):
                 state.destination = nil

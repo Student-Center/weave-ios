@@ -26,6 +26,7 @@ struct MeetingTeamDetailView: View {
                             // 유저
                             ForEach(teamModel.members, id: \.userId) { member in
                                 let profileConfig = UserProfileBoxConfig(
+                                    id: member.userId,
                                     mbti: member.mbti,
                                     animal: member.animalType,
                                     height: member.height,

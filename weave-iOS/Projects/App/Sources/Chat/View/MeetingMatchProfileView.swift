@@ -37,6 +37,7 @@ struct MeetingMatchProfileView: View {
                             let kakaoId = viewStore.isProfileOpen ? member.kakaoId : nil
                             
                             let profileViewConfig = UserProfileBoxConfig(
+                                id: member.id,
                                 mbti: mbtiType,
                                 animal: animalType,
                                 height: member.height,
@@ -47,11 +48,19 @@ struct MeetingMatchProfileView: View {
                                 isUnivVerified: true,
                                 kakaoId: kakaoId
                             )
-                            UserProfileBoxView(config: profileViewConfig)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    viewStore.send(.didProfileTapped)
-                                }
+                            UserProfileBoxView(config: profileViewConfig, needShowMenu: true, menuHandler: { id in
+                                viewStore.send(.didTappedUserMenu(id: id))
+                            })
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                viewStore.send(.didProfileTapped)
+                            }
+                            .confirmationDialog("타이틀", isPresented: viewStore.$isShowUserMenu) {
+                              Button("신고", role: .destructive) {
+                                  viewStore.send(.requestReportUser)
+                              }
+                              Button("취소", role: .cancel) {}
+                            }
                         }
                     }
                     .padding(.vertical, 20)
@@ -61,6 +70,11 @@ struct MeetingMatchProfileView: View {
                 }
                 .padding(.horizontal, 16)
             }
+            .weaveAlert(
+                isPresented: viewStore.$isShowCompleteReportAlert, 
+                title: "신고가 정상적으로\n처리되었어요!",
+                primaryButtonTitle: "확인"
+            )
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()

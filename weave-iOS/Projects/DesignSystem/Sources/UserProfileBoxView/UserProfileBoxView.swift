@@ -10,6 +10,7 @@ import Kingfisher
 import CoreKit
 
 public struct UserProfileBoxConfig {
+    let id: String
     let mbti: MBTIType?
     let animal: String?
     let height: Int?
@@ -21,6 +22,7 @@ public struct UserProfileBoxConfig {
     let kakaoId: String?
     
     public init(
+        id: String,
         mbti: MBTIType?,
         animal: String?,
         height: Int?,
@@ -31,6 +33,7 @@ public struct UserProfileBoxConfig {
         isUnivVerified: Bool,
         kakaoId: String? = nil
     ) {
+        self.id = id
         self.mbti = mbti
         self.animal = animal
         self.height = height
@@ -46,9 +49,17 @@ public struct UserProfileBoxConfig {
 public struct UserProfileBoxView: View {
     
     let config: UserProfileBoxConfig
+    let needShowMenu: Bool
+    var menuHandler: ((String) -> Void)?
     
-    public init(config: UserProfileBoxConfig) {
+    public init(
+        config: UserProfileBoxConfig, 
+        needShowMenu: Bool = false,
+        menuHandler: ((String) -> Void)? = nil
+    ) {
         self.config = config
+        self.needShowMenu = needShowMenu
+        self.menuHandler = menuHandler
     }
     
     var univVerifiedIcon: Image {
@@ -68,6 +79,12 @@ public struct UserProfileBoxView: View {
                     RoundCornerBoxedTextView("📏 \(height)cm")
                 }
                 Spacer()
+                if needShowMenu {
+                    DesignSystem.Icons.menu
+                        .onTapGesture {
+                            menuHandler?(config.id)
+                        }
+                }
             }
             
             HStack {
